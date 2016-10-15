@@ -50,7 +50,7 @@ class ViewRenderer
 
     public function partialFile($file, array $params)
     {
-        $renderer = new ViewRenderer($this->viewer);
+        $renderer = new self($this->viewer);
 
         $renderer->registerRenderer($this->viewer->getCompiledFile($file), $params);
 
@@ -81,7 +81,7 @@ class ViewRenderer
 
         foreach ($values as $key => $value) {
             $content[] = $this->partialFile($file, $params + [
-                'key' => $key,
+                'key'   => $key,
                 'value' => $value,
             ]);
         }
