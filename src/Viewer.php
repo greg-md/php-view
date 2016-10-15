@@ -14,8 +14,8 @@ class Viewer implements \ArrayAccess
     protected $paths = [];
 
     protected $compilers = [
-        '.php' => null,
-        '.html' => null,
+        '.php'   => null,
+        '.html'  => null,
         '.phtml' => null,
     ];
 
