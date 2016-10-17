@@ -2,9 +2,7 @@
 
 namespace Greg\View;
 
-use Greg\Support\Arr;
 use Greg\Support\File;
-use Greg\Support\Obj;
 use Greg\Support\Regex\InNamespaceRegex;
 
 class BladeCompiler implements CompilerInterface
@@ -37,8 +35,8 @@ class BladeCompiler implements CompilerInterface
         'endfor'     => 'compileEndFor',
         'endforeach' => 'compileEndForeach',
         'endwhile'   => 'compileEndWhile',
-        'forelse'    => 'compileForelse',
-        'endforelse' => 'compileEndForelse',
+        'forelse'    => 'compileForElse',
+        'endforelse' => 'compileEndForElse',
 
         'default'   => 'compileDefault',
         'break'     => 'compileBreak',
@@ -48,7 +46,14 @@ class BladeCompiler implements CompilerInterface
         'stop' => 'compileStop',
     ];
 
+    protected $optionalStatements = [
+        'break'     => 'compileBreak',
+        'continue'     => 'compileContinue',
+    ];
+
     protected $foreachK = 0;
+
+    protected $verbatim = [];
 
     public function __construct($compilationPath)
     {
@@ -137,23 +142,50 @@ class BladeCompiler implements CompilerInterface
         list($id, $content) = $token;
 
         if ($id == T_INLINE_HTML) {
+            $content = $this->compileVerbatim($content);
+
             foreach ($this->compilers as $callable) {
                 if (!is_callable($callable) and is_scalar($callable)) {
                     $callable = [$this, $callable];
                 }
 
-                $content = Obj::callCallable($callable, $content);
+                $content = $this->callCallable($callable, $content);
             }
+
+            $content = $this->restoreVerbatim($content);
         }
 
         return $content;
     }
 
+    protected function compileVerbatim($content)
+    {
+        return preg_replace_callback('/(?<!@)@verbatim(.*?)@endverbatim/s', function ($matches) {
+            $this->verbatim[] = $matches[1];
+
+            return '@__verbatim__@';
+        }, $content);
+    }
+
+    protected function restoreVerbatim($content)
+    {
+        return preg_replace_callback('/@__verbatim__@/', function () {
+            return array_shift($this->verbatim);
+        }, $content);
+    }
+
+    protected function callCallable(callable $callable, ...$args)
+    {
+        return call_user_func_array($callable, $args);
+    }
+
     protected function compileComments($string)
     {
-        return $this->inNamespaceRegex('{{--', '--}}')->replaceCallback(function ($matches) {
-            return $this->compileComment($matches['captured']);
-        }, $string, 'i');
+        $regex = $this->inNamespaceRegex('{{--', '--}}');
+
+        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+            return $matches[1] ? $matches[2] : $this->compileComment($matches['captured']);
+        }, $string);
     }
 
     protected function compileComment($string)
@@ -163,16 +195,20 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileRawEchos($string)
     {
-        return $this->inNamespaceRegex('{!!', '!!}')->replaceCallback(function ($matches) {
-            return $this->compileRawEcho($matches['captured']);
-        }, $string, 'i');
+        $regex = $this->inNamespaceRegex('{!!', '!!}');
+
+        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+            return $matches[1] ? $matches[2] : $this->compileRawEcho($matches['captured']);
+        }, $string);
     }
 
     protected function compileContentEchos($string)
     {
-        return $this->inNamespaceRegex('{{', '}}')->replaceCallback(function ($matches) {
-            return $this->compileContentEcho($matches['captured']);
-        }, $string, 'i');
+        $regex = $this->inNamespaceRegex('{{', '}}');
+
+        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+            return $matches[1] ? $matches[2] : $this->compileContentEcho($matches['captured']);
+        }, $string);
     }
 
     protected function compileRawEcho($string)
@@ -182,51 +218,49 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileContentEcho($string)
     {
-        return '<?php echo htmlspecialchars(' . $string . ', ENT_QUOTES); ?>';
+        if (preg_match('#^(\$[a-z0-9_]+)\s+or\s+(.+)$#i', $string, $matches)) {
+            $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
+        }
+
+        return '<?php echo htmlentities(' . $string . ', ENT_QUOTES); ?>';
     }
 
     protected function compileStatements($value)
     {
-        $statements = array_map('preg_quote', array_keys($this->statements));
+        $statements = array_map('preg_quote', array_merge(
+            array_keys($this->statements),
+            array_keys($this->optionalStatements),
+            array_keys($this->emptyStatements)
+        ));
 
         $statements = implode('|', $statements);
-
-        $emptyStatements = array_map('preg_quote', array_keys($this->emptyStatements));
-
-        $emptyStatements = implode('|', $emptyStatements);
 
         $exprNamespace = $this->inNamespaceRegex('(', ')');
 
         $exprNamespace->recursive(true);
 
-        $exprNamespace->setRecursiveGroup('recursive');
-
-        $exprRegex = '[\s\t]*(?\'recursive\'' . $exprNamespace . ')';
-
-        $extendsRegex = '(?\'extends\'->[\s\t]*[a-z0-9_]+[\s\t]*\g\'recursive\'(\g\'extends\')?)?';
-
-        $pattern = '@(?:(?\'statement\'' . $statements . ')' . $exprRegex . '|(?\'empty\'' . $emptyStatements . ')\b;?)' . $extendsRegex;
+        $pattern = '@(?\'statement\'' . $statements . ')' . '(?:[\s\t]*' . $exprNamespace . ')?;?';
 
         return preg_replace_callback('#' . $pattern . '#i', function ($matches) {
-            if ($statement = Arr::get($matches, 'empty')) {
-                $callable = $this->emptyStatements[$statement];
-
-                $args = [];
-            } else {
+            if (isset($this->statements[$matches['statement']])) {
                 $callable = $this->statements[$matches['statement']];
 
                 $args = [$matches['captured']];
-            }
+            } elseif (isset($this->optionalStatements[$matches['statement']])) {
+                $callable = $this->optionalStatements[$matches['statement']];
 
-            if ($extends = Arr::get($matches, 'extends')) {
-                $args[] = $extends;
+                $args = [$matches['captured']];
+            } else {
+                $callable = $this->emptyStatements[$matches['statement']];
+
+                $args = [];
             }
 
             if (!is_callable($callable) and is_scalar($callable)) {
                 $callable = [$this, $callable];
             }
 
-            return Obj::callCallable($callable, ...$args);
+            return $this->callCallable($callable, ...$args);
         }, $value);
     }
 
@@ -284,7 +318,7 @@ class BladeCompiler implements CompilerInterface
         return '<?php ' . $var . ' = true; foreach(' . $expr . '): ' . $var . ' = false; ?>';
     }
 
-    protected function compileForelse()
+    protected function compileForElse()
     {
         $var = '$___foreachEmpty' . $this->foreachK;
 
@@ -300,7 +334,7 @@ class BladeCompiler implements CompilerInterface
         return '<?php endforeach; ?>';
     }
 
-    protected function compileEndForelse()
+    protected function compileEndForElse()
     {
         return '<?php endif; ?>';
     }
@@ -330,8 +364,21 @@ class BladeCompiler implements CompilerInterface
         return '<?php break; case ' . $expr . ': ?>';
     }
 
-    protected function compileBreak()
+    protected function compileContinue($expr = null)
     {
+        if ($expr) {
+            return '<?php if(' . $expr . ') continue; ?>';
+        }
+
+        return '<?php continue; ?>';
+    }
+
+    protected function compileBreak($expr = null)
+    {
+        if ($expr) {
+            return '<?php if(' . $expr . ') break; ?>';
+        }
+
         return '<?php break; ?>';
     }
 
@@ -372,5 +419,19 @@ class BladeCompiler implements CompilerInterface
     public function getCompilationPath()
     {
         return $this->compilationPath;
+    }
+
+    public function addStatements(array $statements)
+    {
+        $this->statements = array_merge($this->statements, $statements);
+
+        return $this;
+    }
+
+    public function addEmptyStatements(array $statements)
+    {
+        $this->emptyStatements = array_merge($this->emptyStatements, $statements);
+
+        return $this;
     }
 }

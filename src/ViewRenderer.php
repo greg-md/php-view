@@ -4,11 +4,19 @@ namespace Greg\View;
 
 class ViewRenderer
 {
-    protected $rendererFile = null;
+    protected $file = null;
 
-    protected $rendererParams = [];
+    protected $params = [];
 
     protected $viewer = null;
+
+    protected $extended = null;
+
+    protected $content = null;
+
+    protected $sections = [];
+
+    protected $currentSection = null;
 
     public function __construct(Viewer $viewer)
     {
@@ -17,17 +25,17 @@ class ViewRenderer
 
     public function render($name, array $params = [])
     {
-        return $this->partial($name, $params + $this->rendererParams);
+        return $this->partial($name, $params + $this->params);
     }
 
     public function renderIfExists($name, array $params = [])
     {
-        return $this->partialIfExists($name, $params + $this->rendererParams);
+        return $this->partialIfExists($name, $params + $this->params);
     }
 
     public function renderFile($file, array $params = [])
     {
-        return $this->partialFile($file, $params + $this->rendererParams);
+        return $this->partialFile($file, $params + $this->params);
     }
 
     public function partial($name, array $params = [])
@@ -48,13 +56,13 @@ class ViewRenderer
         return null;
     }
 
-    public function partialFile($file, array $params)
+    public function partialFile($file, array $params = [])
     {
         $renderer = new self($this->viewer);
 
-        $renderer->registerRenderer($this->viewer->getCompiledFile($file), $params);
+        $renderer->register($this->viewer->getCompiledFile($file), $params);
 
-        return $renderer->loadRenderer();
+        return $renderer->load();
     }
 
     public function partialLoop($name, array $values, array $params = [])
@@ -89,29 +97,146 @@ class ViewRenderer
         return implode('', $content);
     }
 
-    public function loadRenderer()
+    protected function setExtended($name)
+    {
+        $this->extended = (string) $name;
+
+        return $this;
+    }
+
+    protected function getExtended()
+    {
+        return $this->extended;
+    }
+
+    protected function setContent($content)
+    {
+        $this->content = (string) $content;
+
+        return $this;
+    }
+
+    protected function getContent()
+    {
+        return $this->content;
+    }
+
+    protected function content()
+    {
+        echo $this->getContent();
+
+        return $this;
+    }
+
+    public function setSections(array $sections)
+    {
+        $this->sections = $sections;
+
+        return $this;
+    }
+
+    public function getSections()
+    {
+        return $this->sections;
+    }
+
+    public function hasSection($name)
+    {
+        return array_key_exists($name, $this->sections);
+    }
+
+    public function section($name, $content = null)
+    {
+        if ($this->currentSection) {
+            throw new \Exception('You can not have another section in a section.');
+        }
+
+        if (func_num_args() > 1) {
+            $this->sections[$name] = $content;
+        } else {
+            $this->currentSection = $name;
+
+            ob_start();
+        }
+
+        return $this;
+    }
+
+    public function parentSection()
+    {
+        $this->loadSection($this->currentSection);
+
+        return $this;
+    }
+
+    public function endSection()
+    {
+        if (!$this->currentSection) {
+            throw new \Exception('You can not end an undefined section.');
+        }
+
+        $this->sections[$this->currentSection] = ob_get_clean();
+
+        $this->currentSection = null;
+
+        return $this;
+    }
+
+    public function displaySection()
+    {
+        if (!$this->currentSection) {
+            throw new \Exception('You can not end an undefined section.');
+        }
+
+        $this->loadSection($this->currentSection, ob_get_clean());
+
+        $this->currentSection = null;
+
+        return $this;
+    }
+
+    public function loadSection($name, $else = null)
+    {
+        echo $this->hasSection($name) ? $this->sections[$name] : $else;
+
+        return $this;
+    }
+
+    public function register($file, array $params = [])
+    {
+        $this->file = $file;
+
+        $this->params = $params;
+
+        return $this;
+    }
+
+    public function load()
     {
         ob_start();
 
         try {
-            extract($this->rendererParams);
+            extract($this->params);
 
-            include $this->rendererFile;
+            include $this->file;
 
-            return ob_get_clean();
+            $content = ob_get_clean();
+
+            if ($extended = $this->getExtended()) {
+                $renderer = $this->viewer->getRenderer($extended);
+
+                $renderer
+                    ->setContent($content)
+                    ->setSections($this->getSections());
+
+                $content = $renderer->load();
+            }
+
+            return $content;
         } catch (\Exception $e) {
             ob_end_clean();
 
             throw $e;
         }
-    }
-
-    public function registerRenderer($file, array $params)
-    {
-        $this->rendererFile = $file;
-
-        $this->rendererParams = $params;
-
-        return $this;
     }
 }

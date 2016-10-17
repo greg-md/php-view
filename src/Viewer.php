@@ -48,13 +48,41 @@ class Viewer implements \ArrayAccess
 
     public function renderFile($file, array $params = [], $httpResponse = true)
     {
-        $renderer = new ViewRenderer($this);
-
-        $renderer->registerRenderer($this->getCompiledFile($file), $params);
-
-        $content = $renderer->loadRenderer();
+        $content = $this->newRenderer($file, $params)->load();
 
         return $httpResponse ? new Response($content) : $content;
+    }
+
+    public function getRenderer($name, array $params = [])
+    {
+        if ($file = $this->getFile($name)) {
+            return $this->getRendererFile($file, $params);
+        }
+
+        throw new \Exception('View file `' . $name . '` does not exist in view paths.');
+    }
+
+    public function getRendererIfExists($name, array $params = [])
+    {
+        if ($file = $this->getFile($name)) {
+            return $this->getRendererFile($file, $params);
+        }
+
+        return null;
+    }
+
+    public function getRendererFile($file, array $params = [])
+    {
+        return $this->newRenderer($file, $params);
+    }
+
+    protected function newRenderer($file, array $params = [])
+    {
+        $renderer = new ViewRenderer($this);
+
+        $renderer->register($this->getCompiledFile($file), $params + $this->getAccessor());
+
+        return $renderer;
     }
 
     public function assign($key, $value = null)
