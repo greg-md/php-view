@@ -18,6 +18,10 @@ class ViewRenderer
 
     protected $currentSection = null;
 
+    protected $stacks = [];
+
+    protected $currentStack = null;
+
     public function __construct(Viewer $viewer)
     {
         $this->viewer = $viewer;
@@ -65,60 +69,54 @@ class ViewRenderer
         return $renderer->load();
     }
 
-    public function partialLoop($name, array $values, array $params = [])
+    public function each($name, array $values, $valueName = null, $emptyName = null, array $params = [])
     {
         if ($file = $this->viewer->getFile($name)) {
-            return $this->partialFileLoop($file, $values, $params);
+            if ($emptyName) {
+                $emptyName = $this->viewer->getFile($emptyName);
+            }
+
+            return $this->eachFile($file, $values, $valueName, $emptyName, $params);
         }
 
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function partialLoopIfExists($name, array $values, array $params = [])
+    public function eachIfExists($name, array $values, $valueName = null, $emptyName = null, array $params = [])
     {
         if ($file = $this->viewer->getFile($name)) {
-            return $this->partialFileLoop($file, $values, $params);
+            if ($emptyName) {
+                $emptyName = $this->viewer->getFile($emptyName);
+            }
+
+            return $this->eachFile($file, $values, $valueName, $emptyName, $params);
         }
 
         return null;
     }
 
-    public function partialFileLoop($file, array $values, array $params = [])
+    public function eachFile($file, array $values, $valueName = null, $emptyFile = null, array $params = [])
     {
         $content = [];
 
         foreach ($values as $key => $value) {
             $content[] = $this->partialFile($file, $params + [
-                'key'   => $key,
-                'value' => $value,
+                $valueName ?: 'value' => $value,
             ]);
+        }
+
+        if (!$content and $emptyFile) {
+            $content[] = $this->partialFile($emptyFile, $params);
         }
 
         return implode('', $content);
     }
 
-    protected function setExtended($name)
+    protected function extend($name)
     {
         $this->extended = (string) $name;
 
         return $this;
-    }
-
-    protected function getExtended()
-    {
-        return $this->extended;
-    }
-
-    protected function setContent($content)
-    {
-        $this->content = (string) $content;
-
-        return $this;
-    }
-
-    protected function getContent()
-    {
-        return $this->content;
     }
 
     protected function content()
@@ -126,6 +124,127 @@ class ViewRenderer
         echo $this->getContent();
 
         return $this;
+    }
+
+    public function section($name, $content = null)
+    {
+        if ($this->currentSection) {
+            throw new \Exception('You cannot have a section in another section.');
+        }
+
+        if (func_num_args() > 1) {
+            $this->sections[$name] = $content;
+        } else {
+            $this->currentSection = $name;
+
+            ob_start();
+        }
+
+        return $this;
+    }
+
+    public function parent()
+    {
+        $this->yieldSection($this->currentSection);
+
+        return $this;
+    }
+
+    public function endSection()
+    {
+        if (!$this->currentSection) {
+            throw new \Exception('You cannot end an undefined section.');
+        }
+
+        $this->sections[$this->currentSection] = ob_get_clean();
+
+        $this->currentSection = null;
+
+        return $this;
+    }
+
+    public function show()
+    {
+        if (!$this->currentSection) {
+            throw new \Exception('You cannot end an undefined section.');
+        }
+
+        $this->yieldSection($this->currentSection, ob_get_clean());
+
+        $this->currentSection = null;
+
+        return $this;
+    }
+
+    public function yieldSection($name, $else = null)
+    {
+        echo $this->hasSection($name) ? $this->sections[$name] : $else;
+
+        return $this;
+    }
+
+    public function push($name, $content = null)
+    {
+        if ($this->currentStack) {
+            throw new \Exception('You cannot have a stack in another stack.');
+        }
+
+        if (func_num_args() > 1) {
+            $this->stacks[$name][] = $content;
+        } else {
+            $this->currentStack = $name;
+
+            ob_start();
+        }
+
+        return $this;
+    }
+
+    public function endPush()
+    {
+        if (!$this->currentStack) {
+            throw new \Exception('You cannot end an undefined stack.');
+        }
+
+        $this->stacks[$this->currentStack][] = ob_get_clean();
+
+        $this->currentStack = null;
+
+        return $this;
+    }
+
+    public function stack($name, $else = null)
+    {
+        echo $this->hasStack($name) ? implode('', $this->stacks[$name]) : $else;
+
+        return $this;
+    }
+
+    public function format($name, ...$args)
+    {
+        $this->viewer->format($name, ...$args);
+    }
+
+    public function getExtended()
+    {
+        return $this->extended;
+    }
+
+    public function setContent($content)
+    {
+        $this->content = (string) $content;
+
+        return $this;
+    }
+
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function hasStack($name)
+    {
+        return array_key_exists($name, $this->stacks);
     }
 
     public function setSections(array $sections)
@@ -140,66 +259,21 @@ class ViewRenderer
         return $this->sections;
     }
 
+    public function setStacks(array $stacks)
+    {
+        $this->stacks = $stacks;
+
+        return $this;
+    }
+
+    public function getStacks()
+    {
+        return $this->stacks;
+    }
+
     public function hasSection($name)
     {
         return array_key_exists($name, $this->sections);
-    }
-
-    public function section($name, $content = null)
-    {
-        if ($this->currentSection) {
-            throw new \Exception('You can not have another section in a section.');
-        }
-
-        if (func_num_args() > 1) {
-            $this->sections[$name] = $content;
-        } else {
-            $this->currentSection = $name;
-
-            ob_start();
-        }
-
-        return $this;
-    }
-
-    public function parentSection()
-    {
-        $this->loadSection($this->currentSection);
-
-        return $this;
-    }
-
-    public function endSection()
-    {
-        if (!$this->currentSection) {
-            throw new \Exception('You can not end an undefined section.');
-        }
-
-        $this->sections[$this->currentSection] = ob_get_clean();
-
-        $this->currentSection = null;
-
-        return $this;
-    }
-
-    public function displaySection()
-    {
-        if (!$this->currentSection) {
-            throw new \Exception('You can not end an undefined section.');
-        }
-
-        $this->loadSection($this->currentSection, ob_get_clean());
-
-        $this->currentSection = null;
-
-        return $this;
-    }
-
-    public function loadSection($name, $else = null)
-    {
-        echo $this->hasSection($name) ? $this->sections[$name] : $else;
-
-        return $this;
     }
 
     public function register($file, array $params = [])
@@ -225,9 +299,11 @@ class ViewRenderer
             if ($extended = $this->getExtended()) {
                 $renderer = $this->viewer->getRenderer($extended);
 
-                $renderer
-                    ->setContent($content)
-                    ->setSections($this->getSections());
+                $renderer->setContent($content);
+
+                $renderer->setStacks($this->getStacks());
+
+                $renderer->setSections($this->getSections());
 
                 $content = $renderer->load();
             }

@@ -2,11 +2,14 @@
 
 namespace Greg\View;
 
+use Greg\Support\Arr;
 use Greg\Support\File;
 use Greg\Support\Regex\InNamespaceRegex;
 
 class BladeCompiler implements CompilerInterface
 {
+    const PHP_VAR_REGEX = '\$+[a-z_][a-z0-9_]*';
+
     protected $compilationPath = null;
 
     protected $compilers = [
@@ -17,29 +20,37 @@ class BladeCompiler implements CompilerInterface
     ];
 
     protected $statements = [
-        'if'         => 'compileIf',
-        'elseif'     => 'compileElseIf',
-        'unless'     => 'compileUnless',
-        'elseunless' => 'compileElseUnless',
-        'for'        => 'compileFor',
-        'foreach'    => 'compileForeach',
-        'while'      => 'compileWhile',
+        'if'            => 'compileIf',
+        'elseif'        => 'compileElseIf',
+        'unless'        => 'compileUnless',
+        'elseunless'    => 'compileElseUnless',
+        'for'           => 'compileFor',
+        'while'         => 'compileWhile',
+
+        'foreach'       => 'compileForeach',
+        // Fallback blade template syntax
+        'foreachloop'   => 'compileForeach',
 
         'switch' => 'compileSwitch',
         'case'   => 'compileCase',
     ];
 
     protected $emptyStatements = [
-        'endif'      => 'compileEndIf',
-        'endunless'  => 'compileEndUnless',
-        'endfor'     => 'compileEndFor',
-        'endforeach' => 'compileEndForeach',
-        'endwhile'   => 'compileEndWhile',
-        'forelse'    => 'compileForElse',
-        'endforelse' => 'compileEndForElse',
+        'endif'     => 'compileEndIf',
+        'endunless' => 'compileEndUnless',
+        'endfor'    => 'compileEndFor',
+        'endwhile'  => 'compileEndWhile',
+
+        'forelse'       => 'compileForElse',
+        'endforelse'    => 'compileEndForElse',
+        'endforeach'    => 'compileEndForeach',
+
+        // Fallback blade template syntax
+        'forelseloop'       => 'compileForElse',
+        'endforelseloop'    => 'compileEndForElse',
+        'endforeachloop'    => 'compileEndForeach',
 
         'default'   => 'compileDefault',
-        'break'     => 'compileBreak',
         'endswitch' => 'compileEndSwitch',
 
         'else' => 'compileElse',
@@ -48,10 +59,12 @@ class BladeCompiler implements CompilerInterface
 
     protected $optionalStatements = [
         'break'     => 'compileBreak',
-        'continue'     => 'compileContinue',
+        'continue'  => 'compileContinue',
     ];
 
-    protected $foreachK = 0;
+    protected $foreachEmptyVars = [];
+
+    protected $foreachLoopVars = [];
 
     protected $verbatim = [];
 
@@ -160,7 +173,7 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileVerbatim($content)
     {
-        return preg_replace_callback('/(?<!@)@verbatim(.*?)@endverbatim/s', function ($matches) {
+        return preg_replace_callback('#(?<!@)@verbatim(.*?)@endverbatim#is', function ($matches) {
             $this->verbatim[] = $matches[1];
 
             return '@__verbatim__@';
@@ -169,7 +182,7 @@ class BladeCompiler implements CompilerInterface
 
     protected function restoreVerbatim($content)
     {
-        return preg_replace_callback('/@__verbatim__@/', function () {
+        return preg_replace_callback('#@__verbatim__@#', function () {
             return array_shift($this->verbatim);
         }, $content);
     }
@@ -183,7 +196,7 @@ class BladeCompiler implements CompilerInterface
     {
         $regex = $this->inNamespaceRegex('{{--', '--}}');
 
-        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+        return preg_replace_callback('#(@)?(' . $regex . ')#s', function ($matches) {
             return $matches[1] ? $matches[2] : $this->compileComment($matches['captured']);
         }, $string);
     }
@@ -197,7 +210,7 @@ class BladeCompiler implements CompilerInterface
     {
         $regex = $this->inNamespaceRegex('{!!', '!!}');
 
-        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+        return preg_replace_callback('#(@)?(' . $regex . ')#s', function ($matches) {
             return $matches[1] ? $matches[2] : $this->compileRawEcho($matches['captured']);
         }, $string);
     }
@@ -206,7 +219,7 @@ class BladeCompiler implements CompilerInterface
     {
         $regex = $this->inNamespaceRegex('{{', '}}');
 
-        return preg_replace_callback('#(@)?(' . $regex . ')#', function ($matches) {
+        return preg_replace_callback('#(@)?(' . $regex . ')#s', function ($matches) {
             return $matches[1] ? $matches[2] : $this->compileContentEcho($matches['captured']);
         }, $string);
     }
@@ -218,11 +231,11 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileContentEcho($string)
     {
-        if (preg_match('#^(\$[a-z0-9_]+)\s+or\s+(.+)$#i', $string, $matches)) {
+        if (preg_match('#^(' . self::PHP_VAR_REGEX . ')\s+or\s+(.+)$#is', $string, $matches)) {
             $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
         }
 
-        return '<?php echo htmlentities(' . $string . ', ENT_QUOTES); ?>';
+        return '<?php echo htmlentities(' . $string . '); ?>';
     }
 
     protected function compileStatements($value)
@@ -233,6 +246,10 @@ class BladeCompiler implements CompilerInterface
             array_keys($this->emptyStatements)
         ));
 
+        usort($statements, function ($a, $b) {
+            return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
+        });
+
         $statements = implode('|', $statements);
 
         $exprNamespace = $this->inNamespaceRegex('(', ')');
@@ -241,7 +258,7 @@ class BladeCompiler implements CompilerInterface
 
         $pattern = '@(?\'statement\'' . $statements . ')' . '(?:[\s\t]*' . $exprNamespace . ')?;?';
 
-        return preg_replace_callback('#' . $pattern . '#i', function ($matches) {
+        return preg_replace_callback('#' . $pattern . '#is', function ($matches) {
             if (isset($this->statements[$matches['statement']])) {
                 $callable = $this->statements[$matches['statement']];
 
@@ -311,32 +328,82 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileForeach($expr)
     {
-        ++$this->foreachK;
+        $this->foreachEmptyVars[] = $emptyVar = $this->uniqueVar('foreachEmpty');
 
-        $var = '$___foreachEmpty' . $this->foreachK;
+        $parentLoopVar = Arr::last($this->foreachLoopVars) ?: 'null';
 
-        return '<?php ' . $var . ' = true; foreach(' . $expr . '): ' . $var . ' = false; ?>';
+        $this->foreachLoopVars[] = $loopVar = $this->uniqueVar('foreachLoop');
+
+        if (preg_match('#(.+)\s+as\s+(.+),\s*(' . self::PHP_VAR_REGEX . ')$#is', $expr, $matches)) {
+            $iterator = $matches[1];
+
+            $iteratorAlias = $matches[2];
+
+            $realLoopVar = $matches[3];
+
+            $iterationVar = $this->uniqueVar('foreachIterator');
+
+            $iterationCountVar = $this->uniqueVar('foreachIteratorCount');
+
+            $depth = count($this->foreachLoopVars);
+
+            return "<?php
+                {$emptyVar} = true;
+                
+                {$iterationVar} = {$iterator};
+                
+                {$iterationCountVar} = count({$iterationVar});
+                
+                {$loopVar} = (object)[
+                    'iteration' => 0,
+                    'index' => 0,
+                    'remaining' => {$iterationCountVar},
+                    'count' => {$iterationCountVar},
+                    'first' => true,
+                    'last' => {$iterationCountVar} == 1,
+                    'depth' => {$depth},
+                    'parent' => {$parentLoopVar},
+                ];
+                
+                foreach({$iterationVar} as {$iteratorAlias}):
+                    {$emptyVar} = false;
+                    
+                    ++{$loopVar}->iteration;
+                    
+                    {$loopVar}->index = {$loopVar}->iteration - 1;
+                    
+                    {$loopVar}->first = {$loopVar}->iteration == 1;
+                    
+                    --{$loopVar}->remaining;
+                    
+                    {$loopVar}->last = {$loopVar}->iteration == {$loopVar}->count;
+                    
+                    {$realLoopVar} = {$loopVar};
+            ?>";
+        }
+
+        return "<?php {$emptyVar} = true; foreach({$expr}): {$emptyVar} = false; ?>";
     }
 
     protected function compileForElse()
     {
-        $var = '$___foreachEmpty' . $this->foreachK;
+        array_shift($this->foreachLoopVars);
 
-        --$this->foreachK;
-
-        return '<?php endforeach; if(' . $var . '): ?>';
-    }
-
-    protected function compileEndForeach()
-    {
-        --$this->foreachK;
-
-        return '<?php endforeach; ?>';
+        return '<?php endforeach; if(' . array_shift($this->foreachEmptyVars) . '): ?>';
     }
 
     protected function compileEndForElse()
     {
         return '<?php endif; ?>';
+    }
+
+    protected function compileEndForeach()
+    {
+        array_shift($this->foreachLoopVars);
+
+        array_shift($this->foreachEmptyVars);
+
+        return '<?php endforeach; ?>';
     }
 
     protected function compileWhile($expr)
@@ -409,6 +476,11 @@ class BladeCompiler implements CompilerInterface
         return $pattern;
     }
 
+    protected function uniqueVar($name)
+    {
+        return '$' . $name . str_replace('.', '_', uniqid(null, true));
+    }
+
     public function setCompilationPath($path)
     {
         $this->compilationPath = (string) $path;
@@ -421,6 +493,15 @@ class BladeCompiler implements CompilerInterface
         return $this->compilationPath;
     }
 
+    public function clearCompiledFiles()
+    {
+        foreach(glob($this->getCompilationPath() . '/*.php') as $file) {
+            unlink($file);
+        }
+
+        return $this;
+    }
+
     public function addStatements(array $statements)
     {
         $this->statements = array_merge($this->statements, $statements);
@@ -431,6 +512,20 @@ class BladeCompiler implements CompilerInterface
     public function addEmptyStatements(array $statements)
     {
         $this->emptyStatements = array_merge($this->emptyStatements, $statements);
+
+        return $this;
+    }
+
+    public function addOptionalStatements(array $statements)
+    {
+        $this->optionalStatements = array_merge($this->optionalStatements, $statements);
+
+        return $this;
+    }
+
+    public function addOptionalStatement($name, $compiler)
+    {
+        $this->optionalStatements[$name] = $compiler;
 
         return $this;
     }

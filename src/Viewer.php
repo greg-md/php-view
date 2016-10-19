@@ -19,6 +19,8 @@ class Viewer implements \ArrayAccess
         '.phtml' => null,
     ];
 
+    protected $directives = [];
+
     public function __construct($path, array $params = [])
     {
         $this->setPaths((array) $path);
@@ -112,13 +114,14 @@ class Viewer implements \ArrayAccess
     {
         $this->compilers[$extension] = $compiler;
 
-        uksort($this->compilers, function ($a, $b) {
-            return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
-        });
-
         return $this;
     }
 
+    /**
+     * @param $extension
+     * @return CompilerInterface
+     * @throws \Exception
+     */
     public function getCompiler($extension)
     {
         if (!array_key_exists($extension, $this->compilers)) {
@@ -128,7 +131,7 @@ class Viewer implements \ArrayAccess
         $compiler = &$this->compilers[$extension];
 
         if (is_callable($compiler)) {
-            $compiler = Obj::callCallable($compiler);
+            $compiler = Obj::callCallableWith($compiler, $this);
         }
 
         if ($compiler and !($compiler instanceof CompilerInterface)) {
@@ -170,16 +173,15 @@ class Viewer implements \ArrayAccess
         return false;
     }
 
-    /**
-     * @param $file
-     *
-     * @throws \Exception
-     *
-     * @return bool|CompilerInterface
-     */
     public function getCompilerByFile($file)
     {
-        foreach ($this->getCompilersExtensions() as $extension) {
+        $extensions = $this->getCompilersExtensions();
+
+        usort($extensions, function ($a, $b) {
+            return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
+        });
+
+        foreach ($extensions as $extension) {
             if (Str::endsWith($file, $extension)) {
                 return $this->getCompiler($extension);
             }
@@ -195,6 +197,36 @@ class Viewer implements \ArrayAccess
         }
 
         return $file;
+    }
+
+    public function clearCompiledFiles()
+    {
+        foreach($this->getCompilersExtensions() as $extension) {
+            $this->getCompiler($extension)->clearCompiledFiles();
+        }
+
+        return $this;
+    }
+
+    public function directive($name, callable $callable)
+    {
+        $this->directives[$name] = $callable;
+
+        return $this;
+    }
+
+    public function hasDirective($name)
+    {
+        return array_key_exists($name, $this->directives);
+    }
+
+    public function format($name, ...$args)
+    {
+        if (!$this->hasDirective($name)) {
+            throw new \Exception('Directive `' . $name . '` is not defined.');
+        }
+
+        return Obj::callCallable($this->directives[$name], ...$args);
     }
 
     public function __set($key, $value)
