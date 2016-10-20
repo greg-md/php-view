@@ -102,3 +102,12 @@ $response->send();
 
  `$file` - Template file path;  
  `$params` - Template parameters. Will be available only in this template.  
+
+- **`assign(string|array $key, string $value = null)`**
+
+ Assign parameters to all templates.
+
+ **Arguments:**
+
+ `$key` - Parameter key or an array of parameters.  
+ `$value` - Parameter value if `$key` is not an array.  
