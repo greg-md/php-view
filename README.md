@@ -35,7 +35,7 @@ $response->send();
 
  **Arguments:**
 
- `$path` - Templates directory; 
+ `$path` - Templates directory;  
  `$params` - This parameters will be assigned in all templates.
 
  **Example:**
