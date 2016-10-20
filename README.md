@@ -109,5 +109,83 @@ $response->send();
 
  **Arguments:**
 
- `$key` - Parameter key or an array of parameters.  
+ `$key` - Parameter key or an array of parameters;  
  `$value` - Parameter value if `$key` is not an array.  
+
+- **`setPaths(array $paths)`**
+
+ Replace templates directories.
+
+ **Arguments:**
+
+ `$paths` - Templates directories.  
+
+- **`addPaths(array $paths)`**
+
+ Add new templates directories.
+
+ **Arguments:**
+
+ `$paths` - Templates directories.  
+
+- **`addPath(string $path)`**
+
+ Add new template directory.
+
+ **Arguments:**
+
+ `$path` - Template directory.  
+
+- **`getPaths()`**
+
+ Get templates directories.
+
+- **`addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null)`**
+
+ Add new extension.
+
+ **Arguments:**
+
+ `$extension` - File extension.  
+ `$compiler` - File compiler.
+
+- **`getExtensions()`**
+
+ Get all known extensions.
+
+- **`getCompiler(string $extension)`**
+
+ Get compiler by extension.
+
+ **Arguments:**
+
+ `$extension` - File extension.
+
+- **`getCompilers()`**
+
+ Get all registered compilers.
+
+- **`getCompilersExtensions()`**
+
+ Get all extensions which have compilers.
+
+- **`getFile(string $name)`**
+
+ Get file path by template name.
+
+ **Arguments:**
+
+ `$name` - Template name.
+
+- **`clearCompiledFiles()`**
+
+ Clear all compiled files.
+
+- **`directive(string $name, callable $callable)`**
+
+ Register a new directive.
+
+ **Arguments:**
+
+ `$name` - Directive name.  
+ `$callable` - Directive executive function.

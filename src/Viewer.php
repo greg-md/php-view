@@ -105,6 +105,20 @@ class Viewer implements \ArrayAccess
         return $this;
     }
 
+    public function addPaths(array $paths)
+    {
+        $this->paths = array_merge($this->paths, $paths);
+
+        return $this;
+    }
+
+    public function addPath($path)
+    {
+        $this->paths[] = $path;
+
+        return $this;
+    }
+
     public function getPaths()
     {
         return $this->paths;
@@ -115,6 +129,11 @@ class Viewer implements \ArrayAccess
         $this->compilers[$extension] = $compiler;
 
         return $this;
+    }
+
+    public function getExtensions()
+    {
+        return array_keys($this->compilers);
     }
 
     /**
@@ -141,17 +160,12 @@ class Viewer implements \ArrayAccess
         return $compiler;
     }
 
-    protected function getExtensions()
-    {
-        return array_keys($this->compilers);
-    }
-
-    protected function getCompilers()
+    public function getCompilers()
     {
         return array_filter($this->compilers);
     }
 
-    protected function getCompilersExtensions()
+    public function getCompilersExtensions()
     {
         return array_keys($this->getCompilers());
     }
@@ -173,7 +187,16 @@ class Viewer implements \ArrayAccess
         return false;
     }
 
-    public function getCompilerByFile($file)
+    protected function getCompiledFile($file)
+    {
+        if ($compiler = $this->getCompilerByFile($file)) {
+            $file = $compiler->getCompiledFile($file);
+        }
+
+        return $file;
+    }
+
+    protected function getCompilerByFile($file)
     {
         $extensions = $this->getCompilersExtensions();
 
@@ -188,15 +211,6 @@ class Viewer implements \ArrayAccess
         }
 
         return false;
-    }
-
-    public function getCompiledFile($file)
-    {
-        if ($compiler = $this->getCompilerByFile($file)) {
-            $file = $compiler->getCompiledFile($file);
-        }
-
-        return $file;
     }
 
     public function clearCompiledFiles()
