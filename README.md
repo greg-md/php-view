@@ -27,7 +27,7 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
-### Methods:
+#### Methods:
 
 - **`__construct(string|array $path, array $params = [])`** 
 
@@ -52,8 +52,8 @@ $response->send();
 
  **Arguments:**
 
- `$name` - Template name, relative to registered paths; 
- `$params` - Template parameters. Will be available only in this template. 
+ `$name` - Template name, relative to registered paths;  
+ `$params` - Template parameters. Will be available only in this template.  
  `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
 
 - **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`**
@@ -72,6 +72,6 @@ $response->send();
 
  **Arguments:**
 
- `$name` - Template file path; 
- `$params` - Template parameters. Will be available only in this template. 
+ `$name` - Template file path;  
+ `$params` - Template parameters. Will be available only in this template.  
  `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
