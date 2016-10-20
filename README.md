@@ -45,7 +45,7 @@ $response->send();
    ]);
     ```
 
-- `render(string $name, array $params = [], boolean $returnAsString = false)` - Render a template by name.
+- **`render(string $name, array $params = [], boolean $returnAsString = false)`** - Render a template by name.
 
    **Arguments:**
 
@@ -53,7 +53,7 @@ $response->send();
    `$params` - Template parameters. Will be available only in this template.  
    `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
 
-- `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)` - Render a template by name if template exists.
+- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`** - Render a template by name if template exists.
 
    **Arguments:**
 
@@ -61,7 +61,7 @@ $response->send();
    `$params` - Template parameters. Will be available only in this template.  
    `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
 
-- `renderFile(string $file, array $params = [], boolean $returnAsString = false)` - Render a template by name if template exists.
+- **`renderFile(string $file, array $params = [], boolean $returnAsString = false)`** - Render a template by name if template exists.
 
    **Arguments:**
 
