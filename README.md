@@ -9,3 +9,58 @@
 
 A better Blade Compiler for web artisans.
 
+# Documentation
+
+## Viewer
+
+`\Greg\View\Viewer` is the main class which initialize a new view manager.
+
+#### Example:
+
+```php
+$viewer = new \Greg\View\Viewer('./views', $sharedParams = []);
+
+$response = $viewer->render('home', [
+    'author' => 'Greg',
+]);
+
+$response->send();
+```
+
+
+### Methods:
+
+- `__construct(string|array $path, array $params = [])` - This is the constructor of the Viewer.
+
+... **Arguments:**
+... `$path` - Templates directory;
+... `$params` - This parameters will be assigned in all templates.
+
+... **Example:**
+...
+```php
+$viewer->render('home', [
+    'author' => 'Greg',
+]);
+```
+
+- `render(string $name, array $params = [], boolean $returnAsString = false)` - Render a template by name.
+
+... **Arguments:**
+... `$name` - Template name, relative to registered paths;
+... `$params` - Template parameters. Will be available only in this template.
+... `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+
+- `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)` - Render a template by name if template exists.
+
+... **Arguments:**
+... `$name` - Template name, relative to registered paths;
+... `$params` - Template parameters. Will be available only in this template.
+... `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+
+- `renderFile(string $file, array $params = [], boolean $returnAsString = false)` - Render a template by name if template exists.
+
+... **Arguments:**
+... `$name` - Template file path;
+... `$params` - Template parameters. Will be available only in this template.
+... `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
