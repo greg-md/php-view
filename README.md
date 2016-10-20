@@ -72,6 +72,33 @@ $response->send();
 
  **Arguments:**
 
- `$name` - Template file path;  
+ `$file` - Template file path;  
  `$params` - Template parameters. Will be available only in this template.  
  `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+
+- **`getRenderer(string $name, array $params = [])`**
+
+ Get an instance of `\Greg\View\ViewRenderer` by template name.
+
+ **Arguments:**
+
+ `$name` - Template name, relative to registered paths;  
+ `$params` - Template parameters. Will be available only in this template.  
+
+- **`getRendererIfExists(string $name, array $params = [])`**
+
+ Get an instance of `\Greg\View\ViewRenderer` by template name if template exists.
+
+ **Arguments:**
+
+ `$name` - Template name, relative to registered paths;  
+ `$params` - Template parameters. Will be available only in this template.  
+
+- **`getRendererFile(string $file, array $params = [])`**
+
+ Get an instance of `\Greg\View\ViewRenderer` by template name if template exists.
+
+ **Arguments:**
+
+ `$file` - Template file path;  
+ `$params` - Template parameters. Will be available only in this template.  
