@@ -27,44 +27,51 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
-
 ### Methods:
 
-- **`__construct(string|array $path, array $params = [])`** - This is the constructor of the Viewer.
+- **`__construct(string|array $path, array $params = [])`** 
 
-   **Arguments:**
+ This is the constructor of the Viewer.
 
-   `$path` - Templates directory;  
-   `$params` - This parameters will be assigned in all templates.
+ **Arguments:**
 
-   **Example:**
+ `$path` - Templates directory; 
+ `$params` - This parameters will be assigned in all templates.
 
-   ```php
-   $viewer->render('home', [
-       'author' => 'Greg',
-   ]);
-    ```
+ **Example:**
 
-- **`render(string $name, array $params = [], boolean $returnAsString = false)`** - Render a template by name.
+ ```php
+ $viewer->render('home', [
+     'author' => 'Greg',
+ ]);
+ ```
 
-   **Arguments:**
+- **`render(string $name, array $params = [], boolean $returnAsString = false)`**
 
-   `$name` - Template name, relative to registered paths;  
-   `$params` - Template parameters. Will be available only in this template.  
-   `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+ Render a template by name.
 
-- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`** - Render a template by name if template exists.
+ **Arguments:**
 
-   **Arguments:**
+ `$name` - Template name, relative to registered paths; 
+ `$params` - Template parameters. Will be available only in this template. 
+ `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
 
-   `$name` - Template name, relative to registered paths;  
-   `$params` - Template parameters. Will be available only in this template.  
-   `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`**
 
-- **`renderFile(string $file, array $params = [], boolean $returnAsString = false)`** - Render a template by name if template exists.
+ Render a template by name if template exists.
 
-   **Arguments:**
+ **Arguments:**
 
-   `$name` - Template file path;  
-   `$params` - Template parameters. Will be available only in this template.  
-   `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+ `$name` - Template name, relative to registered paths;  
+ `$params` - Template parameters. Will be available only in this template.  
+ `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+
+- **`renderFile(string $file, array $params = [], boolean $returnAsString = false)`**
+
+ Render a template by name if template exists.
+
+ **Arguments:**
+
+ `$name` - Template file path; 
+ `$params` - Template parameters. Will be available only in this template. 
+ `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
