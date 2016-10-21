@@ -495,7 +495,7 @@ class BladeCompiler implements CompilerInterface
 
     public function clearCompiledFiles()
     {
-        foreach(glob($this->getCompilationPath() . '/*.php') as $file) {
+        foreach (glob($this->getCompilationPath() . '/*.php') as $file) {
             unlink($file);
         }
 
