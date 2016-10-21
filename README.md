@@ -64,18 +64,20 @@ $response->send();
     $response->send();
     ```
 
-- #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
+- #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`
     
     Render a template by name if template exists. See `render` method.
 
-- #### `getRenderer(string $name, array $params = []): \Greg\View\ViewRenderer`
+- #### `getRenderer(string $name, array $params = [])`
     
     Get an instance of `\Greg\View\ViewRenderer` by template name.
     
     **Arguments:**
     
     `$name` - Template name, relative to registered paths;  
-    `$params` - Template parameters. Will be available only in this template.  
+    `$params` - Template parameters. Will be available only in this template.
+    
+    **Response: `\Greg\View\ViewRenderer`**
     
     **Example:**
     
