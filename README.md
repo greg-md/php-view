@@ -33,7 +33,7 @@ $response->send();
 
 ### Methods:
 
-- ####`__construct(string|array $path, array $params = [])` 
+- #### `__construct(string|array $path, array $params = [])` 
     
     This is the constructor of the Viewer.
     
@@ -42,7 +42,7 @@ $response->send();
     `$path` - Templates directory;  
     `$params` - This parameters will be assigned in all templates.
 
-- ####`render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
+- #### `render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
     
     Render a template by name.
     
@@ -62,11 +62,11 @@ $response->send();
     $response->send();
     ```
 
-- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`**
+- #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
     
     Render a template by name if template exists. See `render` method.
 
-- **`getRenderer(string $name, array $params = []): \Greg\View\ViewRenderer`**
+- #### `getRenderer(string $name, array $params = []): \Greg\View\ViewRenderer`
     
     Get an instance of `\Greg\View\ViewRenderer` by template name.
     
@@ -85,11 +85,11 @@ $response->send();
     echo $renderer->load();
     ```
 
-- **`getRendererIfExists(string $name, array $params = []): \Greg\View\ViewRenderer`**
+- #### `getRendererIfExists(string $name, array $params = []): \Greg\View\ViewRenderer`
 
     Get an instance of `\Greg\View\ViewRenderer` by template name if template exists. See `getRenderer` method.
 
-- **`assign(string|array $key, string $value = null): $this`**
+- #### `assign(string|array $key, string $value = null): $this`
     
     Assign parameters to all templates.
     
@@ -109,7 +109,7 @@ $response->send();
     ]);
     ```
 
-- **`setPaths(array $paths): $this`**
+- #### `setPaths(array $paths): $this`
     
     Replace templates directories.
     
@@ -125,11 +125,11 @@ $response->send();
     ]);
     ```
 
-- **`addPaths(array $paths): $this`**
+- #### `addPaths(array $paths): $this`
 
     Add new templates directories. See `setPaths` method.
 
-- **`addPath(string $path): $this`**
+- #### `addPath(string $path): $this`
     
     Add new template directory.
     
@@ -143,11 +143,11 @@ $response->send();
     $viewer->addPath('./views');
     ```
 
-- **`getPaths(): array`**
+- #### `getPaths(): array`
 
     Get templates directories.
 
-- **`addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this`**
+- #### `addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this`
     
     Add new extension.
     
@@ -166,11 +166,11 @@ $response->send();
     });
     ```
 
-- **`getExtensions(): string[]`**
+- #### `getExtensions(): string[]`
 
     Get all known extensions.
 
-- **`getCompiler(string $extension): \Greg\View\CompilerInterface`**
+- #### `getCompiler(string $extension): \Greg\View\CompilerInterface`
     
     Get compiler by extension.
     
@@ -186,15 +186,15 @@ $response->send();
     $file = $compiler->getCompiledFile();
     ```
 
-- **`getCompilers(): \Greg\View\CompilerInterface[]`**
+- #### `getCompilers(): \Greg\View\CompilerInterface[]`
 
     Get all registered compilers.
 
-- **`getCompilersExtensions(): string[]`**
+- #### `getCompilersExtensions(): string[]`
 
     Get all extensions which have compilers.
 
-- **`getFile(string $name): string`**
+- #### `getFile(string $name): string`
     
     Get file path by template name.
     
@@ -202,11 +202,11 @@ $response->send();
     
     `$name` - Template name.
 
-- **`clearCompiledFiles(): $this`**
+- #### `clearCompiledFiles(): $this`
 
     Clear all compiled files.
 
-- **`directive(string $name, callable $callable): $this`**
+- #### `directive(string $name, callable $callable): $this`
     
     Register a new directive.
     
@@ -223,7 +223,7 @@ $response->send();
     });
     ```
 
-- **`format(string $name, mixed ...$args): mixed`**
+- #### `format(string $name, mixed ...$args): mixed`
     
     Execute a directive.
     
