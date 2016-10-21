@@ -35,6 +35,8 @@ $response->send();
 
 #### `__construct(string|array $path, array $params = [])` 
 
+---
+
 This is the constructor of the Viewer.
 
 **Arguments:**
@@ -42,9 +44,9 @@ This is the constructor of the Viewer.
 `$path` - Templates directory;  
 `$params` - This parameters will be assigned in all templates.
 
----
-
 #### `render(string $name, array $params = [], boolean $returnAsString = false)`
+
+---
 
 Render a template by name.
 
@@ -66,13 +68,11 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
----
-
 #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`
 
-Render a template by name if template exists. See `render` method.
-
 ---
+
+Render a template by name if template exists. See `render` method.
 
 #### `getRenderer(string $name, array $params = [])`
 
@@ -94,8 +94,6 @@ $renderer = $viewer->getRenderer('home', [
 
 echo $renderer->load();
 ```
-
----
 
 #### `getRendererIfExists(string $name, array $params = [])`
 
