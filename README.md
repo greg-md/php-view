@@ -33,211 +33,211 @@ $response->send();
 
 ### Methods:
 
-- #### `__construct(string|array $path, array $params = [])` 
-    
-    This is the constructor of the Viewer.
-    
-    **Arguments:**
-    
-    `$path` - Templates directory;  
-    `$params` - This parameters will be assigned in all templates.
+#### `__construct(string|array $path, array $params = [])` 
 
-- #### `render(string $name, array $params = [], boolean $returnAsString = false)`
-    
-    Render a template by name.
-    
-    **Arguments:**
-    
-    `$name` - Template name, relative to registered paths;  
-    `$params` - Template parameters. Will be available only in this template.  
-    `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
-    
-    **Response: `\Greg\Support\Http\Response|string`**
-    
-    **Example:**
-    
-    ```php
-    $response = $viewer->render('home', [
-        'author' => 'Greg',
-    ]);
-    
-    $response->send();
-    ```
+This is the constructor of the Viewer.
 
-- #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`
-    
-    Render a template by name if template exists. See `render` method.
+**Arguments:**
 
-- #### `getRenderer(string $name, array $params = [])`
-    
-    Get an instance of `\Greg\View\ViewRenderer` by template name.
-    
-    **Arguments:**
-    
-    `$name` - Template name, relative to registered paths;  
-    `$params` - Template parameters. Will be available only in this template.
-    
-    **Response: `\Greg\View\ViewRenderer`**
-    
-    **Example:**
-    
-    ```php
-    $renderer = $viewer->getRenderer('home', [
-        'author' => 'Greg',
-    ]);
-    
-    echo $renderer->load();
-    ```
+`$path` - Templates directory;  
+`$params` - This parameters will be assigned in all templates.
 
-- #### `getRendererIfExists(string $name, array $params = []): \Greg\View\ViewRenderer`
+#### `render(string $name, array $params = [], boolean $returnAsString = false)`
 
-    Get an instance of `\Greg\View\ViewRenderer` by template name if template exists. See `getRenderer` method.
+Render a template by name.
 
-- #### `assign(string|array $key, string $value = null): $this`
-    
-    Assign parameters to all templates.
-    
-    **Arguments:**
-    
-    `$key` - Parameter key or an array of parameters;  
-    `$value` - Parameter value if `$key` is not an array.  
-    
-    **Example:**
-    
-    ```php
-    $viewer->assign('author', 'Greg');
-    
-    $viewer->assign([
-        'position' => 'Web Developer',
-        'website' => 'http://greg.md/',
-    ]);
-    ```
+**Arguments:**
 
-- #### `setPaths(array $paths): $this`
-    
-    Replace templates directories.
-    
-    **Arguments:**
-    
-    `$paths` - Templates directories.  
-    
-    **Example:**
-    
-    ```php
-    $viewer->setPaths([
-        './views',
-    ]);
-    ```
+`$name` - Template name, relative to registered paths;  
+`$params` - Template parameters. Will be available only in this template.  
+`$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
 
-- #### `addPaths(array $paths): $this`
+**Response: `\Greg\Support\Http\Response|string`**
 
-    Add new templates directories. See `setPaths` method.
+**Example:**
 
-- #### `addPath(string $path): $this`
-    
-    Add new template directory.
-    
-    **Arguments:**
-    
-    `$path` - Template directory.  
-    
-    **Example:**
-    
-    ```php
-    $viewer->addPath('./views');
-    ```
+```php
+$response = $viewer->render('home', [
+    'author' => 'Greg',
+]);
 
-- #### `getPaths(): array`
+$response->send();
+```
 
-    Get templates directories.
+#### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`
 
-- #### `addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this`
-    
-    Add new extension.
-    
-    **Arguments:**
-    
-    `$extension` - Template extension.  
-    `$compiler` - Template compiler.
-    
-    **Example:**
-    
-    ```php
-    $viewer->addExtension('.template');
-    
-    $viewer->addExtension('.blade.php', function (Viewer $viewer) {
-        return new ViewBladeCompiler($viewer, './storage');
-    });
-    ```
+Render a template by name if template exists. See `render` method.
 
-- #### `getExtensions(): string[]`
+#### `getRenderer(string $name, array $params = [])`
 
-    Get all known extensions.
+Get an instance of `\Greg\View\ViewRenderer` by template name.
 
-- #### `getCompiler(string $extension): \Greg\View\CompilerInterface`
-    
-    Get compiler by extension.
-    
-    **Arguments:**
-    
-    `$extension` - Template extension.
+**Arguments:**
 
-    **Example:**
-    
-    ```php
-    $compiler = $viewer->getCompiler('.blade.php');
-    
-    $file = $compiler->getCompiledFile();
-    ```
+`$name` - Template name, relative to registered paths;  
+`$params` - Template parameters. Will be available only in this template.
 
-- #### `getCompilers(): \Greg\View\CompilerInterface[]`
+**Response: `\Greg\View\ViewRenderer`**
 
-    Get all registered compilers.
+**Example:**
 
-- #### `getCompilersExtensions(): string[]`
+```php
+$renderer = $viewer->getRenderer('home', [
+    'author' => 'Greg',
+]);
 
-    Get all extensions which have compilers.
+echo $renderer->load();
+```
 
-- #### `getFile(string $name): string`
-    
-    Get file path by template name.
-    
-    **Arguments:**
-    
-    `$name` - Template name.
+#### `getRendererIfExists(string $name, array $params = [])`
 
-- #### `clearCompiledFiles(): $this`
+Get an instance of `\Greg\View\ViewRenderer` by template name if template exists. See `getRenderer` method.
 
-    Clear all compiled files.
+#### `assign(string|array $key, string $value = null): $this`
 
-- #### `directive(string $name, callable $callable): $this`
-    
-    Register a new directive.
-    
-    **Arguments:**
-    
-    `$name` - Directive name;  
-    `$callable` - Directive executive function.
-    
-    **Example:**
-    
-    ```php
-    $viewer->directive('alert', function($message) {
-        echo '<script>alert("' . $message . '");</script>';
-    });
-    ```
+Assign parameters to all templates.
 
-- #### `format(string $name, mixed ...$args): mixed`
-    
-    Execute a directive.
-    
-    **Arguments:**
-    
-    `$name` - Directive name;  
-    `...$args` - Directive arguments.
-    
-    **Example:**
-    
-    ```php
-    $viewer->format('alert', 'I am an alert message!');
-    ```
+**Arguments:**
+
+`$key` - Parameter key or an array of parameters;  
+`$value` - Parameter value if `$key` is not an array.  
+
+**Example:**
+
+```php
+$viewer->assign('author', 'Greg');
+
+$viewer->assign([
+    'position' => 'Web Developer',
+    'website' => 'http://greg.md/',
+]);
+```
+
+#### `setPaths(array $paths): $this`
+
+Replace templates directories.
+
+**Arguments:**
+
+`$paths` - Templates directories.  
+
+**Example:**
+
+```php
+$viewer->setPaths([
+    './views',
+]);
+```
+
+#### `addPaths(array $paths): $this`
+
+Add new templates directories. See `setPaths` method.
+
+#### `addPath(string $path): $this`
+
+Add new template directory.
+
+**Arguments:**
+
+`$path` - Template directory.  
+
+**Example:**
+
+```php
+$viewer->addPath('./views');
+```
+
+#### `getPaths(): array`
+
+Get templates directories.
+
+#### `addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this`
+
+Add new extension.
+
+**Arguments:**
+
+`$extension` - Template extension.  
+`$compiler` - Template compiler.
+
+**Example:**
+
+```php
+$viewer->addExtension('.template');
+
+$viewer->addExtension('.blade.php', function (Viewer $viewer) {
+    return new ViewBladeCompiler($viewer, './storage');
+});
+```
+
+#### `getExtensions(): string[]`
+
+Get all known extensions.
+
+#### `getCompiler(string $extension): \Greg\View\CompilerInterface`
+
+Get compiler by extension.
+
+**Arguments:**
+
+`$extension` - Template extension.
+
+**Example:**
+
+```php
+$compiler = $viewer->getCompiler('.blade.php');
+
+$file = $compiler->getCompiledFile();
+```
+
+#### `getCompilers(): \Greg\View\CompilerInterface[]`
+
+Get all registered compilers.
+
+#### `getCompilersExtensions(): string[]`
+
+Get all extensions which have compilers.
+
+#### `getFile(string $name): string`
+
+Get file path by template name.
+
+**Arguments:**
+
+`$name` - Template name.
+
+#### `clearCompiledFiles(): $this`
+
+Clear all compiled files.
+
+#### `directive(string $name, callable $callable): $this`
+
+Register a new directive.
+
+**Arguments:**
+
+`$name` - Directive name;  
+`$callable` - Directive executive function.
+
+**Example:**
+
+```php
+$viewer->directive('alert', function($message) {
+    echo '<script>alert("' . $message . '");</script>';
+});
+```
+
+#### `format(string $name, mixed ...$args): mixed`
+
+Execute a directive.
+
+**Arguments:**
+
+`$name` - Directive name;  
+`...$args` - Directive arguments.
+
+**Example:**
+
+```php
+$viewer->format('alert', 'I am an alert message!');
+```
