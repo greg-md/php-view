@@ -31,7 +31,7 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
-### Methods:
+Methods:
 ---
 
 #### `__construct(string|array $path, array $params = [])` 
