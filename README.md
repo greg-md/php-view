@@ -37,12 +37,12 @@ $response->send();
 
 This is the constructor of the Viewer.
 
----
-
 **Arguments:**
 
 `$path` - Templates directory;  
 `$params` - This parameters will be assigned in all templates.
+
+---
 
 #### `render(string $name, array $params = [], boolean $returnAsString = false)`
 
