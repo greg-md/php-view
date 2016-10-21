@@ -32,6 +32,7 @@ $response->send();
 ```
 
 ### Methods:
+---
 
 #### `__construct(string|array $path, array $params = [])` 
 
