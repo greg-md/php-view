@@ -157,8 +157,8 @@ $response->send();
     
     **Arguments:**
     
-    `$extension` - File extension.  
-    `$compiler` - File compiler.
+    `$extension` - Template extension.  
+    `$compiler` - Template compiler.
     
     **Example:**
     
@@ -172,50 +172,72 @@ $response->send();
 
 - **`getExtensions()`**
 
- Get all known extensions.
+    Get all known extensions.
 
 - **`getCompiler(string $extension)`**
+    
+    Get compiler by extension.
+    
+    **Arguments:**
+    
+    `$extension` - Template extension.
 
- Get compiler by extension.
-
- **Arguments:**
-
- `$extension` - File extension.
+    **Example:**
+    
+    ```php
+    $compiler = $viewer->getCompiler('.blade.php');
+    
+    $file = $compiler->getCompiledFile();
+    ```
 
 - **`getCompilers()`**
 
- Get all registered compilers.
+    Get all registered compilers.
 
 - **`getCompilersExtensions()`**
 
- Get all extensions which have compilers.
+    Get all extensions which have compilers.
 
 - **`getFile(string $name)`**
-
- Get file path by template name.
-
- **Arguments:**
-
- `$name` - Template name.
+    
+    Get file path by template name.
+    
+    **Arguments:**
+    
+    `$name` - Template name.
 
 - **`clearCompiledFiles()`**
 
- Clear all compiled files.
+    Clear all compiled files.
 
 - **`directive(string $name, callable $callable)`**
-
- Register a new directive.
-
- **Arguments:**
-
- `$name` - Directive name;  
- `$callable` - Directive executive function.
+    
+    Register a new directive.
+    
+    **Arguments:**
+    
+    `$name` - Directive name;  
+    `$callable` - Directive executive function.
+    
+    **Example:**
+    
+    ```php
+    $viewer->directive('alert', function($message) {
+        echo '<script>alert("' . $message . '");</script>';
+    });
+    ```
 
 - **`format(string $name, mixed ...$args)`**
-
- Register a new directive.
-
- **Arguments:**
-
- `$name` - Directive name;  
- `...$args` - Directive arguments.
+    
+    Execute a directive.
+    
+    **Arguments:**
+    
+    `$name` - Directive name;  
+    `...$args` - Directive arguments.
+    
+    **Example:**
+    
+    ```php
+    $viewer->format('alert', 'I am an alert message!');
+    ```
