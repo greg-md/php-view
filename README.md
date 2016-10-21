@@ -42,7 +42,7 @@ $response->send();
     `$path` - Templates directory;  
     `$params` - This parameters will be assigned in all templates.
 
-- #### `render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
+- #### `render(string $name, array $params = [], boolean $returnAsString = false)`
     
     Render a template by name.
     
@@ -51,6 +51,8 @@ $response->send();
     `$name` - Template name, relative to registered paths;  
     `$params` - Template parameters. Will be available only in this template.  
     `$returnAsString` - If `true`, returned content will be a string, otherwise will return an `\Greg\Support\Http\Response` object.
+    
+    **Response: `\Greg\Support\Http\Response|string`**
     
     **Example:**
     
