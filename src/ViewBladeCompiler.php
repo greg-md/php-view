@@ -19,7 +19,7 @@ class ViewBladeCompiler extends BladeCompiler
     {
         $this->viewer->directive($name, $callable);
 
-        $this->addOptionalStatement($name, function($expr = null) use ($name) {
+        $this->addOptionalStatement($name, function ($expr = null) use ($name) {
             return $this->compileFormat('"' . addslashes($name) . '", ' . $expr);
         });
 
@@ -29,29 +29,29 @@ class ViewBladeCompiler extends BladeCompiler
     protected function setup()
     {
         $this->addStatements([
-            'extends' => 'compileExtends',
-            'section' => 'compileSection',
-            'yield' => 'compileYield',
-            'render' => 'compileRender',
-            'renderIfExists' => 'compileRenderIfExists',
-            'renderFile' => 'compileRenderFile',
-            'partial' => 'compilePartial',
+            'extends'         => 'compileExtends',
+            'section'         => 'compileSection',
+            'yield'           => 'compileYield',
+            'render'          => 'compileRender',
+            'renderIfExists'  => 'compileRenderIfExists',
+            'renderFile'      => 'compileRenderFile',
+            'partial'         => 'compilePartial',
             'partialIfExists' => 'compilePartialIfExists',
-            'partialFile' => 'compilePartialFile',
-            'each' => 'compileEach',
-            'eachIfExists' => 'compileEachIfExists',
-            'eachFile' => 'compileEachFile',
+            'partialFile'     => 'compilePartialFile',
+            'each'            => 'compileEach',
+            'eachIfExists'    => 'compileEachIfExists',
+            'eachFile'        => 'compileEachFile',
 
-            'push' => 'compilePush',
+            'push'  => 'compilePush',
             'stack' => 'compileStack',
         ]);
 
         $this->addEmptyStatements([
-            'content' => 'compileContent',
-            'parent' => 'compileParent',
+            'content'    => 'compileContent',
+            'parent'     => 'compileParent',
             'endsection' => 'compileEndSection',
-            'show' => 'compileShow',
-            'endpush' => 'compileEndPush',
+            'show'       => 'compileShow',
+            'endpush'    => 'compileEndPush',
         ]);
 
         $this->addOptionalStatements([

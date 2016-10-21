@@ -138,8 +138,10 @@ class Viewer implements \ArrayAccess
 
     /**
      * @param $extension
-     * @return CompilerInterface
+     *
      * @throws \Exception
+     *
+     * @return CompilerInterface
      */
     public function getCompiler($extension)
     {
@@ -215,7 +217,7 @@ class Viewer implements \ArrayAccess
 
     public function clearCompiledFiles()
     {
-        foreach($this->getCompilersExtensions() as $extension) {
+        foreach ($this->getCompilersExtensions() as $extension) {
             $this->getCompiler($extension)->clearCompiledFiles();
         }
 
