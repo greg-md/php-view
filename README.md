@@ -11,9 +11,9 @@ A better Viewer and Blade Compiler for web artisans.
 
 # Documentation
 
-## Viewer
+## `\Greg\View\Viewer implements \ArrayAccess use ArrayAccessTrait`
 
-`\Greg\View\Viewer` is the main class which initialize a new view manager.
+Viewer is the main class which initialize a new view manager.
 
 #### Example:
 
