@@ -18,7 +18,7 @@ A better Viewer and Blade Compiler for web artisans.
 #### Example:
 
 ```php
-$viewer = new \Greg\View\Viewer('./views', $sharedParams = []);
+$viewer = new \Greg\View\Viewer('./views');
 
 $response = $viewer->render('home', [
     'author' => 'Greg',
@@ -38,7 +38,7 @@ $response->send();
     `$path` - Templates directory;  
     `$params` - This parameters will be assigned in all templates.
 
-- **`render(string $name, array $params = [], boolean $returnAsString = false)`**
+- **`render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`**
     
     Render a template by name.
     
@@ -58,11 +58,11 @@ $response->send();
     $response->send();
     ```
 
-- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`**
+- **`renderIfExists(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`**
     
     Render a template by name if template exists. See `render` method.
 
-- **`getRenderer(string $name, array $params = [])`**
+- **`getRenderer(string $name, array $params = []): \Greg\View\ViewRenderer`**
     
     Get an instance of `\Greg\View\ViewRenderer` by template name.
     
@@ -81,11 +81,11 @@ $response->send();
     echo $renderer->load();
     ```
 
-- **`getRendererIfExists(string $name, array $params = [])`**
+- **`getRendererIfExists(string $name, array $params = []): \Greg\View\ViewRenderer`**
 
     Get an instance of `\Greg\View\ViewRenderer` by template name if template exists. See `getRenderer` method.
 
-- **`assign(string|array $key, string $value = null)`**
+- **`assign(string|array $key, string $value = null): $this`**
     
     Assign parameters to all templates.
     
@@ -105,7 +105,7 @@ $response->send();
     ]);
     ```
 
-- **`setPaths(array $paths)`**
+- **`setPaths(array $paths): $this`**
     
     Replace templates directories.
     
@@ -121,11 +121,11 @@ $response->send();
     ]);
     ```
 
-- **`addPaths(array $paths)`**
+- **`addPaths(array $paths): $this`**
 
     Add new templates directories. See `setPaths` method.
 
-- **`addPath(string $path)`**
+- **`addPath(string $path): $this`**
     
     Add new template directory.
     
@@ -139,19 +139,11 @@ $response->send();
     $viewer->addPath('./views');
     ```
 
-- **`getPaths()`**
+- **`getPaths(): array`**
 
     Get templates directories.
-    
-    **Example:**
-    
-    ```php
-    foreach($viewer->getPaths() as $path) {
-        echo $path . "\n";
-    }
-    ```
 
-- **`addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null)`**
+- **`addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this`**
     
     Add new extension.
     
@@ -170,11 +162,11 @@ $response->send();
     });
     ```
 
-- **`getExtensions()`**
+- **`getExtensions(): string[]`**
 
     Get all known extensions.
 
-- **`getCompiler(string $extension)`**
+- **`getCompiler(string $extension): \Greg\View\CompilerInterface`**
     
     Get compiler by extension.
     
@@ -190,15 +182,15 @@ $response->send();
     $file = $compiler->getCompiledFile();
     ```
 
-- **`getCompilers()`**
+- **`getCompilers(): \Greg\View\CompilerInterface[]`**
 
     Get all registered compilers.
 
-- **`getCompilersExtensions()`**
+- **`getCompilersExtensions(): string[]`**
 
     Get all extensions which have compilers.
 
-- **`getFile(string $name)`**
+- **`getFile(string $name): string`**
     
     Get file path by template name.
     
@@ -206,11 +198,11 @@ $response->send();
     
     `$name` - Template name.
 
-- **`clearCompiledFiles()`**
+- **`clearCompiledFiles(): $this`**
 
     Clear all compiled files.
 
-- **`directive(string $name, callable $callable)`**
+- **`directive(string $name, callable $callable): $this`**
     
     Register a new directive.
     
@@ -227,7 +219,7 @@ $response->send();
     });
     ```
 
-- **`format(string $name, mixed ...$args)`**
+- **`format(string $name, mixed ...$args): mixed`**
     
     Execute a directive.
     
