@@ -31,8 +31,7 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
-Methods:
----
+### Methods:
 
 #### `__construct(string|array $path, array $params = [])` 
 
@@ -67,9 +66,13 @@ $response = $viewer->render('home', [
 $response->send();
 ```
 
+---
+
 #### `renderIfExists(string $name, array $params = [], boolean $returnAsString = false)`
 
 Render a template by name if template exists. See `render` method.
+
+---
 
 #### `getRenderer(string $name, array $params = [])`
 
@@ -91,6 +94,8 @@ $renderer = $viewer->getRenderer('home', [
 
 echo $renderer->load();
 ```
+
+---
 
 #### `getRendererIfExists(string $name, array $params = [])`
 
