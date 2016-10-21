@@ -48,7 +48,7 @@ class Viewer implements \ArrayAccess
         return null;
     }
 
-    public function renderFile($file, array $params = [], $returnAsString = false)
+    protected function renderFile($file, array $params = [], $returnAsString = false)
     {
         $content = $this->newRenderer($file, $params)->load();
 
@@ -73,7 +73,7 @@ class Viewer implements \ArrayAccess
         return null;
     }
 
-    public function getRendererFile($file, array $params = [])
+    protected function getRendererFile($file, array $params = [])
     {
         return $this->newRenderer($file, $params);
     }
@@ -187,7 +187,7 @@ class Viewer implements \ArrayAccess
         return false;
     }
 
-    protected function getCompiledFile($file)
+    public function getCompiledFile($file)
     {
         if ($compiler = $this->getCompilerByFile($file)) {
             $file = $compiler->getCompiledFile($file);

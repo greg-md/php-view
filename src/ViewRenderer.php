@@ -60,7 +60,7 @@ class ViewRenderer
         return null;
     }
 
-    public function partialFile($file, array $params = [])
+    protected function partialFile($file, array $params = [])
     {
         $renderer = new self($this->viewer);
 
