@@ -33,7 +33,7 @@ $response->send();
 
 ### Methods:
 
-- #### `__construct(string|array $path, array $params = [])` 
+- ####`__construct(string|array $path, array $params = [])` 
     
     This is the constructor of the Viewer.
     
@@ -42,7 +42,7 @@ $response->send();
     `$path` - Templates directory;  
     `$params` - This parameters will be assigned in all templates.
 
-- **`render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`**
+- ###`render(string $name, array $params = [], boolean $returnAsString = false): \Greg\Support\Http\Response|string`
     
     Render a template by name.
     
