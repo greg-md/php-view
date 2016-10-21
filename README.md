@@ -33,7 +33,7 @@ $response->send();
 
 ### Methods:
 
-- **`__construct(string|array $path, array $params = [])`** 
+- #### `__construct(string|array $path, array $params = [])` 
     
     This is the constructor of the Viewer.
     
