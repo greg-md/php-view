@@ -13,10 +13,8 @@ A better Viewer and Blade Compiler for web artisans.
 
 ## Viewer
 
-**
-`\Greg\View\Viewer implements \ArrayAccess`  
-Use: `\Greg\Support\Accessor\ArrayAccessTrait`
-**
+**`\Greg\View\Viewer implements \ArrayAccess`**  
+**Use: `\Greg\Support\Accessor\ArrayAccessTrait`**
 
 `\Greg\View\Viewer` is the main class which initialize a new view manager.
 
