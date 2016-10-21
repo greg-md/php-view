@@ -19,7 +19,7 @@ A better Viewer and Blade Compiler for web artisans.
 
 `\Greg\View\Viewer` is the main class which initialize a new view manager.
 
-#### Example:
+**Example:**
 
 ```php
 $viewer = new \Greg\View\Viewer('./views');
