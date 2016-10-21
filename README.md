@@ -36,7 +36,7 @@ $response->send();
 #### `__construct(string|array $path, array $params = [])` 
 
 This is the constructor of the Viewer.
-
+---
 **Arguments:**
 
 `$path` - Templates directory;  
