@@ -42,7 +42,9 @@ class Viewer implements \ArrayAccess
 
     protected function renderFileContent($file, array $params = [])
     {
-        return $this->newRenderer($file, $params)->load();
+        $renderer = $this->newRenderer($file, $params);
+
+        return (new ViewRendererLoader($renderer))->__l__o__a__d__();
     }
 
     public function renderContent($name, array $params = [])

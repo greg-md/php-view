@@ -8,6 +8,9 @@ class ViewRenderer
 
     protected $params = [];
 
+    /**
+     * @var Viewer
+     */
     protected $viewer = null;
 
     protected $extended = null;
@@ -24,11 +27,11 @@ class ViewRenderer
 
     public function __construct(Viewer $viewer, $file, array $params = [])
     {
-        $this->viewer = $viewer;
+        $this->setViewer($viewer);
 
-        $this->file = $file;
+        $this->setFile($file);
 
-        $this->params = $params;
+        $this->setParams($params);
     }
 
     public function render($name, array $params = [])
@@ -61,7 +64,9 @@ class ViewRenderer
 
     protected function partialFile($file, array $params = [])
     {
-        return (new self($this->viewer, $this->viewer->getCompiledFile($file), $params + $this->viewer->getParams()))->load();
+        $renderer = (new self($this->viewer, $this->viewer->getCompiledFile($file), $params + $this->viewer->getParams()));
+
+        return (new ViewRendererLoader($renderer))->__l__o__a__d__();
     }
 
     public function each($name, array $values, $valueName = null, $emptyName = null, array $params = [])
@@ -218,11 +223,6 @@ class ViewRenderer
         $this->viewer->format($name, ...$args);
     }
 
-    public function load()
-    {
-        return (new ViewRendererLoader($this))->load($this->file, $this->params);
-    }
-    
     public function getViewer()
     {
         return $this->viewer;
@@ -232,6 +232,30 @@ class ViewRenderer
     {
         $this->viewer = $viewer;
         
+        return $this;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    public function setParams(array $params)
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function setFile($file)
+    {
+        $this->file = (string) $file;
+
         return $this;
     }
 

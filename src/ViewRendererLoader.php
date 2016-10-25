@@ -6,34 +6,34 @@ use Greg\Support\Obj;
 
 class ViewRendererLoader
 {
-    protected $renderer = null;
+    protected $__r__e__n__d__e__r__e__r__ = null;
 
     public function __construct(ViewRenderer $renderer)
     {
-        $this->renderer = $renderer;
+        $this->__r__e__n__d__e__r__e__r__ = $renderer;
     }
 
-    public function load()
+    public function __l__o__a__d__()
     {
         ob_start();
 
         try {
-            extract(func_get_arg(0));
+            extract($this->__r__e__n__d__e__r__e__r__->getParams());
 
-            include func_get_arg(1);
+            include $this->__r__e__n__d__e__r__e__r__->getFile();
 
             $content = ob_get_clean();
 
-            if ($extended = $this->renderer->getExtended()) {
-                $renderer = $this->renderer->getViewer()->getRenderer($extended);
+            if ($extended = $this->__r__e__n__d__e__r__e__r__->getExtended()) {
+                $renderer = $this->__r__e__n__d__e__r__e__r__->getViewer()->getRenderer($extended);
 
                 $renderer->setContent($content);
 
-                $renderer->setStacks($this->renderer->getStacks());
+                $renderer->setStacks($this->__r__e__n__d__e__r__e__r__->getStacks());
 
-                $renderer->setSections($this->renderer->getSections());
+                $renderer->setSections($this->__r__e__n__d__e__r__e__r__->getSections());
 
-                $content = $renderer->load();
+                $content = (new self($renderer))->__l__o__a__d__();
             }
 
             return $content;
@@ -46,6 +46,6 @@ class ViewRendererLoader
 
     public function __call($name, $arguments)
     {
-        return Obj::callCallable([$this->renderer, $name], $arguments);
+        return Obj::callCallable([$this->__r__e__n__d__e__r__e__r__, $name], $arguments);
     }
 }
