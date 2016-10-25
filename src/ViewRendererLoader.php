@@ -2,16 +2,11 @@
 
 namespace Greg\View;
 
-use Greg\Support\Obj;
-
 class ViewRendererLoader
 {
-    /**
-     * @var ViewRenderer
-     */
     protected $_r_e_n_d_e_r_e_r_ = null;
 
-    public function _construct(ViewRenderer $renderer)
+    public function __construct(ViewRenderer $renderer)
     {
         $this->_r_e_n_d_e_r_e_r_ = $renderer;
     }
@@ -55,6 +50,6 @@ class ViewRendererLoader
 
     public function __call($name, $arguments)
     {
-        return Obj::callCallable([$this->_r_e_n_d_e_r_e_r_, $name], $arguments);
+        return call_user_func_array([$this->_r_e_n_d_e_r_e_r_, $name], $arguments);
     }
 }
