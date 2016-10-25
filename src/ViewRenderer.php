@@ -76,7 +76,7 @@ class ViewRenderer
                 $emptyName = $this->viewer->getCompiledFile($emptyName);
             }
 
-            return $this->eachFile($file, $values, $valueName, $emptyName, $params);
+            return $this->eachFile($file, $values, $valueKeyName, $emptyName, $params);
         }
 
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
@@ -89,7 +89,7 @@ class ViewRenderer
                 $emptyName = $this->viewer->getCompiledFile($emptyName);
             }
 
-            return $this->eachFile($file, $values, $valueName, $emptyName, $params);
+            return $this->eachFile($file, $values, $valueKeyName, $emptyName, $params);
         }
 
         return null;
