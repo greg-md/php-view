@@ -9,6 +9,10 @@
 
 A better Viewer and Blade Compiler for web artisans.
 
-# Documentation
+# Requirements
 
-Documentation could be found [in the wiki](https://github.com/greg-md/php-view/wiki).
+* PHP Version ^5.6 || ^7.0
+
+# Official documentation
+
+Official documentation could be found [in the wiki](https://github.com/greg-md/php-view/wiki).

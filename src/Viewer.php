@@ -30,35 +30,43 @@ class Viewer implements \ArrayAccess
         return $this;
     }
 
-    public function render($name, array $params = [], $returnAsString = false)
+    public function render($name, array $params = [])
+    {
+        return new Response($this->renderContent($name, $params));
+    }
+
+    public function renderIfExists($name, array $params = [])
+    {
+        return new Response($this->renderContentIfExists($name, $params));
+    }
+
+    protected function renderFileContent($file, array $params = [])
+    {
+        return $this->newRenderer($file, $params)->load();
+    }
+
+    public function renderContent($name, array $params = [])
     {
         if ($file = $this->getFile($name)) {
-            return $this->renderFile($file, $params, $returnAsString);
+            return $this->renderFileContent($file, $params);
         }
 
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function renderIfExists($name, array $params = [], $returnAsString = false)
+    public function renderContentIfExists($name, array $params = [])
     {
         if ($file = $this->getFile($name)) {
-            return $this->renderFile($file, $params, $returnAsString);
+            return $this->renderFileContent($file, $params);
         }
 
         return null;
     }
 
-    protected function renderFile($file, array $params = [], $returnAsString = false)
-    {
-        $content = $this->newRenderer($file, $params)->load();
-
-        return $returnAsString ? new Response($content) : $content;
-    }
-
     public function getRenderer($name, array $params = [])
     {
         if ($file = $this->getFile($name)) {
-            return $this->getRendererFile($file, $params);
+            return $this->newRenderer($file, $params);
         }
 
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
@@ -67,15 +75,10 @@ class Viewer implements \ArrayAccess
     public function getRendererIfExists($name, array $params = [])
     {
         if ($file = $this->getFile($name)) {
-            return $this->getRendererFile($file, $params);
+            return $this->newRenderer($file, $params);
         }
 
         return null;
-    }
-
-    protected function getRendererFile($file, array $params = [])
-    {
-        return $this->newRenderer($file, $params);
     }
 
     protected function newRenderer($file, array $params = [])
