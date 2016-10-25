@@ -46,7 +46,7 @@ class ViewRenderer
 
     public function partial($name, array $params = [])
     {
-        if ($file = $this->viewer->getFile($name)) {
+        if ($file = $this->viewer->getCompiledFile($name)) {
             return $this->partialFile($file, $params);
         }
 
@@ -55,7 +55,7 @@ class ViewRenderer
 
     public function partialIfExists($name, array $params = [])
     {
-        if ($file = $this->viewer->getFile($name)) {
+        if ($file = $this->viewer->getCompiledFile($name)) {
             return $this->partialFile($file, $params);
         }
 
@@ -64,16 +64,16 @@ class ViewRenderer
 
     protected function partialFile($file, array $params = [])
     {
-        $renderer = (new self($this->viewer, $this->viewer->getCompiledFile($file), $params + $this->viewer->getParams()));
+        $renderer = (new self($this->viewer, $file, $params + $this->viewer->getParams()));
 
-        return (new ViewRendererLoader($renderer))->__l__o__a__d__();
+        return (new ViewRendererLoader($renderer))->_l_o_a_d_();
     }
 
-    public function each($name, array $values, $valueName = null, $emptyName = null, array $params = [])
+    public function each($name, array $values, $valueKeyName = null, $emptyName = null, array $params = [])
     {
-        if ($file = $this->viewer->getFile($name)) {
+        if ($file = $this->viewer->getCompiledFile($name)) {
             if ($emptyName) {
-                $emptyName = $this->viewer->getFile($emptyName);
+                $emptyName = $this->viewer->getCompiledFile($emptyName);
             }
 
             return $this->eachFile($file, $values, $valueName, $emptyName, $params);
@@ -82,11 +82,11 @@ class ViewRenderer
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function eachIfExists($name, array $values, $valueName = null, $emptyName = null, array $params = [])
+    public function eachIfExists($name, array $values, $valueKeyName = null, $emptyName = null, array $params = [])
     {
-        if ($file = $this->viewer->getFile($name)) {
+        if ($file = $this->viewer->getCompiledFile($name)) {
             if ($emptyName) {
-                $emptyName = $this->viewer->getFile($emptyName);
+                $emptyName = $this->viewer->getCompiledFile($emptyName);
             }
 
             return $this->eachFile($file, $values, $valueName, $emptyName, $params);
@@ -95,13 +95,13 @@ class ViewRenderer
         return null;
     }
 
-    protected function eachFile($file, array $values, $valueName = null, $emptyFile = null, array $params = [])
+    protected function eachFile($file, array $values, $valueKeyName = null, $emptyFile = null, array $params = [])
     {
         $content = [];
 
         foreach ($values as $key => $value) {
             $content[] = $this->partialFile($file, $params + [
-                $valueName ?: 'value' => $value,
+                $valueKeyName ?: 'value' => $value,
             ]);
         }
 
@@ -223,21 +223,16 @@ class ViewRenderer
         $this->viewer->format($name, ...$args);
     }
 
-    public function getViewer()
-    {
-        return $this->viewer;
-    }
-
     public function setViewer(Viewer $viewer)
     {
         $this->viewer = $viewer;
-        
+
         return $this;
     }
 
-    public function getParams()
+    public function getViewer()
     {
-        return $this->params;
+        return $this->viewer;
     }
 
     public function setParams(array $params)
@@ -247,9 +242,9 @@ class ViewRenderer
         return $this;
     }
 
-    public function getFile()
+    public function getParams()
     {
-        return $this->file;
+        return $this->params;
     }
 
     public function setFile($file)
@@ -257,6 +252,11 @@ class ViewRenderer
         $this->file = (string) $file;
 
         return $this;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
     }
 
     public function setExtended($name)
@@ -283,11 +283,6 @@ class ViewRenderer
         return $this->content;
     }
 
-    public function hasStack($name)
-    {
-        return array_key_exists($name, $this->stacks);
-    }
-
     public function setSections(array $sections)
     {
         $this->sections = $sections;
@@ -298,6 +293,11 @@ class ViewRenderer
     public function getSections()
     {
         return $this->sections;
+    }
+
+    public function hasSection($name)
+    {
+        return array_key_exists($name, $this->sections);
     }
 
     public function setStacks(array $stacks)
@@ -312,8 +312,8 @@ class ViewRenderer
         return $this->stacks;
     }
 
-    public function hasSection($name)
+    public function hasStack($name)
     {
-        return array_key_exists($name, $this->sections);
+        return array_key_exists($name, $this->stacks);
     }
 }

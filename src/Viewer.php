@@ -5,7 +5,6 @@ namespace Greg\View;
 use Greg\Support\Accessor\ArrayAccessTrait;
 use Greg\Support\Http\Response;
 use Greg\Support\Obj;
-use Greg\Support\Str;
 
 class Viewer implements \ArrayAccess
 {
@@ -40,16 +39,9 @@ class Viewer implements \ArrayAccess
         return new Response($this->renderContentIfExists($name, $params));
     }
 
-    protected function renderFileContent($file, array $params = [])
-    {
-        $renderer = $this->newRenderer($file, $params);
-
-        return (new ViewRendererLoader($renderer))->__l__o__a__d__();
-    }
-
     public function renderContent($name, array $params = [])
     {
-        if ($file = $this->getFile($name)) {
+        if ($file = $this->getCompiledFile($name)) {
             return $this->renderFileContent($file, $params);
         }
 
@@ -58,34 +50,39 @@ class Viewer implements \ArrayAccess
 
     public function renderContentIfExists($name, array $params = [])
     {
-        if ($file = $this->getFile($name)) {
+        if ($file = $this->getCompiledFile($name)) {
             return $this->renderFileContent($file, $params);
         }
 
         return null;
     }
 
-    public function getRenderer($name, array $params = [])
+    protected function renderFileContent($file, array $params = [])
     {
-        if ($file = $this->getFile($name)) {
-            return $this->newRenderer($file, $params);
-        }
+        $renderer = new ViewRenderer($this, $file, $params + $this->getParams());
 
-        throw new \Exception('View file `' . $name . '` does not exist in view paths.');
+        return (new ViewRendererLoader($renderer))->_l_o_a_d_();
     }
 
-    public function getRendererIfExists($name, array $params = [])
+    public function getCompiledFile($name)
     {
-        if ($file = $this->getFile($name)) {
-            return $this->newRenderer($file, $params);
+        foreach ($this->getPaths() as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+
+            foreach ($this->getExtensions() as $extension) {
+                if (is_file($file = $path . DIRECTORY_SEPARATOR . ltrim($name . $extension, '\/'))) {
+                    if ($compiler = $this->getCompiler($extension)) {
+                        $file = $compiler->getCompiledFile($file);
+                    }
+
+                    return $file;
+                }
+            }
         }
 
-        return null;
-    }
-
-    protected function newRenderer($file, array $params = [])
-    {
-        return new ViewRenderer($this, $this->getCompiledFile($file), $params + $this->getParams());
+        return false;
     }
 
     public function assign($key, $value = null)
@@ -176,49 +173,6 @@ class Viewer implements \ArrayAccess
     public function getCompilersExtensions()
     {
         return array_keys($this->getCompilers());
-    }
-
-    public function getFile($name)
-    {
-        foreach ($this->getPaths() as $path) {
-            if (!is_dir($path)) {
-                continue;
-            }
-
-            foreach ($this->getExtensions() as $extension) {
-                if (is_file($file = $path . DIRECTORY_SEPARATOR . ltrim($name . $extension, '\/'))) {
-                    return $file;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public function getCompiledFile($file)
-    {
-        if ($compiler = $this->getCompilerByFile($file)) {
-            $file = $compiler->getCompiledFile($file);
-        }
-
-        return $file;
-    }
-
-    protected function getCompilerByFile($file)
-    {
-        $extensions = $this->getCompilersExtensions();
-
-        usort($extensions, function ($a, $b) {
-            return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
-        });
-
-        foreach ($extensions as $extension) {
-            if (Str::endsWith($file, $extension)) {
-                return $this->getCompiler($extension);
-            }
-        }
-
-        return false;
     }
 
     public function clearCompiledFiles()

@@ -6,34 +6,43 @@ use Greg\Support\Obj;
 
 class ViewRendererLoader
 {
-    protected $__r__e__n__d__e__r__e__r__ = null;
+    /**
+     * @var ViewRenderer
+     */
+    protected $_r_e_n_d_e_r_e_r_ = null;
 
-    public function __construct(ViewRenderer $renderer)
+    public function _construct(ViewRenderer $renderer)
     {
-        $this->__r__e__n__d__e__r__e__r__ = $renderer;
+        $this->_r_e_n_d_e_r_e_r_ = $renderer;
     }
 
-    public function __l__o__a__d__()
+    public function _l_o_a_d_()
     {
         ob_start();
 
         try {
-            extract($this->__r__e__n__d__e__r__e__r__->getParams());
+            extract($this->_r_e_n_d_e_r_e_r_->getParams());
 
-            include $this->__r__e__n__d__e__r__e__r__->getFile();
+            include $this->_r_e_n_d_e_r_e_r_->getFile();
 
             $content = ob_get_clean();
 
-            if ($extended = $this->__r__e__n__d__e__r__e__r__->getExtended()) {
-                $renderer = $this->__r__e__n__d__e__r__e__r__->getViewer()->getRenderer($extended);
+            if ($extended = $this->_r_e_n_d_e_r_e_r_->getExtended()) {
+                $viewer = $this->_r_e_n_d_e_r_e_r_->getViewer();
 
-                $renderer->setContent($content);
+                if (!$file = $viewer->getCompiledFile($extended)) {
+                    throw new \Exception('View file `' . $extended . '` does not exist in view paths.');
+                }
 
-                $renderer->setStacks($this->__r__e__n__d__e__r__e__r__->getStacks());
+                $extendedRenderer = new ViewRenderer($viewer, $file, $viewer->getParams());
 
-                $renderer->setSections($this->__r__e__n__d__e__r__e__r__->getSections());
+                $extendedRenderer->setContent($content);
 
-                $content = (new self($renderer))->__l__o__a__d__();
+                $extendedRenderer->setSections($this->_r_e_n_d_e_r_e_r_->getSections());
+
+                $extendedRenderer->setStacks($this->_r_e_n_d_e_r_e_r_->getStacks());
+
+                $content = (new self($extendedRenderer))->_l_o_a_d_();
             }
 
             return $content;
@@ -46,6 +55,6 @@ class ViewRendererLoader
 
     public function __call($name, $arguments)
     {
-        return Obj::callCallable([$this->__r__e__n__d__e__r__e__r__, $name], $arguments);
+        return Obj::callCallable([$this->_r_e_n_d_e_r_e_r_, $name], $arguments);
     }
 }
