@@ -22,9 +22,13 @@ class ViewRenderer
 
     protected $currentStack = null;
 
-    public function __construct(Viewer $viewer)
+    public function __construct(Viewer $viewer, $file, array $params = [])
     {
         $this->viewer = $viewer;
+
+        $this->file = $file;
+
+        $this->params = $params;
     }
 
     public function render($name, array $params = [])
@@ -35,11 +39,6 @@ class ViewRenderer
     public function renderIfExists($name, array $params = [])
     {
         return $this->partialIfExists($name, $params + $this->params);
-    }
-
-    public function renderFile($file, array $params = [])
-    {
-        return $this->partialFile($file, $params + $this->params);
     }
 
     public function partial($name, array $params = [])
@@ -62,11 +61,7 @@ class ViewRenderer
 
     protected function partialFile($file, array $params = [])
     {
-        $renderer = new self($this->viewer);
-
-        $renderer->register($this->viewer->getCompiledFile($file), $params);
-
-        return $renderer->load();
+        return (new self($this->viewer, $this->viewer->getCompiledFile($file), $params + $this->viewer->getParams()))->load();
     }
 
     public function each($name, array $values, $valueName = null, $emptyName = null, array $params = [])
@@ -95,7 +90,7 @@ class ViewRenderer
         return null;
     }
 
-    public function eachFile($file, array $values, $valueName = null, $emptyFile = null, array $params = [])
+    protected function eachFile($file, array $values, $valueName = null, $emptyFile = null, array $params = [])
     {
         $content = [];
 
@@ -112,14 +107,12 @@ class ViewRenderer
         return implode('', $content);
     }
 
-    protected function extend($name)
+    public function extend($name)
     {
-        $this->extended = (string) $name;
-
-        return $this;
+        return $this->setExtended($name);
     }
 
-    protected function content()
+    public function content()
     {
         echo $this->getContent();
 
@@ -145,7 +138,7 @@ class ViewRenderer
 
     public function parent()
     {
-        $this->yieldSection($this->currentSection);
+        $this->displaySection($this->currentSection);
 
         return $this;
     }
@@ -169,14 +162,14 @@ class ViewRenderer
             throw new \Exception('You cannot end an undefined section.');
         }
 
-        $this->yieldSection($this->currentSection, ob_get_clean());
+        $this->displaySection($this->currentSection, ob_get_clean());
 
         $this->currentSection = null;
 
         return $this;
     }
 
-    public function yieldSection($name, $else = null)
+    public function displaySection($name, $else = null)
     {
         echo $this->hasSection($name) ? $this->sections[$name] : $else;
 
@@ -223,6 +216,30 @@ class ViewRenderer
     public function format($name, ...$args)
     {
         $this->viewer->format($name, ...$args);
+    }
+
+    public function load()
+    {
+        return (new ViewRendererLoader($this))->load($this->file, $this->params);
+    }
+    
+    public function getViewer()
+    {
+        return $this->viewer;
+    }
+
+    public function setViewer(Viewer $viewer)
+    {
+        $this->viewer = $viewer;
+        
+        return $this;
+    }
+
+    public function setExtended($name)
+    {
+        $this->extended = (string) $name;
+
+        return $this;
     }
 
     public function getExtended()
@@ -274,45 +291,5 @@ class ViewRenderer
     public function hasSection($name)
     {
         return array_key_exists($name, $this->sections);
-    }
-
-    public function register($file, array $params = [])
-    {
-        $this->file = $file;
-
-        $this->params = $params;
-
-        return $this;
-    }
-
-    public function load()
-    {
-        ob_start();
-
-        try {
-            extract($this->params);
-
-            include $this->file;
-
-            $content = ob_get_clean();
-
-            if ($extended = $this->getExtended()) {
-                $renderer = $this->viewer->getRenderer($extended);
-
-                $renderer->setContent($content);
-
-                $renderer->setStacks($this->getStacks());
-
-                $renderer->setSections($this->getSections());
-
-                $content = $renderer->load();
-            }
-
-            return $content;
-        } catch (\Exception $e) {
-            ob_end_clean();
-
-            throw $e;
-        }
     }
 }

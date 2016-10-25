@@ -136,7 +136,7 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileYield($expr)
     {
-        return '<?php $this->yieldSection(' . $expr . ')?>';
+        return '<?php $this->displaySection(' . $expr . ')?>';
     }
 
     protected function compilePush($expr)

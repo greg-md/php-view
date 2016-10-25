@@ -83,11 +83,7 @@ class Viewer implements \ArrayAccess
 
     protected function newRenderer($file, array $params = [])
     {
-        $renderer = new ViewRenderer($this);
-
-        $renderer->register($this->getCompiledFile($file), $params + $this->getAccessor());
-
-        return $renderer;
+        return new ViewRenderer($this, $this->getCompiledFile($file), $params + $this->getParams());
     }
 
     public function assign($key, $value = null)
@@ -99,6 +95,11 @@ class Viewer implements \ArrayAccess
         }
 
         return $this;
+    }
+
+    public function getParams()
+    {
+        return $this->getAccessor();
     }
 
     public function setPaths(array $paths)
