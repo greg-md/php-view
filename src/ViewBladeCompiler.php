@@ -34,13 +34,10 @@ class ViewBladeCompiler extends BladeCompiler
             'yield'           => 'compileYield',
             'render'          => 'compileRender',
             'renderIfExists'  => 'compileRenderIfExists',
-            'renderFile'      => 'compileRenderFile',
             'partial'         => 'compilePartial',
             'partialIfExists' => 'compilePartialIfExists',
-            'partialFile'     => 'compilePartialFile',
             'each'            => 'compileEach',
             'eachIfExists'    => 'compileEachIfExists',
-            'eachFile'        => 'compileEachFile',
 
             'push'  => 'compilePush',
             'stack' => 'compileStack',
@@ -61,47 +58,32 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileRender($expr)
     {
-        return '<?php $this->render(' . $expr . ')?>';
+        return '<?php echo $this->render(' . $expr . ')?>';
     }
 
     protected function compileRenderIfExists($expr)
     {
-        return '<?php $this->renderIfExists(' . $expr . ')?>';
-    }
-
-    protected function compileRenderFile($expr)
-    {
-        return '<?php $this->renderFile(' . $expr . ')?>';
+        return '<?php echo $this->renderIfExists(' . $expr . ')?>';
     }
 
     protected function compilePartial($expr)
     {
-        return '<?php $this->partial(' . $expr . ')?>';
+        return '<?php echo $this->partial(' . $expr . ')?>';
     }
 
     protected function compilePartialIfExists($expr)
     {
-        return '<?php $this->partialIfExists(' . $expr . ')?>';
-    }
-
-    protected function compilePartialFile($expr)
-    {
-        return '<?php $this->partialFile(' . $expr . ')?>';
+        return '<?php echo $this->partialIfExists(' . $expr . ')?>';
     }
 
     protected function compileEach($expr)
     {
-        return '<?php $this->each(' . $expr . ')?>';
+        return '<?php echo $this->each(' . $expr . ')?>';
     }
 
     protected function compileEachIfExists($expr)
     {
-        return '<?php $this->eachIfExists(' . $expr . ')?>';
-    }
-
-    protected function compileEachFile($expr)
-    {
-        return '<?php $this->eachFile(' . $expr . ')?>';
+        return '<?php echo $this->eachIfExists(' . $expr . ')?>';
     }
 
     protected function compileExtends($name)
@@ -111,7 +93,7 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileContent()
     {
-        return '<?php $this->content()?>';
+        return '<?php echo $this->content()?>';
     }
 
     protected function compileSection($expr)
@@ -121,7 +103,7 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileParent()
     {
-        return '<?php $this->parent()?>';
+        return '<?php echo $this->parent()?>';
     }
 
     protected function compileEndSection()
@@ -131,12 +113,12 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileShow()
     {
-        return '<?php $this->show()?>';
+        return '<?php echo $this->show()?>';
     }
 
     protected function compileYield($expr)
     {
-        return '<?php $this->displaySection(' . $expr . ')?>';
+        return '<?php echo $this->getSection(' . $expr . ')?>';
     }
 
     protected function compilePush($expr)
@@ -151,11 +133,11 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function compileStack($expr)
     {
-        return '<?php $this->stack(' . $expr . ')?>';
+        return '<?php echo $this->stack(' . $expr . ')?>';
     }
 
     protected function compileFormat($expr)
     {
-        return '<?php $this->format(' . $expr . ')?>';
+        return '<?php echo $this->format(' . $expr . ')?>';
     }
 }

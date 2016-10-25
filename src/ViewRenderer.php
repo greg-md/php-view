@@ -119,9 +119,7 @@ class ViewRenderer
 
     public function content()
     {
-        echo $this->getContent();
-
-        return $this;
+        return $this->getContent();
     }
 
     public function section($name, $content = null)
@@ -143,9 +141,7 @@ class ViewRenderer
 
     public function parent()
     {
-        $this->displaySection($this->currentSection);
-
-        return $this;
+        return $this->getSection($this->currentSection);
     }
 
     public function endSection()
@@ -167,18 +163,16 @@ class ViewRenderer
             throw new \Exception('You cannot end an undefined section.');
         }
 
-        $this->displaySection($this->currentSection, ob_get_clean());
+        $content = $this->getSection($this->currentSection, ob_get_clean());
 
         $this->currentSection = null;
 
-        return $this;
+        return $content;
     }
 
-    public function displaySection($name, $else = null)
+    public function getSection($name, $else = null)
     {
-        echo $this->hasSection($name) ? $this->sections[$name] : $else;
-
-        return $this;
+        return $this->hasSection($name) ? $this->sections[$name] : $else;
     }
 
     public function push($name, $content = null)
@@ -213,14 +207,12 @@ class ViewRenderer
 
     public function stack($name, $else = null)
     {
-        echo $this->hasStack($name) ? implode('', $this->stacks[$name]) : $else;
-
-        return $this;
+        return $this->hasStack($name) ? implode('', $this->stacks[$name]) : $else;
     }
 
     public function format($name, ...$args)
     {
-        $this->viewer->format($name, ...$args);
+        return $this->viewer->format($name, ...$args);
     }
 
     public function setViewer(Viewer $viewer)
