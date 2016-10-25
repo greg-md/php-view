@@ -11,7 +11,7 @@ A better Viewer and Blade Compiler for web artisans.
 
 # Requirements
 
-* PHP Version ^5.6 || ^7.0
+* PHP Version `^5.6 || ^7.0`
 
 # Official documentation
 
