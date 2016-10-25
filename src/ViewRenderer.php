@@ -231,7 +231,7 @@ class ViewRenderer
     public function setViewer(Viewer $viewer)
     {
         $this->viewer = $viewer;
-        
+
         return $this;
     }
 
