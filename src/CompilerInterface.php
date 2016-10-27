@@ -6,5 +6,5 @@ interface CompilerInterface
 {
     public function getCompiledFile($file);
 
-    public function clearCompiledFiles();
+    public function removeCompiledFiles();
 }

@@ -19,7 +19,7 @@ class ViewBladeCompiler extends BladeCompiler
     {
         $this->viewer->directive($name, $callable);
 
-        $this->addOptionalStatement($name, function ($expr = null) use ($name) {
+        $this->addOptionalDirective($name, function ($expr = null) use ($name) {
             return $this->compileFormat('"' . addslashes($name) . '", ' . $expr);
         });
 
@@ -28,7 +28,7 @@ class ViewBladeCompiler extends BladeCompiler
 
     protected function setup()
     {
-        $this->addStatements([
+        $this->addDirectives([
             'extends'         => 'compileExtends',
             'section'         => 'compileSection',
             'yield'           => 'compileYield',
@@ -43,7 +43,7 @@ class ViewBladeCompiler extends BladeCompiler
             'stack' => 'compileStack',
         ]);
 
-        $this->addEmptyStatements([
+        $this->addEmptyDirectives([
             'content'    => 'compileContent',
             'parent'     => 'compileParent',
             'endsection' => 'compileEndSection',
@@ -51,7 +51,7 @@ class ViewBladeCompiler extends BladeCompiler
             'endpush'    => 'compileEndPush',
         ]);
 
-        $this->addOptionalStatements([
+        $this->addOptionalDirectives([
             'format' => 'compileFormat',
         ]);
     }

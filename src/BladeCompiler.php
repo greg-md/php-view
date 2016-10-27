@@ -13,13 +13,13 @@ class BladeCompiler implements CompilerInterface
     protected $compilationPath = null;
 
     protected $compilers = [
-        'compileStatements',
+        'compileDirectives',
         'compileComments',
         'compileRawEchos',
         'compileContentEchos',
     ];
 
-    protected $statements = [
+    protected $directives = [
         'if'            => 'compileIf',
         'elseif'        => 'compileElseIf',
         'unless'        => 'compileUnless',
@@ -35,7 +35,7 @@ class BladeCompiler implements CompilerInterface
         'case'   => 'compileCase',
     ];
 
-    protected $emptyStatements = [
+    protected $emptyDirectives = [
         'endif'     => 'compileEndIf',
         'endunless' => 'compileEndUnless',
         'endfor'    => 'compileEndFor',
@@ -57,7 +57,7 @@ class BladeCompiler implements CompilerInterface
         'stop' => 'compileStop',
     ];
 
-    protected $optionalStatements = [
+    protected $optionalDirectives = [
         'break'     => 'compileBreak',
         'continue'  => 'compileContinue',
     ];
@@ -82,6 +82,15 @@ class BladeCompiler implements CompilerInterface
         }
 
         return $this->getCompilationFile($file);
+    }
+
+    public function removeCompiledFiles()
+    {
+        foreach (glob($this->getCompilationPath() . '/*.php') as $file) {
+            unlink($file);
+        }
+
+        return $this;
     }
 
     protected function getCompilationFileName($id)
@@ -238,37 +247,37 @@ class BladeCompiler implements CompilerInterface
         return '<?php echo htmlentities(' . $string . '); ?>';
     }
 
-    protected function compileStatements($value)
+    protected function compileDirectives($value)
     {
-        $statements = array_map('preg_quote', array_merge(
-            array_keys($this->statements),
-            array_keys($this->optionalStatements),
-            array_keys($this->emptyStatements)
+        $directives = array_map('preg_quote', array_merge(
+            array_keys($this->directives),
+            array_keys($this->optionalDirectives),
+            array_keys($this->emptyDirectives)
         ));
 
-        usort($statements, function ($a, $b) {
+        usort($directives, function ($a, $b) {
             return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
         });
 
-        $statements = implode('|', $statements);
+        $directives = implode('|', $directives);
 
         $exprNamespace = $this->inNamespaceRegex('(', ')');
 
         $exprNamespace->recursive(true);
 
-        $pattern = '@(?\'statement\'' . $statements . ')' . '(?:[\s\t]*' . $exprNamespace . ')?;?';
+        $pattern = '@(?\'directive\'' . $directives . ')' . '(?:[\s\t]*' . $exprNamespace . ')?;?';
 
         return preg_replace_callback('#' . $pattern . '#is', function ($matches) {
-            if (isset($this->statements[$matches['statement']])) {
-                $callable = $this->statements[$matches['statement']];
+            if (isset($this->directives[$matches['directive']])) {
+                $callable = $this->directives[$matches['directive']];
 
                 $args = [$matches['captured']];
-            } elseif (isset($this->optionalStatements[$matches['statement']])) {
-                $callable = $this->optionalStatements[$matches['statement']];
+            } elseif (isset($this->optionalDirectives[$matches['directive']])) {
+                $callable = $this->optionalDirectives[$matches['directive']];
 
                 $args = [$matches['captured']];
             } else {
-                $callable = $this->emptyStatements[$matches['statement']];
+                $callable = $this->emptyDirectives[$matches['directive']];
 
                 $args = [];
             }
@@ -493,39 +502,44 @@ class BladeCompiler implements CompilerInterface
         return $this->compilationPath;
     }
 
-    public function clearCompiledFiles()
+    protected function addDirectives(array $directives)
     {
-        foreach (glob($this->getCompilationPath() . '/*.php') as $file) {
-            unlink($file);
-        }
+        $this->directives = array_merge($this->directives, $directives);
 
         return $this;
     }
 
-    public function addStatements(array $statements)
+    public function addDirective($name, callable $compiler)
     {
-        $this->statements = array_merge($this->statements, $statements);
+        $this->directives[$name] = $compiler;
 
         return $this;
     }
 
-    public function addEmptyStatements(array $statements)
+    protected function addEmptyDirectives(array $directives)
     {
-        $this->emptyStatements = array_merge($this->emptyStatements, $statements);
+        $this->emptyDirectives = array_merge($this->emptyDirectives, $directives);
 
         return $this;
     }
 
-    public function addOptionalStatements(array $statements)
+    public function addEmptyDirective($name, callable $compiler)
     {
-        $this->optionalStatements = array_merge($this->optionalStatements, $statements);
+        $this->emptyDirectives[$name] = $compiler;
 
         return $this;
     }
 
-    public function addOptionalStatement($name, $compiler)
+    protected function addOptionalDirectives(array $directives)
     {
-        $this->optionalStatements[$name] = $compiler;
+        $this->optionalDirectives = array_merge($this->optionalDirectives, $directives);
+
+        return $this;
+    }
+
+    public function addOptionalDirective($name, callable $compiler)
+    {
+        $this->optionalDirectives[$name] = $compiler;
 
         return $this;
     }

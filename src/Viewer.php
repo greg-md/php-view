@@ -175,10 +175,10 @@ class Viewer implements \ArrayAccess
         return array_keys($this->getCompilers());
     }
 
-    public function clearCompiledFiles()
+    public function removeCompiledFiles()
     {
         foreach ($this->getCompilersExtensions() as $extension) {
-            $this->getCompiler($extension)->clearCompiledFiles();
+            $this->getCompiler($extension)->removeCompiledFiles();
         }
 
         return $this;
