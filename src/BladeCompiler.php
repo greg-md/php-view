@@ -432,12 +432,12 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileSwitch($expr)
     {
-        return '<?php switch(' . $expr . '): case uniqid(null, true): ?>';
+        return '<?php switch(' . $expr . '): case "' . $this->uniqueVar('switch') . '": break; ?>';
     }
 
     protected function compileCase($expr)
     {
-        return '<?php break; case ' . $expr . ': ?>';
+        return '<?php case ' . $expr . ': ?>';
     }
 
     protected function compileContinue($expr = null)
@@ -460,7 +460,7 @@ class BladeCompiler implements CompilerInterface
 
     protected function compileDefault()
     {
-        return '<?php break; default: ?>';
+        return '<?php default: ?>';
     }
 
     protected function compileEndSwitch()
