@@ -263,13 +263,19 @@ class BladeCompiler implements CompilerInterface
 
         $exprNamespace = $this->inNamespaceRegex('(', ')');
 
-        $exprNamespace->recursive(true);
+        $exprNamespace->recursive();
 
-        $pattern = '@(?\'directive\'' . $directives . ')' . '(?:[\s\t]*' . $exprNamespace . ')?;?';
+        $exprNamespace->setRecursiveGroup('recursive');
+
+        $pattern = "@(?'directive'{$directives})" . "(?:[\\s\\t]*(?'recursive'{$exprNamespace}))?;?";
 
         return preg_replace_callback('#' . $pattern . '#is', function ($matches) {
             if (isset($this->directives[$matches['directive']])) {
                 $callable = $this->directives[$matches['directive']];
+
+                if (!isset($matches['captured'])) {
+                    throw new \Exception('Parameters in `' . $matches['directive'] . '` directive are required.');
+                }
 
                 $args = [$matches['captured']];
             } elseif (isset($this->optionalDirectives[$matches['directive']])) {

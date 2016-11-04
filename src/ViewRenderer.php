@@ -308,4 +308,9 @@ class ViewRenderer
     {
         return array_key_exists($name, $this->stacks);
     }
+
+    public function __call($name, $arguments)
+    {
+        return $this->format($name, ...$arguments);
+    }
 }
