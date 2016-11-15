@@ -2,7 +2,7 @@
 
 namespace Greg\View;
 
-interface CompilerInterface
+interface CompilerStrategy
 {
     public function getCompiledFile($file);
 

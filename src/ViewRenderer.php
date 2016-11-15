@@ -25,7 +25,7 @@ class ViewRenderer
 
     protected $currentStack = null;
 
-    public function __construct(Viewer $viewer, $file, array $params = [])
+    public function __construct(ViewerContract $viewer, $file, array $params = [])
     {
         $this->setViewer($viewer);
 
@@ -215,7 +215,7 @@ class ViewRenderer
         return $this->viewer->format($name, ...$args);
     }
 
-    public function setViewer(Viewer $viewer)
+    public function setViewer(ViewerContract $viewer)
     {
         $this->viewer = $viewer;
 

@@ -6,20 +6,20 @@ use Greg\Support\Arr;
 use Greg\Support\File;
 use Greg\Support\Regex\InNamespaceRegex;
 
-class BladeCompiler implements CompilerInterface
+class BladeCompiler implements CompilerStrategy
 {
     const PHP_VAR_REGEX = '\$+[a-z_][a-z0-9_]*';
 
-    protected $compilationPath = null;
+    private $compilationPath = null;
 
-    protected $compilers = [
+    private $compilers = [
         'compileDirectives',
         'compileComments',
         'compileRawEchos',
         'compileContentEchos',
     ];
 
-    protected $directives = [
+    private $directives = [
         'if'            => 'compileIf',
         'elseif'        => 'compileElseIf',
         'unless'        => 'compileUnless',
@@ -35,7 +35,7 @@ class BladeCompiler implements CompilerInterface
         'case'   => 'compileCase',
     ];
 
-    protected $emptyDirectives = [
+    private $emptyDirectives = [
         'endif'     => 'compileEndIf',
         'endunless' => 'compileEndUnless',
         'endfor'    => 'compileEndFor',
@@ -57,21 +57,28 @@ class BladeCompiler implements CompilerInterface
         'stop' => 'compileStop',
     ];
 
-    protected $optionalDirectives = [
+    private $optionalDirectives = [
         'break'     => 'compileBreak',
         'continue'  => 'compileContinue',
     ];
 
-    protected $foreachEmptyVars = [];
+    private $foreachEmptyVars = [];
 
-    protected $foreachLoopVars = [];
+    private $foreachLoopVars = [];
 
-    protected $verbatim = [];
+    private $verbatim = [];
 
     public function __construct($compilationPath)
     {
         $this->setCompilationPath($compilationPath);
 
+        $this->boot();
+
+        return $this;
+    }
+
+    protected function boot()
+    {
         return $this;
     }
 
@@ -508,6 +515,39 @@ class BladeCompiler implements CompilerInterface
         return $this->compilationPath;
     }
 
+    protected function setCompilers(array $compilers)
+    {
+        $this->compilers = $compilers;
+
+        return $this;
+    }
+
+    protected function addCompilers(array $compilers)
+    {
+        $this->compilers = array_merge($this->compilers, $compilers);
+
+        return $this;
+    }
+
+    public function addCompiler(callable $callable)
+    {
+        $this->compilers[] = $callable;
+
+        return $this;
+    }
+
+    protected function getCompilers()
+    {
+        return $this->compilers;
+    }
+
+    protected function setDirectives(array $directives)
+    {
+        $this->directives = $directives;
+
+        return $this;
+    }
+
     protected function addDirectives(array $directives)
     {
         $this->directives = array_merge($this->directives, $directives);
@@ -518,6 +558,18 @@ class BladeCompiler implements CompilerInterface
     public function addDirective($name, callable $compiler)
     {
         $this->directives[$name] = $compiler;
+
+        return $this;
+    }
+
+    protected function getDirectives()
+    {
+        return $this->directives;
+    }
+
+    protected function setEmptyDirectives(array $directives)
+    {
+        $this->emptyDirectives = $directives;
 
         return $this;
     }
@@ -536,6 +588,18 @@ class BladeCompiler implements CompilerInterface
         return $this;
     }
 
+    protected function getEmptyDirectives()
+    {
+        return $this->emptyDirectives;
+    }
+
+    protected function setOptionalDirectives(array $directives)
+    {
+        $this->optionalDirectives = $directives;
+
+        return $this;
+    }
+
     protected function addOptionalDirectives(array $directives)
     {
         $this->optionalDirectives = array_merge($this->optionalDirectives, $directives);
@@ -548,5 +612,10 @@ class BladeCompiler implements CompilerInterface
         $this->optionalDirectives[$name] = $compiler;
 
         return $this;
+    }
+
+    protected function getOptionalDirectives()
+    {
+        return $this->optionalDirectives;
     }
 }

@@ -2,17 +2,15 @@
 
 namespace Greg\View;
 
-class ViewBladeCompiler extends BladeCompiler
+class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
 {
     protected $viewer = null;
 
-    public function __construct(Viewer $viewer, $compilationPath)
+    public function __construct(ViewerContract $viewer, $compilationPath)
     {
         $this->viewer = $viewer;
 
         parent::__construct($compilationPath);
-
-        $this->setup();
     }
 
     public function directive($name, callable $callable)
@@ -26,7 +24,7 @@ class ViewBladeCompiler extends BladeCompiler
         return $this;
     }
 
-    protected function setup()
+    protected function boot()
     {
         $this->addDirectives([
             'extends'         => 'compileExtends',
@@ -54,6 +52,8 @@ class ViewBladeCompiler extends BladeCompiler
         $this->addOptionalDirectives([
             'format' => 'compileFormat',
         ]);
+
+        return parent::boot();
     }
 
     protected function compileRender($expr)

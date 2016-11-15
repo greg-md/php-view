@@ -3,22 +3,21 @@
 namespace Greg\View;
 
 use Greg\Support\Accessor\ArrayAccessTrait;
-use Greg\Support\Http\Response;
 use Greg\Support\Obj;
 
-class Viewer implements \ArrayAccess
+class Viewer implements ViewerContract
 {
     use ArrayAccessTrait;
 
-    protected $paths = [];
+    private $paths = [];
 
-    protected $compilers = [
+    private $compilers = [
         '.php'   => null,
         '.html'  => null,
         '.phtml' => null,
     ];
 
-    protected $directives = [];
+    private $directives = [];
 
     public function __construct($path, array $params = [])
     {
@@ -31,33 +30,23 @@ class Viewer implements \ArrayAccess
 
     public function render($name, array $params = [])
     {
-        return new Response($this->renderContent($name, $params));
-    }
-
-    public function renderIfExists($name, array $params = [])
-    {
-        return new Response($this->renderContentIfExists($name, $params));
-    }
-
-    public function renderContent($name, array $params = [])
-    {
         if ($file = $this->getCompiledFile($name)) {
-            return $this->renderFileContent($file, $params);
+            return $this->renderFile($file, $params);
         }
 
         throw new \Exception('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function renderContentIfExists($name, array $params = [])
+    public function renderIfExists($name, array $params = [])
     {
         if ($file = $this->getCompiledFile($name)) {
-            return $this->renderFileContent($file, $params);
+            return $this->renderFile($file, $params);
         }
 
         return null;
     }
 
-    protected function renderFileContent($file, array $params = [])
+    protected function renderFile($file, array $params = [])
     {
         $renderer = new ViewRenderer($this, $file, $params + $this->getParams());
 
@@ -144,7 +133,7 @@ class Viewer implements \ArrayAccess
      *
      * @throws \Exception
      *
-     * @return CompilerInterface
+     * @return CompilerStrategy
      */
     public function getCompiler($extension)
     {
@@ -158,8 +147,8 @@ class Viewer implements \ArrayAccess
             $compiler = Obj::callCallableWith($compiler, $this);
         }
 
-        if ($compiler and !($compiler instanceof CompilerInterface)) {
-            throw new \Exception('View compiler for extension `' . $extension . '` should be an instance of `CompilerInterface`.');
+        if ($compiler and !($compiler instanceof CompilerStrategy)) {
+            throw new \Exception('View compiler for extension `' . $extension . '` should be an instance of `' . CompilerStrategy::class . '`.');
         }
 
         return $compiler;
