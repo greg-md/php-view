@@ -135,25 +135,25 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_adds_custom_compiler()
     {
-        $this->compiler->addCompiler(function($content) {
+        $this->compiler->addCompiler(function ($content) {
             return str_replace('[SPLIT]', '<!-- Split content -->', $content);
         });
 
-        $this->renderedStringEquals("Hello World! <!-- Split content -->", 'Hello World! [SPLIT]');
+        $this->renderedStringEquals('Hello World! <!-- Split content -->', 'Hello World! [SPLIT]');
     }
 
     /** @test */
     public function it_adds_custom_directives()
     {
-        $this->compiler->addDirective('eco', function($content) {
+        $this->compiler->addDirective('eco', function ($content) {
             return '<?php echo ' . $content . '?>';
         });
 
-        $this->compiler->addEmptyDirective('br', function() {
+        $this->compiler->addEmptyDirective('br', function () {
             return '<br />';
         });
 
-        $this->compiler->addOptionalDirective('comment', function($comment = null) {
+        $this->compiler->addOptionalDirective('comment', function ($comment = null) {
             return '<!-- <?php echo ' . ($comment ?: '""') . '?> -->';
         });
 

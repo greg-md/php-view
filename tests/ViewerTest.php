@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class FooCompiler
 {
-
 }
 
 class ViewerTest extends TestCase
@@ -25,7 +24,7 @@ class ViewerTest extends TestCase
 
         $this->viewer = new Viewer(__DIR__ . '/view');
 
-        $this->viewer->addExtension('.blade.php', function() {
+        $this->viewer->addExtension('.blade.php', function () {
             return new ViewBladeCompiler(__DIR__ . '/compiled');
         });
     }
@@ -74,7 +73,7 @@ class ViewerTest extends TestCase
     {
         $this->expectException(ViewException::class);
 
-        $this->viewer->addExtension('.foo', function() {
+        $this->viewer->addExtension('.foo', function () {
             return new FooCompiler();
         });
 

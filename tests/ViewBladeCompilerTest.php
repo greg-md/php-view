@@ -75,7 +75,8 @@ class ViewBladeCompilerTest extends TestCase
         return null;
     }
 
-    protected function formatEco($content) {
+    protected function formatEco($content)
+    {
         return $content;
     }
 }
