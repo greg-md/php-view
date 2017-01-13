@@ -26,7 +26,7 @@ class ViewRendererLoader
                 $viewer = $this->_r_e_n_d_e_r_e_r_->getViewer();
 
                 if (!$file = $viewer->getCompiledFile($extended)) {
-                    throw new \Exception('View file `' . $extended . '` does not exist in view paths.');
+                    throw new ViewException('View file `' . $extended . '` does not exist in view paths.');
                 }
 
                 $extendedRenderer = new ViewRenderer($viewer, $file, $viewer->getParams());

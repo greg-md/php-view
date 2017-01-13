@@ -34,7 +34,7 @@ class Viewer implements ViewerContract
             return $this->renderFile($file, $params);
         }
 
-        throw new \Exception('View file `' . $name . '` does not exist in view paths.');
+        throw new ViewException('View file `' . $name . '` does not exist in view paths.');
     }
 
     public function renderIfExists($name, array $params = [])
@@ -55,15 +55,11 @@ class Viewer implements ViewerContract
 
     public function getCompiledFile($name)
     {
-        foreach ($this->getPaths() as $path) {
-            if (!is_dir($path)) {
-                continue;
-            }
-
+        foreach ($this->paths as $path) {
             foreach ($this->getExtensions() as $extension) {
                 if (is_file($file = $path . DIRECTORY_SEPARATOR . ltrim($name . $extension, '\/'))) {
-                    if ($compiler = $this->getCompiler($extension)) {
-                        $file = $compiler->getCompiledFile($file);
+                    if ($this->hasCompiler($extension)) {
+                        $file = $this->getCompiler($extension)->getCompiledFile($file);
                     }
 
                     return $file;
@@ -128,27 +124,32 @@ class Viewer implements ViewerContract
         return array_keys($this->compilers);
     }
 
+    public function hasCompiler($extension)
+    {
+        return array_key_exists($extension, $this->getCompilers());
+    }
+
     /**
      * @param $extension
      *
-     * @throws \Exception
+     * @throws ViewException
      *
      * @return CompilerStrategy
      */
     public function getCompiler($extension)
     {
-        if (!array_key_exists($extension, $this->compilers)) {
-            throw new \Exception('View compiler for extension `' . $extension . '` not found.');
+        if (!$this->hasCompiler($extension)) {
+            throw new ViewException('View compiler for extension `' . $extension . '` not found.');
         }
 
         $compiler = &$this->compilers[$extension];
 
         if (is_callable($compiler)) {
-            $compiler = Obj::callCallableWith($compiler, $this);
+            $compiler = Obj::call($compiler, $this);
         }
 
-        if ($compiler and !($compiler instanceof CompilerStrategy)) {
-            throw new \Exception('View compiler for extension `' . $extension . '` should be an instance of `' . CompilerStrategy::class . '`.');
+        if (!($compiler instanceof CompilerStrategy)) {
+            throw new ViewException('View compiler for extension `' . $extension . '` should be an instance of `' . CompilerStrategy::class . '`.');
         }
 
         return $compiler;
@@ -177,6 +178,12 @@ class Viewer implements ViewerContract
     {
         $this->directives[$name] = $callable;
 
+        foreach ($this->compilers as $compiler) {
+            if ($compiler instanceof ViewCompilerStrategy) {
+                $compiler->addViewDirective($name);
+            }
+        }
+
         return $this;
     }
 
@@ -188,10 +195,10 @@ class Viewer implements ViewerContract
     public function format($name, ...$args)
     {
         if (!$this->hasDirective($name)) {
-            throw new \Exception('Directive `' . $name . '` is not defined.');
+            throw new ViewException('Directive `' . $name . '` is not defined.');
         }
 
-        return Obj::callCallable($this->directives[$name], ...$args);
+        return Obj::call($this->directives[$name], ...$args);
     }
 
     public function __set($key, $value)

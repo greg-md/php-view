@@ -6,5 +6,7 @@ interface CompilerStrategy
 {
     public function getCompiledFile($file);
 
+    public function getCompiledFileFromString($id, $string);
+
     public function removeCompiledFiles();
 }

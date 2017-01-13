@@ -50,7 +50,7 @@ class ViewRenderer
             return $this->partialFile($file, $params);
         }
 
-        throw new \Exception('View file `' . $name . '` does not exist in view paths.');
+        throw new ViewException('View file `' . $name . '` does not exist in view paths.');
     }
 
     public function partialIfExists($name, array $params = [])
@@ -79,7 +79,7 @@ class ViewRenderer
             return $this->eachFile($file, $values, $valueKeyName, $emptyName, $params);
         }
 
-        throw new \Exception('View file `' . $name . '` does not exist in view paths.');
+        throw new ViewException('View file `' . $name . '` does not exist in view paths.');
     }
 
     public function eachIfExists($name, array $values, $valueKeyName = null, $emptyName = null, array $params = [])
@@ -125,7 +125,7 @@ class ViewRenderer
     public function section($name, $content = null)
     {
         if ($this->currentSection) {
-            throw new \Exception('You cannot have a section in another section.');
+            throw new ViewException('You cannot have a section in another section.');
         }
 
         if (func_num_args() > 1) {
@@ -147,7 +147,7 @@ class ViewRenderer
     public function endSection()
     {
         if (!$this->currentSection) {
-            throw new \Exception('You cannot end an undefined section.');
+            throw new ViewException('You cannot end an undefined section.');
         }
 
         $this->sections[$this->currentSection] = ob_get_clean();
@@ -160,7 +160,7 @@ class ViewRenderer
     public function show()
     {
         if (!$this->currentSection) {
-            throw new \Exception('You cannot end an undefined section.');
+            throw new ViewException('You cannot end an undefined section.');
         }
 
         $content = $this->getSection($this->currentSection, ob_get_clean());
@@ -178,7 +178,7 @@ class ViewRenderer
     public function push($name, $content = null)
     {
         if ($this->currentStack) {
-            throw new \Exception('You cannot have a stack in another stack.');
+            throw new ViewException('You cannot have a stack in another stack.');
         }
 
         if (func_num_args() > 1) {
@@ -195,7 +195,7 @@ class ViewRenderer
     public function endPush()
     {
         if (!$this->currentStack) {
-            throw new \Exception('You cannot end an undefined stack.');
+            throw new ViewException('You cannot end an undefined stack.');
         }
 
         $this->stacks[$this->currentStack][] = ob_get_clean();

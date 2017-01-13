@@ -4,7 +4,7 @@ namespace Greg\View;
 
 use Greg\Support\Arr;
 use Greg\Support\File;
-use Greg\Support\Regex\InNamespaceRegex;
+use Greg\Support\Tools\InNamespaceRegex;
 
 class BladeCompiler implements CompilerStrategy
 {
@@ -41,13 +41,10 @@ class BladeCompiler implements CompilerStrategy
         'endfor'    => 'compileEndFor',
         'endwhile'  => 'compileEndWhile',
 
-        'forelse'       => 'compileForElse',
-        'endforelse'    => 'compileEndForElse',
+        'empty'         => 'compileEmpty',
         'endforeach'    => 'compileEndForeach',
 
         // Fallback blade template syntax
-        'forelseloop'       => 'compileForElse',
-        'endforelseloop'    => 'compileEndForElse',
         'endforeachloop'    => 'compileEndForeach',
 
         'default'   => 'compileDefault',
@@ -77,18 +74,38 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function boot()
+    public function setCompilationPath($path)
     {
+        $this->compilationPath = (string) $path;
+
         return $this;
+    }
+
+    public function getCompilationPath()
+    {
+        return $this->compilationPath;
     }
 
     public function getCompiledFile($file)
     {
-        if ($this->expiredFile($file)) {
-            $this->save($file, $this->compileFile($file));
+        $compiledFile = $this->getCompilationFile($file);
+
+        if ($this->isFileExpired($file, $compiledFile)) {
+            $this->save($compiledFile, $this->compileFile($file));
         }
 
-        return $this->getCompilationFile($file);
+        return $compiledFile;
+    }
+
+    public function getCompiledFileFromString($id, $string)
+    {
+        $compiledFile = $this->getCompilationFile($id);
+
+        if ($this->isStringExpired($string, $compiledFile)) {
+            $this->saveString($compiledFile, $string, $this->compileString($string));
+        }
+
+        return $compiledFile;
     }
 
     public function removeCompiledFiles()
@@ -100,52 +117,16 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getCompilationFileName($id)
-    {
-        return md5($id) . '.php';
-    }
-
-    protected function getCompilationFile($id)
-    {
-        return $this->getCompilationPath() . DIRECTORY_SEPARATOR . $this->getCompilationFileName($id);
-    }
-
-    protected function expiredFile($file)
+    public function compileFile($file)
     {
         if (!file_exists($file)) {
-            return true;
-        }
-
-        $compilationFile = $this->getCompilationFile($file);
-
-        if (!file_exists($compilationFile)) {
-            return true;
-        }
-
-        return filemtime($file) > filemtime($compilationFile);
-    }
-
-    protected function save($id, $string)
-    {
-        $file = $this->getCompilationFile($id);
-
-        File::fixFileDirRecursive($file);
-
-        file_put_contents($file, $string);
-
-        return $this;
-    }
-
-    protected function compileFile($file)
-    {
-        if (!file_exists($file)) {
-            throw new \Exception('Blade file `' . $file . '` not found.');
+            throw new ViewException('Blade file `' . $file . '` not found.');
         }
 
         return $this->compileString(file_get_contents($file));
     }
 
-    protected function compileString($string)
+    public function compileString($string)
     {
         $result = '';
 
@@ -157,6 +138,84 @@ class BladeCompiler implements CompilerStrategy
         }
 
         return $result;
+    }
+
+    public function addCompiler(callable $callable)
+    {
+        $this->compilers[] = $callable;
+
+        return $this;
+    }
+
+    public function addDirective($name, callable $compiler)
+    {
+        $this->directives[$name] = $compiler;
+
+        return $this;
+    }
+
+    public function addEmptyDirective($name, callable $compiler)
+    {
+        $this->emptyDirectives[$name] = $compiler;
+
+        return $this;
+    }
+
+    public function addOptionalDirective($name, callable $compiler)
+    {
+        $this->optionalDirectives[$name] = $compiler;
+
+        return $this;
+    }
+
+    protected function boot()
+    {
+        return $this;
+    }
+
+    protected function saveString($compiledFile, $string, $compiledContent)
+    {
+        $this->save($compiledFile, $compiledContent);
+
+        file_put_contents($compiledFile . '.blade.php', $string);
+
+        return $this;
+    }
+
+    protected function save($compiledFile, $compiledContent)
+    {
+        File::makeDir($compiledFile);
+
+        file_put_contents($compiledFile, $compiledContent);
+
+        return $this;
+    }
+
+    protected function getCompilationFile($id)
+    {
+        return $this->getCompilationPath() . DIRECTORY_SEPARATOR . md5($id) . '.php';
+    }
+
+    protected function isFileExpired($file, $compiledFile)
+    {
+        if (!file_exists($file)) {
+            return true;
+        }
+
+        if (!file_exists($compiledFile)) {
+            return true;
+        }
+
+        return filemtime($file) > filemtime($compiledFile);
+    }
+
+    protected function isStringExpired($string, $compiledFile)
+    {
+        if (!file_exists($compiledFile)) {
+            return true;
+        }
+
+        return $string !== file_get_contents($compiledFile . '.blade.php');
     }
 
     /**
@@ -178,7 +237,7 @@ class BladeCompiler implements CompilerStrategy
                     $callable = [$this, $callable];
                 }
 
-                $content = $this->callCallable($callable, $content);
+                $content = call_user_func_array($callable, [$content]);
             }
 
             $content = $this->restoreVerbatim($content);
@@ -201,11 +260,6 @@ class BladeCompiler implements CompilerStrategy
         return preg_replace_callback('#@__verbatim__@#', function () {
             return array_shift($this->verbatim);
         }, $content);
-    }
-
-    protected function callCallable(callable $callable, ...$args)
-    {
-        return call_user_func_array($callable, $args);
     }
 
     protected function compileComments($string)
@@ -242,16 +296,21 @@ class BladeCompiler implements CompilerStrategy
 
     protected function compileRawEcho($string)
     {
-        return '<?php echo ' . $string . '; ?>';
+        return '<?php echo ' . $this->parseOr($string) . '; ?>';
     }
 
     protected function compileContentEcho($string)
+    {
+        return '<?php echo htmlentities(' . $this->parseOr($string) . '); ?>';
+    }
+
+    protected function parseOr($string)
     {
         if (preg_match('#^(' . self::PHP_VAR_REGEX . ')\s+or\s+(.+)$#is', $string, $matches)) {
             $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
         }
 
-        return '<?php echo htmlentities(' . $string . '); ?>';
+        return $string;
     }
 
     protected function compileDirectives($value)
@@ -263,7 +322,11 @@ class BladeCompiler implements CompilerStrategy
         ));
 
         usort($directives, function ($a, $b) {
-            return gmp_cmp(mb_strlen($a), mb_strlen($b)) * -1;
+            $a = mb_strlen($a);
+
+            $b = mb_strlen($b);
+
+            return $a > $b ? -1 : ($b > $a ? 1 : 0);
         });
 
         $directives = implode('|', $directives);
@@ -281,14 +344,18 @@ class BladeCompiler implements CompilerStrategy
                 $callable = $this->directives[$matches['directive']];
 
                 if (!isset($matches['captured'])) {
-                    throw new \Exception('Parameters in `' . $matches['directive'] . '` directive are required.');
+                    throw new ViewException('Parameters in `' . $matches['directive'] . '` directive are required.');
                 }
 
                 $args = [$matches['captured']];
             } elseif (isset($this->optionalDirectives[$matches['directive']])) {
                 $callable = $this->optionalDirectives[$matches['directive']];
 
-                $args = [$matches['captured']];
+                $args = [];
+
+                if (isset($matches['captured'])) {
+                    $args[] = $matches['captured'];
+                }
             } else {
                 $callable = $this->emptyDirectives[$matches['directive']];
 
@@ -299,7 +366,7 @@ class BladeCompiler implements CompilerStrategy
                 $callable = [$this, $callable];
             }
 
-            return $this->callCallable($callable, ...$args);
+            return call_user_func_array($callable, $args);
         }, $value);
     }
 
@@ -350,7 +417,7 @@ class BladeCompiler implements CompilerStrategy
 
     protected function compileForeach($expr)
     {
-        $this->foreachEmptyVars[] = $emptyVar = $this->uniqueVar('foreachEmpty');
+        $this->foreachEmptyVars[$emptyVar = $this->uniqueVar('foreachEmpty')] = false;
 
         $parentLoopVar = Arr::last($this->foreachLoopVars) ?: 'null';
 
@@ -407,23 +474,20 @@ class BladeCompiler implements CompilerStrategy
         return "<?php {$emptyVar} = true; foreach({$expr}): {$emptyVar} = false; ?>";
     }
 
-    protected function compileForElse()
+    protected function compileEmpty()
     {
-        array_shift($this->foreachLoopVars);
+        $this->foreachEmptyVars[$lastKey = Arr::lastKey($this->foreachEmptyVars)] = true;
 
-        return '<?php endforeach; if(' . array_shift($this->foreachEmptyVars) . '): ?>';
-    }
-
-    protected function compileEndForElse()
-    {
-        return '<?php endif; ?>';
+        return '<?php endforeach; if(' . $lastKey . '): ?>';
     }
 
     protected function compileEndForeach()
     {
-        array_shift($this->foreachLoopVars);
+        array_pop($this->foreachLoopVars);
 
-        array_shift($this->foreachEmptyVars);
+        if (array_pop($this->foreachEmptyVars)) {
+            return '<?php endif; ?>';
+        }
 
         return '<?php endforeach; ?>';
     }
@@ -445,7 +509,7 @@ class BladeCompiler implements CompilerStrategy
 
     protected function compileSwitch($expr)
     {
-        return '<?php switch(' . $expr . '): case "' . $this->uniqueVar('switch') . '": break; ?>';
+        return '<?php switch(' . $expr . '): case "' . uniqid(null, true) . '": break; ?>';
     }
 
     protected function compileCase($expr)
@@ -485,8 +549,6 @@ class BladeCompiler implements CompilerStrategy
     {
         $pattern = new InNamespaceRegex($start, $end ?: $start);
 
-        $pattern->recursive(false);
-
         $pattern->setCapturedKey('captured');
 
         $pattern->disableInQuotes();
@@ -503,18 +565,6 @@ class BladeCompiler implements CompilerStrategy
         return '$' . $name . str_replace('.', '_', uniqid(null, true));
     }
 
-    public function setCompilationPath($path)
-    {
-        $this->compilationPath = (string) $path;
-
-        return $this;
-    }
-
-    public function getCompilationPath()
-    {
-        return $this->compilationPath;
-    }
-
     protected function setCompilers(array $compilers)
     {
         $this->compilers = $compilers;
@@ -525,13 +575,6 @@ class BladeCompiler implements CompilerStrategy
     protected function addCompilers(array $compilers)
     {
         $this->compilers = array_merge($this->compilers, $compilers);
-
-        return $this;
-    }
-
-    public function addCompiler(callable $callable)
-    {
-        $this->compilers[] = $callable;
 
         return $this;
     }
@@ -555,13 +598,6 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    public function addDirective($name, callable $compiler)
-    {
-        $this->directives[$name] = $compiler;
-
-        return $this;
-    }
-
     protected function getDirectives()
     {
         return $this->directives;
@@ -581,13 +617,6 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    public function addEmptyDirective($name, callable $compiler)
-    {
-        $this->emptyDirectives[$name] = $compiler;
-
-        return $this;
-    }
-
     protected function getEmptyDirectives()
     {
         return $this->emptyDirectives;
@@ -603,13 +632,6 @@ class BladeCompiler implements CompilerStrategy
     protected function addOptionalDirectives(array $directives)
     {
         $this->optionalDirectives = array_merge($this->optionalDirectives, $directives);
-
-        return $this;
-    }
-
-    public function addOptionalDirective($name, callable $compiler)
-    {
-        $this->optionalDirectives[$name] = $compiler;
 
         return $this;
     }

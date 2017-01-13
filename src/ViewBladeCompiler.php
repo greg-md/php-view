@@ -2,26 +2,15 @@
 
 namespace Greg\View;
 
+use Greg\Support\Str;
+
 class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
 {
-    protected $viewer = null;
-
-    public function __construct(ViewerContract $viewer, $compilationPath)
+    public function addViewDirective($name)
     {
-        $this->viewer = $viewer;
-
-        parent::__construct($compilationPath);
-    }
-
-    public function directive($name, callable $callable)
-    {
-        $this->viewer->directive($name, $callable);
-
-        $this->addOptionalDirective($name, function ($expr = null) use ($name) {
-            return $this->compileFormat('"' . addslashes($name) . '", ' . $expr);
+        return parent::addOptionalDirective($name, function ($expr = null) use ($name) {
+            return $this->compileFormat('"' . addslashes($name) . '"' . (Str::isEmpty($expr) ? '' : ', ' . $expr));
         });
-
-        return $this;
     }
 
     protected function boot()
