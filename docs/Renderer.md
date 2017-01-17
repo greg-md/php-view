@@ -98,7 +98,7 @@ render(string $name, array $params = []): string
 _Example:_
 
 ```php
-echo $renderer->render('header', [
+echo $this->render('header', [
     'title' => 'I am a header!',
 ]);
 ```
@@ -122,7 +122,7 @@ renderString(string $id, string $string, array $params = []): string
 _Example:_
 
 ```php
-echo $renderer->renderString('header.php', '<header><?php echo $title?></header>', [
+echo $this->renderString('header.php', '<header><?php echo $title?></header>', [
     'title' => 'I am a header!',
 ]);
 ```
