@@ -111,7 +111,7 @@ Get compiled file from a template string.
 getCompiledFileFromString(string $id, string $string): string
 ```
 
-`$id` - Template unique id. It should has the compiler extension;
+`$id` - Template unique id. It should has the compiler extension;  
 `$string` - Template string.
 
 ## removeCompiledFiles
