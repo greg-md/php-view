@@ -190,7 +190,7 @@ Display parent content.
 content(): string
 ```
 
-_Example:_
+### _Example:_
 
 Create a template `layout.blade.php`:
 
