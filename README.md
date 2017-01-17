@@ -39,7 +39,7 @@ $viewer->addExtension('.blade.php', function () {
 });
 ```
 
-_By default it will use `php` language as view compiler._
+_By default it will use [Renderer](docs/Renderer.md) as an instance of a template._
 
 _Note:_ If you want to use your own compiler, it has to be an instance of `\Greg\View\CompilerStrategy`.
 
