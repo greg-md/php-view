@@ -7,7 +7,11 @@
 [![Latest Unstable Version](https://poser.pugx.org/greg-md/php-view/v/unstable.svg)](https://packagist.org/packages/greg-md/php-view)
 [![License](https://poser.pugx.org/greg-md/php-view/license.svg)](https://packagist.org/packages/greg-md/php-view)
 
-A better Viewer and Blade Compiler for web artisans.
+A better Viewer for web artisans.
+
+# Compilers
+
+- [Blade]()
 
 # Requirements
 
@@ -15,7 +19,7 @@ A better Viewer and Blade Compiler for web artisans.
 
 # How it works
 
-**First of all**, you have to create a new [Viewer]():
+**First of all**, you have to create a new [Viewer](docs/Viewer.md):
 
 ```php
 $viewsDirectory = __DIR__ . '/views';
@@ -27,7 +31,9 @@ $viewer = new \Greg\View\Viewer($viewsDirectory);
 
 ```php
 $viewer->addExtension('.blade.php', function () {
-    return new \Greg\View\ViewBladeCompiler(__DIR__ . '/compiled');
+    $compiledViewsDirectory = __DIR__ . '/compiled';
+
+    return new \Greg\View\ViewBladeCompiler($compiledViewsDirectory);
 });
 ```
 
