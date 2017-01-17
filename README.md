@@ -9,7 +9,7 @@
 
 A better Viewer for web artisans.
 
-# Compilers
+# Available Compilers
 
 - [Blade]()
 
@@ -17,7 +17,7 @@ A better Viewer for web artisans.
 
 * PHP Version `^5.6 || ^7.0`
 
-# How it works
+# How It Works
 
 **First of all**, you have to create a new [Viewer](docs/Viewer.md):
 
