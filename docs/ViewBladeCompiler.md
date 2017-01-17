@@ -188,18 +188,19 @@ Extend a template with another template string.
 extendsString(string $id, string $string)
 ```
 
-`$id` - Template unique id;
+`$id` - Template unique id;  
 `$string` - Template string.
 
-### extendsIfExists
+### extendsStringIfExists
 
-Extend a template with another template file if it exists.
+Extend a template with another template string if it exists.
 
 ```php
-extendsIfExists(string $name)
+extendsStringIfExists(string $id, string $string)
 ```
 
-`$name` - Template file.
+`$id` - Template unique id;  
+`$string` - Template string.
 
 ### content
 
