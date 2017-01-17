@@ -1,6 +1,6 @@
 # Renderer Documentation
 
-`\Greg\View\Renderer` is an instance of a template, and could be accessed via `$this` variable in the template.
+`\Greg\View\Renderer` is an instance of a template. Could be accessed via `$this` variable in the template.
 
 _Example:_
 
