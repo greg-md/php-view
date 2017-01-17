@@ -15,8 +15,8 @@ A better Viewer for web artisans.
 
 # Compilers
 
-- [PHP]()
-- [Blade]()
+- PHP
+- Blade
 
 # How It Works
 
@@ -67,3 +67,4 @@ echo $content;
 # Documentation
 
 * [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
+* [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;

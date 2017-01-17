@@ -74,6 +74,11 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
+    protected function boot()
+    {
+        return $this;
+    }
+
     public function setCompilationPath($path)
     {
         $this->compilationPath = (string) $path;
@@ -165,11 +170,6 @@ class BladeCompiler implements CompilerStrategy
     {
         $this->optionalDirectives[$name] = $compiler;
 
-        return $this;
-    }
-
-    protected function boot()
-    {
         return $this;
     }
 
