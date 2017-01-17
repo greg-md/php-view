@@ -2,13 +2,13 @@
 
 namespace Greg\View;
 
-use Greg\Support\Accessor\ArrayAccessTrait;
+use Greg\Support\Accessor\AccessorTrait;
 use Greg\Support\Obj;
 use Greg\Support\Str;
 
 class Viewer implements ViewerContract
 {
-    use ArrayAccessTrait;
+    use AccessorTrait;
 
     private $paths = [];
 
@@ -67,7 +67,7 @@ class Viewer implements ViewerContract
 
     protected function renderFile($file, array $params = [])
     {
-        $renderer = new ViewRenderer($this, $file, $params + $this->getParams());
+        $renderer = new ViewRenderer($this, $file, $params + $this->assigned());
 
         return (new ViewRendererLoader($renderer))->_l_o_a_d_();
     }
@@ -115,9 +115,25 @@ class Viewer implements ViewerContract
         return $this;
     }
 
-    public function getParams()
+    public function assigned($key = null)
     {
-        return $this->getAccessor();
+        return func_num_args() ? $this->getFromAccessor($key) : $this->getAccessor();
+    }
+
+    public function hasAssigned($key = null)
+    {
+        return func_num_args() ? $this->inAccessor($key) : (bool) $this->getAccessor();
+    }
+
+    public function deleteAssigned($key = null)
+    {
+        if (func_num_args()) {
+            $this->removeFromAccessor($key);
+        } else {
+            $this->resetAccessor();
+        }
+
+        return $this;
     }
 
     public function setPaths(array $paths)
@@ -136,7 +152,7 @@ class Viewer implements ViewerContract
 
     public function addPath($path)
     {
-        $this->paths[] = $path;
+        $this->paths[] = (string) $path;
 
         return $this;
     }
@@ -248,13 +264,33 @@ class Viewer implements ViewerContract
         return Obj::call($this->directives[$name], ...$args);
     }
 
+    public function offsetExists($key)
+    {
+        return $this->hasAssigned($key);
+    }
+
+    public function offsetSet($key, $value)
+    {
+        return $this->assign($key, $value);
+    }
+
+    public function &offsetGet($key)
+    {
+        return $this->getAccessor()[$key];
+    }
+
+    public function offsetUnset($key)
+    {
+        return $this->deleteAssigned($key);
+    }
+
     public function __set($key, $value)
     {
-        return $this->set($key, $value);
+        return $this->assign($key, $value);
     }
 
     public function __get($key)
     {
-        return $this->get($key);
+        return $this->assigned($key);
     }
 }

@@ -92,7 +92,7 @@ class ViewRenderer
 
     protected function partialFile($file, array $params = [])
     {
-        $renderer = (new self($this->viewer, $file, $params + $this->viewer->getParams()));
+        $renderer = (new self($this->viewer, $file, $params + $this->viewer->assigned()));
 
         return (new ViewRendererLoader($renderer))->_l_o_a_d_();
     }

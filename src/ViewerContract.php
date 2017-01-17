@@ -18,7 +18,11 @@ interface ViewerContract extends \ArrayAccess
 
     public function assign($key, $value = null);
 
-    public function getParams();
+    public function assigned($key = null);
+
+    public function hasAssigned($key = null);
+
+    public function deleteAssigned($key = null);
 
     public function setPaths(array $paths);
 
