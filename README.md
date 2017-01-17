@@ -68,3 +68,4 @@ echo $content;
 
 * [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
+* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md) specially for the [Viewer](Viewer.md).

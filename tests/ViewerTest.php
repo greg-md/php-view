@@ -223,9 +223,9 @@ class ViewerTest extends TestCase
     /** @test */
     public function it_uses_pushes()
     {
-        $this->renderedStringEquals('Hello World!', '@push("hello")Hello@endpush@stack("hello") World!');
+        $this->renderedStringEquals('Hello World!', '@push("hello")Hello@endpush@push("hello") World!@endpush@stack("hello")');
 
-        $this->renderedStringEquals('Hello World!', '@push("hello", "Hello")@stack("hello") World!');
+        $this->renderedStringEquals('Hello World!', '@push("hello", "Hello")@push("hello", " World!")@stack("hello")');
     }
 
     /** @test */
