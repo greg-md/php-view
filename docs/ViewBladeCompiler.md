@@ -162,11 +162,33 @@ _Output:_
 
 ## Extends
 
+**extends**
+
+Extend a template with another template file.
+
 ```php
 extends(string $name)
 ```
 
-Extend a template with another template.
+`$name` - Template file.
+
+**extendsIfExists**
+
+Extend a template with another template file if it exists.
+
+```php
+extendsIfExists(string $name)
+```
+
+`$name` - Template file.
+
+**content**
+
+Display parent content.
+
+```php
+content(): string
+```
 
 _Example:_
 
