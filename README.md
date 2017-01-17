@@ -70,7 +70,8 @@ echo $content;
 * [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
 * [Renderer](docs/Renderer.md) - Instance of a template. Could be accessed via `$this` variable in the template.
 * [Loader](docs/Loader.md) - A special loader for [Renderer](docs/Renderer.md) which will give access only to its public properties and methods;
-* [Compiler Strategy](docs/CompilerStrategy.md) - A strategy for custom compilers;
-* [View Compiler Strategy](docs/ViewCompilerStrategy.md) - A strategy for custom [Viewer](docs/Viewer.md) compilers;
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
-* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
+* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
+* [Viewer Contract](docs/ViewerContract.md) - A contract of a viewer;
+* [Compiler Strategy](docs/CompilerStrategy.md) - A strategy for custom compilers;
+* [View Compiler Strategy](docs/ViewCompilerStrategy.md) - A strategy for custom [Viewer Contract](docs/ViewerContract.md) compilers;
