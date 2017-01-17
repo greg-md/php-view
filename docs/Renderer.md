@@ -98,9 +98,9 @@ render(string $name, array $params = []): string
 _Example:_
 
 ```php
-echo $this->render('header', [
+<?php echo $this->render('header', [
     'title' => 'I am a header!',
-]);
+]);?>
 ```
 
 ## renderIfExists
@@ -122,9 +122,9 @@ renderString(string $id, string $string, array $params = []): string
 _Example:_
 
 ```php
-echo $this->renderString('header.php', '<header><?php echo $title?></header>', [
+<?php echo $this->renderString('header.php', '<header><?php echo $title?></header>', [
     'title' => 'I am a header!',
-]);
+]);?>
 ```
 
 ## renderStringIfExists
