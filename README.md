@@ -59,4 +59,4 @@ echo $content;
 
 # Documentation
 
-* [Viewer](docs/Viewer) - The main class which initializes a new view manager;
+* [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
