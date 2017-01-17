@@ -19,7 +19,7 @@ include $compiledFile;
 ```
 
 # Available extenders:
-* [ViewBladeCompiler](ViewBladeCompiler.md) - A Blade compiler specially for the [Viewer](Viewer.md).
+* [ViewBladeCompiler](ViewBladeCompiler.md) - A Blade compiler specially for the [Viewer Contract](ViewerContract.md).
 
 # Table of contents:
 

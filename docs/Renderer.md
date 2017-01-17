@@ -48,7 +48,7 @@ Below is a list of **supported methods**:
 * [push](#push) - Start a pusher or push contents in the stack;
 * [endPush](#endpush) - End current pusher and add it to the stack;
 * [stack](#stack) - Get from the stack;
-* [format](#format) - Execute a directive registered in the [Viewer](Viewer.md);
+* [format](#format) - Execute a directive registered in the [Viewer](ViewerContract.md);
 * [viewer](#viewer) - Get [Viewer](/greg-md/php-view/wiki/Viewer);
 * [params](#params) - Get parameters;
 * [file](#file) - Get file;
@@ -70,7 +70,7 @@ This is the constructor of the `ViewRenderer`.
 __construct(Viewer $viewer, string $file, array $params = [])
 ```
 
-`$viewer` - The [Viewer](/greg-md/php-view/wiki/Viewer);  
+`$viewer` - [Viewer](/greg-md/php-view/wiki/Viewer);  
 `$file` - Template file;  
 `$params` - Template parameters.
 

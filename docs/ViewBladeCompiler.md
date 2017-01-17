@@ -1,6 +1,6 @@
 # View Blade Compiler Documentation
 
-`\Greg\View\ViewBladeCompiler` is an extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
+`\Greg\View\ViewBladeCompiler` is an extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
 
 Extends: [`\Greg\View\BladeCompiler`](BladeCompiler.md).
 
@@ -23,7 +23,7 @@ Below is a list of **new directives and template formats**.
     * [Partial](#partial) - Render another template with new parameters;
     * [Each](#each) - Render template for each element in array;
     * [Content](#content) - Get registered content;
-    * [Format](#format) - Execute a directive registered in the [Viewer](Viewer.md).
+    * [Format](#format) - Execute a directive registered in the [Viewer Contract](ViewerContract.md).
 
 # New methods
 
@@ -373,7 +373,7 @@ Render a template string with current parameters for each value if its compiler 
 
 ## Format
 
-Execute a directive registered in the [Viewer](Viewer.md).
+Execute a directive registered in the [Viewer Contract](ViewerContract.md).
 
 ```php
 format(string $name, mixed ...$args)
