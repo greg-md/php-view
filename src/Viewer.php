@@ -4,6 +4,7 @@ namespace Greg\View;
 
 use Greg\Support\Accessor\ArrayAccessTrait;
 use Greg\Support\Obj;
+use Greg\Support\Str;
 
 class Viewer implements ViewerContract
 {
@@ -46,6 +47,24 @@ class Viewer implements ViewerContract
         return null;
     }
 
+    public function renderString($id, $string, array $params = [])
+    {
+        if ($file = $this->getCompiledFileFromString($id, $string)) {
+            return $this->renderFile($file, $params);
+        }
+
+        throw new ViewException('Could not find a compiler for view `' . $id . '`.');
+    }
+
+    public function renderStringIfExists($id, $string, array $params = [])
+    {
+        if ($file = $this->getCompiledFileFromString($id, $string)) {
+            return $this->renderFile($file, $params);
+        }
+
+        return null;
+    }
+
     protected function renderFile($file, array $params = [])
     {
         $renderer = new ViewRenderer($this, $file, $params + $this->getParams());
@@ -64,6 +83,21 @@ class Viewer implements ViewerContract
 
                     return $file;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    public function getCompiledFileFromString($id, $string)
+    {
+        foreach ($this->getSortedExtensions() as $extension) {
+            if (Str::endsWith($id, $extension)) {
+                if ($this->hasCompiler($extension)) {
+                    return $this->getCompiler($extension)->getCompiledFileFromString($id, $string);
+                }
+
+                return false;
             }
         }
 
@@ -124,6 +158,17 @@ class Viewer implements ViewerContract
         return array_keys($this->compilers);
     }
 
+    public function getSortedExtensions()
+    {
+        $extensions = $this->getExtensions();
+
+        usort($extensions, function($a, $b) {
+            return mb_strlen($b) - mb_strlen($a);
+        });
+
+        return $extensions;
+    }
+
     public function hasCompiler($extension)
     {
         return array_key_exists($extension, $this->getCompilers());
@@ -178,8 +223,10 @@ class Viewer implements ViewerContract
     {
         $this->directives[$name] = $callable;
 
-        foreach ($this->compilers as $compiler) {
-            if ($compiler instanceof ViewCompilerStrategy) {
+        foreach ($this->getCompilersExtensions() as $extension) {
+            $compiler = $this->getCompiler($extension);
+
+            if (($compiler instanceof ViewCompilerStrategy)) {
                 $compiler->addViewDirective($name);
             }
         }

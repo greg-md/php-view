@@ -8,7 +8,13 @@ interface ViewerContract extends \ArrayAccess
 
     public function renderIfExists($name, array $params = []);
 
+    public function renderString($id, $string, array $params = []);
+
+    public function renderStringIfExists($id, $string, array $params = []);
+
     public function getCompiledFile($name);
+
+    public function getCompiledFileFromString($id, $string);
 
     public function assign($key, $value = null);
 
@@ -25,6 +31,10 @@ interface ViewerContract extends \ArrayAccess
     public function addExtension($extension, $compiler = null);
 
     public function getExtensions();
+
+    public function getSortedExtensions();
+
+    public function hasCompiler($extension);
 
     public function getCompiler($extension);
 

@@ -79,4 +79,178 @@ class ViewerTest extends TestCase
 
         $this->viewer->getCompiler('.foo');
     }
+
+    /** @test */
+    public function it_adds_custom_directives()
+    {
+        $this->viewer->directive('eco', function($content) {
+            return $content;
+        });
+
+        $this->renderedStringEquals('Hello World!', '@eco("Hello World!")');
+    }
+
+    /** @test */
+    public function it_renders_inside_view()
+    {
+        $this->renderedStringEquals('Hello World!', '@render("default")');
+
+        $this->renderedStringEquals('Hello World!', 'Hello @renderString("world.blade.php", "World")!');
+
+        $this->renderedStringEquals('', '@renderIfExists("undefined")');
+
+        $this->renderedStringEquals('Hello !', 'Hello @renderStringIfExists("world.undefined", "World")!');
+    }
+
+    /** @test */
+    public function it_partials_inside_view()
+    {
+        $this->renderedStringEquals('Hello World!', 'Hello @partial("world")!', ['world' => 'World']);
+
+        $this->renderedStringEquals('Hello World!', 'Hello @partialString("world.blade.php", "World")!');
+
+        $this->renderedStringEquals('', '@partialIfExists("undefined")');
+
+        $this->renderedStringEquals('World', '@partialIfExists("world")');
+
+        $this->renderedStringEquals('Hello World!', 'Hello @partialStringIfExists("world.blade.php", "World")!');
+
+        $this->renderedStringEquals('Hello !', 'Hello @partialStringIfExists("world.undefined", "World")!');
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_partial_not_found()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@partial("undefined")');
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_partial_string_not_found()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@partialString("undefined", "Hello World!")');
+    }
+
+    /** @test */
+    public function it_executes_each_directive()
+    {
+        $this->renderedStringEquals('Hello World!Hello World!', '@each("default", [1, 2])');
+
+        $this->renderedStringEquals('Hello World!Hello World!', '@eachIfExists("default", [1, 2])');
+
+        $this->renderedStringEquals('', '@eachIfExists("undefined", [1, 2])');
+
+        $this->renderedStringEquals('Hello World!Hello World!', '@eachString("hello-world.blade.php", "Hello World!", [1, 2])');
+
+        $this->renderedStringEquals('Hello World!Hello World!', '@eachStringIfExists("hello-world.blade.php", "Hello World!", [1, 2])');
+
+        $this->renderedStringEquals('', '@eachStringIfExists("hello-world.undefined", "Hello World!", [1, 2])');
+
+        $this->renderedStringEquals('No items found!', '@eachString("hello-world.blade.php", "Hello World!", [], [], null, "empty.blade.php", "No items found!")');
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_each_not_found()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@each("undefined", [1, 2])');
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_each_string_not_found()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@eachString("undefined", "Hello World!", [1, 2])');
+    }
+
+    /** @test */
+    public function it_extends_an_view()
+    {
+        $this->renderedStringEquals('Hello World!', '@extends("hello")World');
+
+        $this->renderedStringEquals('Hello World!', '@extendsString("hello.blade.php", "Hello @content!")World');
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_extends_undefined_view()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@extends("undefined")');
+    }
+
+    /** @test */
+    public function it_uses_sections()
+    {
+        $this->renderedStringEquals('Hello World!', '@section("hello-world");@parent;Hello World!@endsection;@yield("hello-world");');
+
+        $this->renderedStringEquals('Hello World!', '@section("hello-world")Hello World!@show');
+
+        $this->renderedStringEquals('Hello World!', '@section("hello-world", "Hello World!")@yield("hello-world")');
+    }
+
+    /** @test */
+    public function it_cannot_use_sections_in_sections()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->expectExceptionMessage('You cannot have a section in another section.');
+
+        $this->renderString('@section("hello-world")Hello World!@section("second")Huh@endsection@show');
+    }
+
+    /** @test */
+    public function it_cannot_end_undefined_sections()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@endsection');
+    }
+
+    /** @test */
+    public function it_cannot_show_undefined_sections()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@show');
+    }
+
+    /** @test */
+    public function it_uses_pushes()
+    {
+        $this->renderedStringEquals('Hello World!', '@push("hello")Hello@endpush@stack("hello") World!');
+
+        $this->renderedStringEquals('Hello World!', '@push("hello", "Hello")@stack("hello") World!');
+    }
+
+    /** @test */
+    public function it_cannot_push_in_another_push()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@push("hello")Hello@push("world")@endpush@endpush');
+    }
+
+    /** @test */
+    public function it_cannot_end_undefined_push()
+    {
+        $this->expectException(ViewException::class);
+
+        $this->renderString('@endpush');
+    }
+
+    protected function renderedStringEquals($expected, $actual, array $params = [])
+    {
+        $this->assertEquals($expected, $this->renderString($actual, $params));
+    }
+
+    protected function renderString($string, array $params = [])
+    {
+        return $this->viewer->renderString('test.blade.php', $string, $params);
+    }
 }

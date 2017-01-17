@@ -62,6 +62,34 @@ class ViewRenderer
         return null;
     }
 
+    public function renderString($id, $string, array $params = [])
+    {
+        return $this->partialString($id, $string, $params + $this->params);
+    }
+
+    public function renderStringIfExists($id, $string, array $params = [])
+    {
+        return $this->partialStringIfExists($id, $string, $params + $this->params);
+    }
+
+    public function partialString($id, $string, array $params = [])
+    {
+        if ($file = $this->viewer->getCompiledFileFromString($id, $string)) {
+            return $this->partialFile($file, $params);
+        }
+
+        throw new ViewException('Could not find a compiler for view `' . $id . '`.');
+    }
+
+    public function partialStringIfExists($id, $string, array $params = [])
+    {
+        if ($file = $this->viewer->getCompiledFileFromString($id, $string)) {
+            return $this->partialFile($file, $params);
+        }
+
+        return null;
+    }
+
     protected function partialFile($file, array $params = [])
     {
         $renderer = (new self($this->viewer, $file, $params + $this->viewer->getParams()));
@@ -69,33 +97,51 @@ class ViewRenderer
         return (new ViewRendererLoader($renderer))->_l_o_a_d_();
     }
 
-    public function each($name, array $values, $valueKeyName = null, $emptyName = null, array $params = [])
+    public function each($name, array $values, array $params = [], $valueKeyName = null, $emptyName = null)
     {
         if ($file = $this->viewer->getCompiledFile($name)) {
-            if ($emptyName) {
-                $emptyName = $this->viewer->getCompiledFile($emptyName);
-            }
+            $emptyFile = $emptyName ? $this->viewer->getCompiledFile($emptyName) : null;
 
-            return $this->eachFile($file, $values, $valueKeyName, $emptyName, $params);
+            return $this->eachFile($file, $values, $params, $valueKeyName, $emptyFile);
         }
 
         throw new ViewException('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function eachIfExists($name, array $values, $valueKeyName = null, $emptyName = null, array $params = [])
+    public function eachIfExists($name, array $values, array $params = [], $valueKeyName = null, $emptyName = null)
     {
         if ($file = $this->viewer->getCompiledFile($name)) {
-            if ($emptyName) {
-                $emptyName = $this->viewer->getCompiledFile($emptyName);
-            }
+            $emptyFile = $emptyName ? $this->viewer->getCompiledFile($emptyName) : null;
 
-            return $this->eachFile($file, $values, $valueKeyName, $emptyName, $params);
+            return $this->eachFile($file, $values, $params, $valueKeyName, $emptyFile);
         }
 
         return null;
     }
 
-    protected function eachFile($file, array $values, $valueKeyName = null, $emptyFile = null, array $params = [])
+    public function eachString($id, $string, array $values, array $params = [], $valueKeyName = null, $emptyId = null, $emptyString = null)
+    {
+        if ($file = $this->viewer->getCompiledFileFromString($id, $string)) {
+            $emptyFile = $emptyId ? $this->viewer->getCompiledFileFromString($emptyId, $emptyString) : null;
+
+            return $this->eachFile($file, $values, $params, $valueKeyName, $emptyFile);
+        }
+
+        throw new ViewException('Could not find a compiler for view `' . $id . '`.');
+    }
+
+    public function eachStringIfExists($id, $string, array $values, array $params = [], $valueKeyName = null, $emptyId = null, $emptyString = null)
+    {
+        if ($file = $this->viewer->getCompiledFileFromString($id, $string)) {
+            $emptyFile = $emptyId ? $this->viewer->getCompiledFileFromString($emptyId, $emptyString) : null;
+
+            return $this->eachFile($file, $values, $params, $valueKeyName, $emptyFile);
+        }
+
+        return null;
+    }
+
+    protected function eachFile($file, array $values, array $params = [], $valueKeyName = null, $emptyFile = null)
     {
         $content = [];
 
@@ -117,6 +163,11 @@ class ViewRenderer
         return $this->setExtended($name);
     }
 
+    public function extendString($id, $string)
+    {
+        return $this->setExtendedString($id, $string);
+    }
+
     public function content()
     {
         return $this->getContent();
@@ -125,6 +176,8 @@ class ViewRenderer
     public function section($name, $content = null)
     {
         if ($this->currentSection) {
+            ob_get_clean();
+
             throw new ViewException('You cannot have a section in another section.');
         }
 
@@ -178,6 +231,8 @@ class ViewRenderer
     public function push($name, $content = null)
     {
         if ($this->currentStack) {
+            ob_get_clean();
+
             throw new ViewException('You cannot have a stack in another stack.');
         }
 
@@ -258,6 +313,16 @@ class ViewRenderer
         return $this;
     }
 
+    public function setExtendedString($id, $name)
+    {
+        $this->extended = [
+            'id'        => (string) $id,
+            'string'    => (string) $name
+        ];
+
+        return $this;
+    }
+
     public function getExtended()
     {
         return $this->extended;
@@ -309,8 +374,10 @@ class ViewRenderer
         return array_key_exists($name, $this->stacks);
     }
 
+    /*
     public function __call($name, $arguments)
     {
         return $this->format($name, ...$arguments);
     }
+    */
 }

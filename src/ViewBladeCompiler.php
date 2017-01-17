@@ -17,14 +17,21 @@ class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
     {
         $this->addDirectives([
             'extends'         => 'compileExtends',
+            'extendsString'   => 'compileExtendsString',
             'section'         => 'compileSection',
             'yield'           => 'compileYield',
             'render'          => 'compileRender',
             'renderIfExists'  => 'compileRenderIfExists',
             'partial'         => 'compilePartial',
             'partialIfExists' => 'compilePartialIfExists',
-            'each'            => 'compileEach',
-            'eachIfExists'    => 'compileEachIfExists',
+            'renderString'    => 'compileRenderString',
+            'renderStringIfExists'  => 'compileRenderStringIfExists',
+            'partialString'         => 'compilePartialString',
+            'partialStringIfExists' => 'compilePartialStringIfExists',
+            'each'                  => 'compileEach',
+            'eachIfExists'          => 'compileEachIfExists',
+            'eachString'            => 'compileEachString',
+            'eachStringIfExists'    => 'compileEachStringIfExists',
 
             'push'  => 'compilePush',
             'stack' => 'compileStack',
@@ -65,6 +72,26 @@ class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
         return '<?php echo $this->partialIfExists(' . $expr . ')?>';
     }
 
+    protected function compileRenderString($expr)
+    {
+        return '<?php echo $this->renderString(' . $expr . ')?>';
+    }
+
+    protected function compileRenderStringIfExists($expr)
+    {
+        return '<?php echo $this->renderStringIfExists(' . $expr . ')?>';
+    }
+
+    protected function compilePartialString($expr)
+    {
+        return '<?php echo $this->partialString(' . $expr . ')?>';
+    }
+
+    protected function compilePartialStringIfExists($expr)
+    {
+        return '<?php echo $this->partialStringIfExists(' . $expr . ')?>';
+    }
+
     protected function compileEach($expr)
     {
         return '<?php echo $this->each(' . $expr . ')?>';
@@ -75,9 +102,24 @@ class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
         return '<?php echo $this->eachIfExists(' . $expr . ')?>';
     }
 
-    protected function compileExtends($name)
+    protected function compileEachString($expr)
     {
-        return '<?php $this->extend(' . $name . ')?>';
+        return '<?php echo $this->eachString(' . $expr . ')?>';
+    }
+
+    protected function compileEachStringIfExists($expr)
+    {
+        return '<?php echo $this->eachStringIfExists(' . $expr . ')?>';
+    }
+
+    protected function compileExtends($expr)
+    {
+        return '<?php $this->extend(' . $expr . ')?>';
+    }
+
+    protected function compileExtendsString($expr)
+    {
+        return '<?php $this->extendString(' . $expr . ')?>';
     }
 
     protected function compileContent()
