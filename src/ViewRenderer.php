@@ -317,7 +317,7 @@ class ViewRenderer
     {
         $this->extended = [
             'id'        => (string) $id,
-            'string'    => (string) $name
+            'string'    => (string) $name,
         ];
 
         return $this;

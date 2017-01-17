@@ -83,7 +83,7 @@ class ViewerTest extends TestCase
     /** @test */
     public function it_adds_custom_directives()
     {
-        $this->viewer->directive('eco', function($content) {
+        $this->viewer->directive('eco', function ($content) {
             return $content;
         });
 

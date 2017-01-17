@@ -162,7 +162,7 @@ class Viewer implements ViewerContract
     {
         $extensions = $this->getExtensions();
 
-        usort($extensions, function($a, $b) {
+        usort($extensions, function ($a, $b) {
             return mb_strlen($b) - mb_strlen($a);
         });
 
