@@ -1,6 +1,6 @@
 # View Blade Compiler Documentation
 
-`\Greg\View\ViewBladeCompiler` is An extended [Blade Compiler](docs/BladeCompiler.md) specially for the [Viewer](Viewer.md).
+`\Greg\View\ViewBladeCompiler` is an extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
 
 Extends: [`\Greg\View\BladeCompiler`](BladeCompiler.md).
 
@@ -8,7 +8,7 @@ Implements: `\Greg\View\ViewCompilerStrategy`.
 
 # Table of contents:
 
-Below is a list of **new methods** of the `ViewBladeCompiler`:
+Below is a list of **new methods**:
 
 * [addViewDirective](#addviewdirective) - Add a directive that was already registered in the `Viewer`, but not in the compiler.
 
@@ -16,7 +16,7 @@ Below is a list of **new directives and template formats**.
 
 * **Statements**
     * [Section](#section-statement) - Section statement;
-    * [Push](#push-statement) - Push statement;
+    * [Push](#push-statement) - Push statement.
 * **Directives**
     * [Extends](#extends) - Extend template;
     * [Render](#render) - Render another template with existing parameters.
@@ -279,7 +279,7 @@ Render a template file with new parameters if template exists. See [partial](#pa
 ### _Example:_
 
 ```blade
-@render("foo")
+@partial("foo")
 
-@renderIfExists("bar")
+@partialIfExists("bar")
 ```

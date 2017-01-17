@@ -23,7 +23,7 @@ include $compiledFile;
 
 # Table of contents:
 
-Below is a list of **supported methods** of the `BladeCompiler`:
+Below is a list of **supported methods**:
 
 * [__construct](#__construct) - Constructor of the `BladeCompiler`;
 * [setCompilationPath](#setcompilationpath) - Set compilation path;
