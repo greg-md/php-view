@@ -23,7 +23,7 @@ Below is a list of **new directives and template formats**.
     * [Partial](#partial) - Render another template with new parameters;
     * [Each](#each) - Render template for each element in array;
     * [Content](#content) - Get registered content;
-    * [Format](#format) - Execute a directive registered in the [Viewer](#).
+    * [Format](#format) - Execute a directive registered in the [Viewer](Viewer.md).
 
 # New methods
 
@@ -136,7 +136,6 @@ Hello World!
 
 ## Push Statement
 
-
 ### push
 
 Push contents in a stack.
@@ -147,6 +146,14 @@ push(string $name, string $content = null)
 
 `$name` - Stack name;  
 `$content` - Stack content.
+
+### endpush
+
+End current push.
+
+```php
+endpush()
+```
 
 ### stack
 
@@ -197,7 +204,7 @@ Extend a template with another template string.
 extendsString(string $id, string $string)
 ```
 
-`$id` - Template unique id;  
+`$id` - Template unique id. It should has the compiler extension;  
 `$string` - Template string.
 
 ### content
@@ -251,6 +258,22 @@ render(string $name, array $params = [])
 
 Render a template file with current parameters if template exists. See [render](#render) directive.
 
+### renderString
+
+Render a template string with current parameters.
+
+```php
+renderString(string $id, string $string, array $params = [])
+```
+
+`$id` - Template unique id. It should has the compiler extension;  
+`$string` - Template string;  
+`$params` - Template custom parameters.
+
+### renderStringIfExists
+
+Render a template string with current parameters if its compiler exists. See [renderString](#renderstring) directive.
+
 ### _Example:_
 
 ```blade
@@ -276,10 +299,92 @@ partial(string $name, array $params = [])
 
 Render a template file with new parameters if template exists. See [partial](#partial) directive.
 
+### partialString
+
+Render a template string with new parameters.
+
+```php
+partialString(string $id, string $string, array $params = [])
+```
+
+`$id` - Template unique id. It should has the compiler extension;  
+`$string` - Template string;  
+`$params` - Template custom parameters.
+
+### partialIfExists
+
+Render a template string with new parameters if its compiler exists. See [partialString](#partialstring) directive.
+
 ### _Example:_
 
 ```blade
 @partial("foo")
 
 @partialIfExists("bar")
+```
+
+## Each
+
+### each
+
+Render a template file with current parameters for each value.
+
+```php
+each(string $name, array $values, array $params = [], string $valueKeyName = null, string $emptyName = null)
+```
+
+`$name` - Template file;  
+`$values` - Values;  
+`$params` - Template custom parameters;  
+`$valueKeyName` - The key name of the current value;  
+`$emptyName` - If no values, will render this template file.
+
+### eachIfExists
+
+Render a template file with current parameters for each value if template exists. See [each](#each) directive.
+
+### eachString
+
+Render a template string with current parameters for each value.
+
+```php
+eachString(string $id, string $string, array $values, array $params = [], string $valueKeyName = null, string $emptyId = null, string $emptyString = null)
+```
+
+`$id` - Template unique id. It should has the compiler extension;  
+`$string` - Template string;  
+`$values` - Values;  
+`$params` - Template custom parameters;  
+`$valueKeyName` - The key name of the current value;  
+`$emptyId` - Template unique id. Will use it if no values found;
+`$emptyString` - Template string. Will use it if no values found.
+
+### eachStringIfExists
+
+Render a template string with current parameters for each value if its compiler exists. See [eachString](#eachstring) directive.
+
+### _Example:_
+
+```blade
+@each("foo", [1, 2])
+
+@renderIfExists("bar", [1, 2])
+```
+
+## Format
+
+Execute a directive registered in the [Viewer](Viewer.md).
+
+```php
+format(string $name, mixed ...$args)
+```
+
+_Example:_
+
+```blade
+@format("alert", "I am a javascript alert!")
+
+<!-- or -->
+
+@alert("I am a javascript alert!")
 ```
