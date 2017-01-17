@@ -54,7 +54,7 @@ Create a template file in the views directory. For example `welcome.blade.php`:
 </html>
 ```
 
-Use this template in your application:
+Use `welcome` template in your application:
 
 ```php
 $content = $viewer->render('welcome', [
@@ -68,4 +68,4 @@ echo $content;
 
 * [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
-* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md) specially for the [Viewer](Viewer.md).
+* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
