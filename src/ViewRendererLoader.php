@@ -40,7 +40,7 @@ class ViewRendererLoader
                 }
             }
 
-            $extendedRenderer = new ViewRenderer($viewer, $file, $viewer->getParams());
+            $extendedRenderer = new ViewRenderer($viewer, $file, $viewer->assigned());
 
             $extendedRenderer->setContent($content);
 

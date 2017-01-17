@@ -57,7 +57,7 @@ class ViewerTest extends TestCase
     {
         $this->viewer->assign('foo', 'bar');
 
-        $this->assertArrayHasKey('foo', $this->viewer->getParams());
+        $this->assertArrayHasKey('foo', $this->viewer->assigned());
     }
 
     /** @test */
