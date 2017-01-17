@@ -2,6 +2,7 @@
 
 namespace Greg\View\Tests;
 
+use Greg\View\Renderer;
 use Greg\View\ViewBladeCompiler;
 use Greg\View\Viewer;
 use Greg\View\ViewException;
@@ -88,6 +89,10 @@ class ViewerTest extends TestCase
         });
 
         $this->renderedStringEquals('Hello World!', '@eco("Hello World!")');
+
+        $renderer = new Renderer($this->viewer, null);
+
+        $this->assertEquals('Hello World!', $renderer->eco('Hello World!'));
     }
 
     /** @test */
