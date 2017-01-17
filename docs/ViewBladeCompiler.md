@@ -64,7 +64,7 @@ section(string $name, string $content = null)
 
 ### endsection
 
-End current section.
+End and register current section.
 
 ```php
 endsection()
@@ -138,7 +138,7 @@ Hello World!
 
 ### push
 
-Start a pusher or push contents in a stack.
+Start a pusher or push contents in the stack.
 
 ```php
 push(string $name, string $content = null)
@@ -157,7 +157,7 @@ endpush()
 
 ### stack
 
-Display contents from a stack.
+Display contents from the stack.
 
 ```php
 stack(string $name): string

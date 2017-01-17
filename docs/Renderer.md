@@ -42,12 +42,12 @@ Below is a list of **supported methods**:
 * [content](#content) - Get content;
 * [section](#section) - Start or add a section;
 * [parent](#parent) - Get parent section;
-* [endSection](#endsection) - End current section;
+* [endSection](#endsection) - End and register current section;
 * [show](#show) - End and get current section;
 * [getSection](#getsection) - Get a section;
-* [push](#push) - Start a pusher or push contents in a stack;
+* [push](#push) - Start a pusher or push contents in the stack;
 * [endPush](#endpush) - End current pusher and add it to the stack;
-* [stack](#stack) - Get a stack;
+* [stack](#stack) - Get from the stack;
 * [format](#format) - Execute a directive registered in the [Viewer](Viewer.md);
 * [viewer](#viewer) - Get [Viewer](/greg-md/php-view/wiki/Viewer);
 * [params](#params) - Get parameters;
@@ -202,17 +202,28 @@ Render a template string with current parameters for each value if template exis
 
 ## extend
 
-Extend template.
+Extend template with another template file.
 
 ```php
 extend(string $name): $this
 ```
 
-`$name` - Template name, relative to registered paths;
+`$name` - Template file.
+
+## extendString
+
+Extend template with another template string.
+
+```php
+extend(string $id, string $string): $this
+```
+
+`$id` - Template unique id. It should has the compiler extension;  
+`$string` - Template string.
 
 ## content
 
-Get registered content.
+Get content.
 
 ```php
 content(): string
@@ -220,7 +231,7 @@ content(): string
 
 ## section
 
-Start or register a new section.
+Start or add a section.
 
 ```php
 section(string $name, string $content = null): $this
@@ -239,7 +250,7 @@ parent(): $this
 
 ## endSection
 
-Finish and register current section content.
+End and register current section.
 
 ```php
 endSection(): $this
@@ -247,7 +258,7 @@ endSection(): $this
 
 ## show
 
-Finish and return current section content.
+Finish and get current section content.
 
 ```php
 show(): string
@@ -255,18 +266,18 @@ show(): string
 
 ## getSection
 
-Get section content.
+Get a section.
 
 ```php
 getSection(string $name, string $else = null): string
 ```
 
 `$name` - Section name;  
-`$else` - If the section doesn't exists, you see this content.
+`$else` - If the section does not exists, you see this content.
 
 ## push
 
-Start or add content in a stack.
+Start a pusher or push contents in the stack.
 
 ```php
 push(string $name, string $content = null): $this
@@ -277,7 +288,7 @@ push(string $name, string $content = null): $this
 
 ## endPush
 
-Finish and add content in a stack.
+End current pusher and add it to the stack.
 
 ```php
 endPush(): $this
@@ -285,7 +296,7 @@ endPush(): $this
 
 ## stack
 
-Get stack contents.
+Get from the stack.
 
 ```php
 stack(string $name, string $else = null): string
@@ -296,7 +307,7 @@ stack(string $name, string $else = null): string
 
 ## format
 
-Execute a directive registered in the [Viewer](/greg-md/php-view/wiki/Viewer).
+Execute a directive registered in the [Viewer](Viewer.md).
 
 ```php
 format(string $name, mixed ...$args): mixed
@@ -305,83 +316,41 @@ format(string $name, mixed ...$args): mixed
 `$name` - Directive name;  
 `...$args` - Directive arguments.
 
-## setViewer
-
-Set [Viewer](/greg-md/php-view/wiki/Viewer).
-
-```php
-setViewer(\Greg\View\Viewer $viewer): $this
-```
-
-`$viewer` - [`\Greg\View\Viewer`](/greg-md/php-view/wiki/Viewer).
-
-## getViewer
+## viewer
 
 Get [Viewer](/greg-md/php-view/wiki/Viewer).
 
 ```php
-getViewer(): \Greg\View\Viewer
+viewer(): \Greg\View\Viewer
 ```
 
-Returns [`\Greg\View\Viewer`](/greg-md/php-view/wiki/Viewer).
+## params
 
-## setParams
-
-Set registered parameters.
+Get parameters.
 
 ```php
-setParams(array $params): $this
+params(): array
 ```
 
-`$params` - Parameters.
+## file
 
-## getParams
-
-Get registered parameters.
+Get file.
 
 ```php
-getParams(): array
+file(): string
 ```
 
-## setFile
+## extended
 
-Set registered file.
-
-```php
-setFile(string $file): $this
-```
-
-`$file` - File full path.
-
-## getFile
-
-Get registered file.
+Get extended template file.
 
 ```php
-getFile(): string
-```
-
-## setExtended
-
-Set extended template.
-
-```php
-setExtended(string $name): $this
-```
-
-`$name` - Extended template name.
-
-## getExtended
-
-Get extended template.
-
-```php
-getExtended(): string
+extended(): string
 ```
 
 ## setContent
 
-Set registered content.
+Set content.
 
 ```php
 setContent(string $content): $this
@@ -389,27 +358,19 @@ setContent(string $content): $this
 
 `$content` - Registered content.
 
-## getContent
-
-Get registered content.
-
-```php
-getContent(): string
-```
-
 ## setSections
 
-Set registered sections.
+Set sections.
 
 ```php
 setSections(array $sections): $this
 ```
 
-`$sections` - Registered sections.
+`$sections` - Sections.
 
 ## getSections
 
-Get registered sections.
+Get sections.
 
 ```php
 getSections(): array
@@ -427,17 +388,17 @@ hasSection(string $name): boolean
 
 ## setStacks
 
-Set registered stacks.
+Set stacks.
 
 ```php
 setStacks(array $stacks): $this
 ```
 
-`$stacks` - Registered stacks.
+`$stacks` - Stacks.
 
 ## getStacks
 
-Get registered stacks.
+Get stacks.
 
 ```php
 getStacks(): array
