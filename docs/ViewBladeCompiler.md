@@ -126,7 +126,7 @@ _Output:_
 
 ## Extends
 
-Extend with another template
+Extend a template with another template.
 
 _Example:_
 
@@ -138,7 +138,7 @@ Create a template `layout.blade.php`:
 </section>
 ```
 
-Extend with `layout` template:
+Extend `layout` template:
 
 ```blade
 @extends("layout")
