@@ -94,7 +94,7 @@ class BladeCompilerTest extends TestCase
     {
         $file = __DIR__ . '/view/default.blade.php';
 
-        $compiledFile = __DIR__ . '/compiled/6e0ef330951b91930b6aaa22edf9986e.php';
+        $compiledFile = __DIR__ . '/compiled/' . md5($file) . '.php';
 
         $this->assertEquals($compiledFile, $this->compiler->getCompiledFile($file));
 
