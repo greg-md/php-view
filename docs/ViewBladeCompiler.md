@@ -162,7 +162,7 @@ _Output:_
 
 ## Extends
 
-**extends**
+### extends
 
 Extend a template with another template file.
 
@@ -172,7 +172,7 @@ extends(string $name)
 
 `$name` - Template file.
 
-**extendsIfExists**
+### extendsIfExists
 
 Extend a template with another template file if it exists.
 
@@ -182,7 +182,7 @@ extendsIfExists(string $name)
 
 `$name` - Template file.
 
-**content**
+### content
 
 Display parent content.
 
