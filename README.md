@@ -28,9 +28,10 @@ $viewsDirectory = __DIR__ . '/views';
 $viewer = new \Greg\View\Viewer($viewsDirectory);
 ```
 
-**Optionally** you can add a view compiler. For example a [Blade Compiler](docs/ViewBladeCompiler.md) specially created for the [Viewer](docs/Viewer.md):
+**Optionally**, you can add a view compiler. For example a [Blade Compiler](docs/ViewBladeCompiler.md) specially created for the [Viewer](docs/Viewer.md):
 
 ```php
+// Turn it to a callable, to load only when using blade templates.
 $viewer->addExtension('.blade.php', function () {
     $compiledViewsDirectory = __DIR__ . '/compiled';
 
