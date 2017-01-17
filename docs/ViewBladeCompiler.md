@@ -53,7 +53,7 @@ Below is a list of **new directives and template formats**.
 
 ### section
 
-Create a section.
+Start or add a section;
 
 ```php
 section(string $name, string $content = null)
@@ -90,7 +90,7 @@ parent(): string
 
 ### show
 
-Display current section.
+End and display current section.
 
 ```php
 show(): string
@@ -138,7 +138,7 @@ Hello World!
 
 ### push
 
-Push contents in a stack.
+Start a pusher or push contents in a stack.
 
 ```php
 push(string $name, string $content = null)
@@ -149,7 +149,7 @@ push(string $name, string $content = null)
 
 ### endpush
 
-End current push.
+End current pusher and add it to the stack.
 
 ```php
 endpush()
@@ -188,7 +188,7 @@ _Output:_
 
 ### extends
 
-Extend a template with another template file.
+Extend template with another template file.
 
 ```php
 extends(string $name)
@@ -198,7 +198,7 @@ extends(string $name)
 
 ### extendsString
 
-Extend a template with another template string.
+Extend template with another template string.
 
 ```php
 extendsString(string $id, string $string)
@@ -248,7 +248,7 @@ _Output:_
 Render a template file with current parameters.
 
 ```php
-render(string $name, array $params = [])
+render(string $name, array $params = []): string
 ```
 
 `$name` - Template file;  
@@ -263,7 +263,7 @@ Render a template file with current parameters if template exists. See [render](
 Render a template string with current parameters.
 
 ```php
-renderString(string $id, string $string, array $params = [])
+renderString(string $id, string $string, array $params = []): string
 ```
 
 `$id` - Template unique id. It should has the compiler extension;  
@@ -289,7 +289,7 @@ Render a template string with current parameters if its compiler exists. See [re
 Render a template file with new parameters.
 
 ```php
-partial(string $name, array $params = [])
+partial(string $name, array $params = []): string
 ```
 
 `$name` - Template file;  
@@ -304,7 +304,7 @@ Render a template file with new parameters if template exists. See [partial](#pa
 Render a template string with new parameters.
 
 ```php
-partialString(string $id, string $string, array $params = [])
+partialString(string $id, string $string, array $params = []): string
 ```
 
 `$id` - Template unique id. It should has the compiler extension;  
@@ -330,7 +330,7 @@ Render a template string with new parameters if its compiler exists. See [partia
 Render a template file with current parameters for each value.
 
 ```php
-each(string $name, array $values, array $params = [], string $valueKeyName = null, string $emptyName = null)
+each(string $name, array $values, array $params = [], string $valueKeyName = null, string $emptyName = null): string
 ```
 
 `$name` - Template file;  
@@ -348,7 +348,7 @@ Render a template file with current parameters for each value if template exists
 Render a template string with current parameters for each value.
 
 ```php
-eachString(string $id, string $string, array $values, array $params = [], string $valueKeyName = null, string $emptyId = null, string $emptyString = null)
+eachString(string $id, string $string, array $values, array $params = [], string $valueKeyName = null, string $emptyId = null, string $emptyString = null): string
 ```
 
 `$id` - Template unique id. It should has the compiler extension;  

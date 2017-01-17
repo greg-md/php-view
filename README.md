@@ -67,6 +67,7 @@ echo $content;
 # Documentation
 
 * [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
+* [Renderer](docs/Renderer.md) - The renderer of a template file from the [Viewer](docs/Viewer.md);
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
 * [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
 * [Compiler Strategy](docs/CompilerStrategy.md) - A strategy for custom compilers.

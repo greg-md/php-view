@@ -44,6 +44,16 @@ class Renderer
         return $this->partialIfExists($name, $params + $this->params);
     }
 
+    public function renderString($id, $string, array $params = [])
+    {
+        return $this->partialString($id, $string, $params + $this->params);
+    }
+
+    public function renderStringIfExists($id, $string, array $params = [])
+    {
+        return $this->partialStringIfExists($id, $string, $params + $this->params);
+    }
+
     public function partial($name, array $params = [])
     {
         if ($file = $this->viewer->getCompiledFile($name)) {
@@ -60,16 +70,6 @@ class Renderer
         }
 
         return null;
-    }
-
-    public function renderString($id, $string, array $params = [])
-    {
-        return $this->partialString($id, $string, $params + $this->params);
-    }
-
-    public function renderStringIfExists($id, $string, array $params = [])
-    {
-        return $this->partialStringIfExists($id, $string, $params + $this->params);
     }
 
     public function partialString($id, $string, array $params = [])
@@ -177,7 +177,7 @@ class Renderer
 
     public function content()
     {
-        return $this->getContent();
+        return $this->content;
     }
 
     public function section($name, $content = null)
@@ -302,11 +302,6 @@ class Renderer
         $this->content = (string) $content;
 
         return $this;
-    }
-
-    public function getContent()
-    {
-        return $this->content;
     }
 
     public function setSections(array $sections)
