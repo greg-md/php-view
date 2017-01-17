@@ -51,12 +51,42 @@ Below is a list of **new directives and template formats**.
 
 ## Section Statement
 
+**Section:**
+
+Create a section.
+
 ```php
-section(string $name, string $content = null): string
+section(string $name, string $content = null)
 ```
 
 `$name` - Section name;  
 `$content` - Section content.
+
+**Yield:**
+
+Display a section.
+
+```php
+yield(string $name): string
+```
+
+`$name` - Section name.
+
+**Parent:**
+
+Display parent section.
+
+```php
+parent(): string
+```
+
+**Show:**
+
+Display current section.
+
+```php
+show(): string
+```
 
 _Example 1:_
 
@@ -99,11 +129,17 @@ Hello World!
 Push contents in a stack.
 
 ```php
-push(string $name, string $content = null): string
+push(string $name, string $content = null)
 ```
 
 `$name` - Stack name;  
 `$content` - Stack content.
+
+```php
+stack(string $name): string
+```
+
+`$name` - Stack name.  
 
 _Example:_
 
@@ -125,6 +161,10 @@ _Output:_
 ```
 
 ## Extends
+
+```php
+extends(string $name)
+```
 
 Extend a template with another template.
 
