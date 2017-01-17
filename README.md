@@ -28,7 +28,7 @@ $viewsDirectory = __DIR__ . '/views';
 $viewer = new \Greg\View\Viewer($viewsDirectory);
 ```
 
-**Optionally** you can add a view compiler. For example a Blade Compiler specially created for this Viewer:
+**Optionally** you can add a view compiler. For example a [Blade Compiler](docs/ViewBladeCompiler.md) specially created for the [Viewer](docs/Viewer.md):
 
 ```php
 $viewer->addExtension('.blade.php', function () {
