@@ -19,11 +19,11 @@ include $compiledFile;
 ```
 
 # Available extenders:
-* [ViewBladeCompiler](ViewBladeCompiler.md) - A Blade compiler for the [Viewer](Viewer.md).
+* [ViewBladeCompiler](ViewBladeCompiler.md) - A Blade compiler specially for the [Viewer](Viewer.md).
 
 # Table of contents:
 
-Below is a list of supported methods of the `BladeCompiler`:
+Below is a list of **supported methods** of the `BladeCompiler`:
 
 * [__construct](#__construct) - Constructor of the `BladeCompiler`;
 * [setCompilationPath](#setcompilationpath) - Set compilation path;
@@ -38,7 +38,7 @@ Below is a list of supported methods of the `BladeCompiler`:
 * [addEmptyDirective](#addemptydirective) - Add an empty template directive;
 * [addOptionalDirective](#addoptionaldirective) - Add a template directive with optional parameters.
 
-Below is a list of supported directives and template formats.
+Below is a list of **supported directives and template formats**.
 
 * **Display data**
     * [Secured](#display-secured-data) - Display data throw `htmlentities` to prevent XSS attacks;
@@ -56,6 +56,8 @@ Below is a list of supported directives and template formats.
     * [Stop](#stop) - Stop template execution.
 
 # Methods
+
+Below is a list of **supported methods** of the `BladeCompiler`:
 
 ## __construct 
 
@@ -166,6 +168,8 @@ Add an empty template directive. See [`addDirective`](#adddirective) method.
 Add a template directive with optional parameters. See [`addDirective`](#adddirective) method.
 
 # Template syntax
+
+Below is a list of **supported directives and template formats**.
 
 ## Display secured data
 
