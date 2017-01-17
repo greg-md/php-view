@@ -178,7 +178,7 @@ Display data throw `htmlentities` to prevent XSS attacks.
 _Example:_
 
 ```blade
-Hello, {{ $name }}.
+Hello, {{ $name or 'guest' }}.
 ```
 
 ## Display raw data
@@ -188,7 +188,7 @@ Display data as it is.
 _Example:_
 
 ```blade
-Hello, {!! $name !!}.
+Hello, {!! $name or '<em>guest</em>' !!}.
 ```
 
 ## Comments
@@ -250,7 +250,7 @@ _Example:_
     <p>This is user {{ $user->id }}</p>
 
     @break($user->number == 5)
-@forelse
+@empty
     <p>No users</p>
 @endforeach
 ```
