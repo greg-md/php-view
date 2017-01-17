@@ -13,6 +13,50 @@ A better Viewer and Blade Compiler for web artisans.
 
 * PHP Version `^5.6 || ^7.0`
 
-# Official documentation
+# How it works
 
-Official documentation could be found [in the wiki](https://github.com/greg-md/php-view/wiki).
+**First of all**, you have to create a new [Viewer]():
+
+```php
+$viewsDirectory = __DIR__ . '/views';
+
+$viewer = new \Greg\View\Viewer($viewsDirectory);
+```
+
+**Optionally** you can add a view compiler. For example a Blade Compiler specially created for this Viewer:
+
+```php
+$viewer->addExtension('.blade.php', function () {
+    return new \Greg\View\ViewBladeCompiler(__DIR__ . '/compiled');
+});
+```
+
+By default it will use `php` language as view compiler.
+
+_Note:_ If you want to use your own compiler, it has to be an instance of `\Greg\View\CompilerStrategy`.
+
+**Now** you can render views where you want in your application.
+
+Create a template file in the views directory. For example `welcome.blade.php`:
+
+```blade
+<html>
+    <body>
+        <h1>Hello, {{ $name }}</h1>
+    </body>
+</html>
+```
+
+Use this template in your application:
+
+```php
+$content = $viewer->render('welcome', [
+    'name' => 'Greg',
+]);
+
+echo $content;
+```
+
+# Documentation
+
+* [Viewer](docs/Viewer) - The main class which initializes a new view manager;
