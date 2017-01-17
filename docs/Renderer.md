@@ -100,7 +100,7 @@ _Example:_
 ```php
 <?php echo $this->render('header', [
     'title' => 'I am a header!',
-]);?>
+])?>
 ```
 
 ## renderIfExists
@@ -124,7 +124,7 @@ _Example:_
 ```php
 <?php echo $this->renderString('header.php', '<header><?php echo $title?></header>', [
     'title' => 'I am a header!',
-]);?>
+])?>
 ```
 
 ## renderStringIfExists
