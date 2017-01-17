@@ -41,9 +41,9 @@ $viewer->addExtension('.blade.php', function () {
 
 _By default it will use [Renderer](docs/Renderer.md) as an instance of a template._
 
-_Note:_ If you want to use your own compiler, it has to be an instance of `\Greg\View\CompilerStrategy`.
+_Note:_ If you want to use your own compiler, it has to be an instance of [Compiler Strategy](docs/CompilerStrategy.md).
 
-**Now** you can render views where you want in your application.
+**Now**, you can render views where you want in your application.
 
 Create a template file in the views directory. For example `welcome.blade.php`:
 
