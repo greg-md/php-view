@@ -67,9 +67,9 @@ class Viewer implements ViewerContract
 
     protected function renderFile($file, array $params = [])
     {
-        $renderer = new ViewRenderer($this, $file, $params + $this->assigned());
+        $renderer = new Renderer($this, $file, $params + $this->assigned());
 
-        return (new ViewRendererLoader($renderer))->_l_o_a_d_();
+        return (new Loader($renderer))->_l_o_a_d_();
     }
 
     public function getCompiledFile($name)

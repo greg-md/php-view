@@ -12,10 +12,6 @@ interface ViewerContract extends \ArrayAccess
 
     public function renderStringIfExists($id, $string, array $params = []);
 
-    public function getCompiledFile($name);
-
-    public function getCompiledFileFromString($id, $string);
-
     public function assign($key, $value = null);
 
     public function assigned($key = null);

@@ -2,36 +2,36 @@
 
 namespace Greg\View;
 
-class ViewRenderer
+class Renderer
 {
-    protected $file = null;
+    private $file = null;
 
-    protected $params = [];
+    private $params = [];
+
+    private $extended = null;
+
+    private $content = null;
+
+    private $sections = [];
+
+    private $currentSection = null;
+
+    private $stacks = [];
+
+    private $currentStack = null;
 
     /**
      * @var Viewer
      */
     protected $viewer = null;
 
-    protected $extended = null;
-
-    protected $content = null;
-
-    protected $sections = [];
-
-    protected $currentSection = null;
-
-    protected $stacks = [];
-
-    protected $currentStack = null;
-
-    public function __construct(ViewerContract $viewer, $file, array $params = [])
+    public function __construct(Viewer $viewer, $file, array $params = [])
     {
-        $this->setViewer($viewer);
+        $this->viewer = $viewer;
 
-        $this->setFile($file);
+        $this->file = $file;
 
-        $this->setParams($params);
+        $this->params = $params;
     }
 
     public function render($name, array $params = [])
@@ -94,7 +94,7 @@ class ViewRenderer
     {
         $renderer = (new self($this->viewer, $file, $params + $this->viewer->assigned()));
 
-        return (new ViewRendererLoader($renderer))->_l_o_a_d_();
+        return (new Loader($renderer))->_l_o_a_d_();
     }
 
     public function each($name, array $values, array $params = [], $valueKeyName = null, $emptyName = null)
@@ -160,12 +160,19 @@ class ViewRenderer
 
     public function extend($name)
     {
-        return $this->setExtended($name);
+        $this->extended = (string) $name;
+
+        return $this;
     }
 
     public function extendString($id, $string)
     {
-        return $this->setExtendedString($id, $string);
+        $this->extended = [
+            'id'        => (string) $id,
+            'string'    => (string) $string,
+        ];
+
+        return $this;
     }
 
     public function content()
@@ -270,60 +277,22 @@ class ViewRenderer
         return $this->viewer->format($name, ...$args);
     }
 
-    public function setViewer(ViewerContract $viewer)
-    {
-        $this->viewer = $viewer;
-
-        return $this;
-    }
-
-    public function getViewer()
+    public function viewer()
     {
         return $this->viewer;
     }
 
-    public function setParams(array $params)
-    {
-        $this->params = $params;
-
-        return $this;
-    }
-
-    public function getParams()
+    public function params()
     {
         return $this->params;
     }
 
-    public function setFile($file)
-    {
-        $this->file = (string) $file;
-
-        return $this;
-    }
-
-    public function getFile()
+    public function file()
     {
         return $this->file;
     }
 
-    public function setExtended($name)
-    {
-        $this->extended = (string) $name;
-
-        return $this;
-    }
-
-    public function setExtendedString($id, $name)
-    {
-        $this->extended = [
-            'id'        => (string) $id,
-            'string'    => (string) $name,
-        ];
-
-        return $this;
-    }
-
-    public function getExtended()
+    public function extended()
     {
         return $this->extended;
     }
@@ -374,10 +343,8 @@ class ViewRenderer
         return array_key_exists($name, $this->stacks);
     }
 
-    /*
     public function __call($name, $arguments)
     {
         return $this->format($name, ...$arguments);
     }
-    */
 }

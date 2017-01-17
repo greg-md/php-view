@@ -2,11 +2,11 @@
 
 namespace Greg\View;
 
-class ViewRendererLoader
+class Loader
 {
     protected $_r_e_n_d_e_r_e_r_ = null;
 
-    public function __construct(ViewRenderer $renderer)
+    public function __construct(Renderer $renderer)
     {
         $this->_r_e_n_d_e_r_e_r_ = $renderer;
     }
@@ -16,9 +16,9 @@ class ViewRendererLoader
         ob_start();
 
         try {
-            extract($this->_r_e_n_d_e_r_e_r_->getParams());
+            extract($this->_r_e_n_d_e_r_e_r_->params());
 
-            include $this->_r_e_n_d_e_r_e_r_->getFile();
+            include $this->_r_e_n_d_e_r_e_r_->file();
 
             $content = ob_get_clean();
         } catch (\Exception $e) {
@@ -27,8 +27,8 @@ class ViewRendererLoader
             throw $e;
         }
 
-        if ($extended = $this->_r_e_n_d_e_r_e_r_->getExtended()) {
-            $viewer = $this->_r_e_n_d_e_r_e_r_->getViewer();
+        if ($extended = $this->_r_e_n_d_e_r_e_r_->extended()) {
+            $viewer = $this->_r_e_n_d_e_r_e_r_->viewer();
 
             if (is_array($extended)) {
                 if (!$file = $viewer->getCompiledFileFromString($extended['id'], $extended['string'])) {
@@ -40,7 +40,7 @@ class ViewRendererLoader
                 }
             }
 
-            $extendedRenderer = new ViewRenderer($viewer, $file, $viewer->assigned());
+            $extendedRenderer = new Renderer($viewer, $file, $viewer->assigned());
 
             $extendedRenderer->setContent($content);
 
