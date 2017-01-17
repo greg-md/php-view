@@ -180,6 +180,25 @@ Extend a template with another template file if it exists.
 extendsIfExists(string $name)
 ```
 
+### extendsString
+
+Extend a template with another template string.
+
+```php
+extendsString(string $id, string $string)
+```
+
+`$id` - Template unique id;
+`$string` - Template string.
+
+### extendsIfExists
+
+Extend a template with another template file if it exists.
+
+```php
+extendsIfExists(string $name)
+```
+
 `$name` - Template file.
 
 ### content
@@ -215,8 +234,6 @@ _Output:_
     Hello World!
 </section>
 ```
-
-You can use `@extendsString` and `@extendsStringIfExists` in the same way by passing the template string instead of template file.
 
 ```blade
 @extendsString("layout.blade.php", "<section class="content">@content</section>")
