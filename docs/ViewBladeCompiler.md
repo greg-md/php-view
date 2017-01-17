@@ -62,6 +62,14 @@ section(string $name, string $content = null)
 `$name` - Section name;  
 `$content` - Section content.
 
+### endsection
+
+End current section.
+
+```php
+endsection()
+```
+
 ### yield
 
 Display a section.
@@ -88,7 +96,7 @@ Display current section.
 show(): string
 ```
 
-### Example:
+### _Example_:
 
 _Example 1:_
 
@@ -150,7 +158,7 @@ stack(string $name): string
 
 `$name` - Stack name.  
 
-### Example:
+### _Example_:
 
 ```blade
 @push("js", "<script>alert('Foo')</script>")
@@ -181,31 +189,12 @@ extends(string $name)
 
 `$name` - Template file.
 
-### extendsIfExists
-
-Extend a template with another template file if it exists.
-
-```php
-extendsIfExists(string $name)
-```
-
 ### extendsString
 
 Extend a template with another template string.
 
 ```php
 extendsString(string $id, string $string)
-```
-
-`$id` - Template unique id;  
-`$string` - Template string.
-
-### extendsStringIfExists
-
-Extend a template with another template string if it exists.
-
-```php
-extendsStringIfExists(string $id, string $string)
 ```
 
 `$id` - Template unique id;  
@@ -247,7 +236,47 @@ _Output:_
 
 ## Render
 
-_Example:_
+### render
+
+Render a template file with current parameters.
+
+```php
+render(string $name, array $params = [])
+```
+
+`$name` - Template file;  
+`$params` - Template custom parameters.
+
+### renderIfExists
+
+Render a template file with current parameters if template exists. See [render](#render) directive.
+
+### _Example:_
+
+```blade
+@render("foo")
+
+@renderIfExists("bar")
+```
+
+## Partial
+
+### partial
+
+Render a template file with new parameters.
+
+```php
+partial(string $name, array $params = [])
+```
+
+`$name` - Template file;  
+`$params` - Template custom parameters.
+
+### partialIfExists
+
+Render a template file with new parameters if template exists. See [partial](#partial) directive.
+
+### _Example:_
 
 ```blade
 @render("foo")
