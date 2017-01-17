@@ -51,7 +51,7 @@ Below is a list of **new directives and template formats**.
 
 ## Section Statement
 
-**Section:**
+### section
 
 Create a section.
 
@@ -62,7 +62,7 @@ section(string $name, string $content = null)
 `$name` - Section name;  
 `$content` - Section content.
 
-**Yield:**
+### yield
 
 Display a section.
 
@@ -72,7 +72,7 @@ yield(string $name): string
 
 `$name` - Section name.
 
-**Parent:**
+### parent
 
 Display parent section.
 
@@ -80,13 +80,15 @@ Display parent section.
 parent(): string
 ```
 
-**Show:**
+### show
 
 Display current section.
 
 ```php
 show(): string
 ```
+
+### Example:
 
 _Example 1:_
 
@@ -126,6 +128,9 @@ Hello World!
 
 ## Push Statement
 
+
+### push
+
 Push contents in a stack.
 
 ```php
@@ -135,13 +140,17 @@ push(string $name, string $content = null)
 `$name` - Stack name;  
 `$content` - Stack content.
 
+### stack
+
+Display contents from a stack.
+
 ```php
 stack(string $name): string
 ```
 
 `$name` - Stack name.  
 
-_Example:_
+### Example:
 
 ```blade
 @push("js", "<script>alert('Foo')</script>")
@@ -234,12 +243,6 @@ _Output:_
 <section class="content">
     Hello World!
 </section>
-```
-
-```blade
-@extendsString("layout.blade.php", "<section class="content">@content</section>")
-
-Hello World!
 ```
 
 ## Render
