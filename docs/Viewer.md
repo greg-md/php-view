@@ -59,7 +59,7 @@ __construct(string|array $path, array $params = [])
 _Example:_
 
 ```php
-$viewer = new \Greg\View\Viewer('./views', [
+$viewer = new \Greg\View\Viewer(__DIR__ . '/views', [
     'repository' => 'greg-md/php-view',
 ]);
 ```
@@ -231,7 +231,7 @@ _Example:_
 
 ```php
 $viewer->setPaths([
-    './views',
+    __DIR__ . '/views',
 ]);
 ```
 
@@ -256,7 +256,7 @@ addPath(string $path): $this
 _Example:_
 
 ```php
-$viewer->addPath('./views');
+$viewer->addPath(__DIR__ . '/views');
 ```
 
 ## getPaths
