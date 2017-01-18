@@ -4,7 +4,7 @@
 
 _Example:_
 
-```html
+```phtml
 <header>
     <?php echo $this->getSection("header")?>
 </header>
