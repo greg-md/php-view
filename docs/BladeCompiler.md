@@ -6,7 +6,7 @@ On the surface it's pretty much the same, but it's realized in a much better way
 `\Greg\View\BladeCompiler` is an independent compiler which you can work with.
 It has only independent directives, but you can extend it any time.
 
-Implements: `\Greg\View\CompilerStrategy`.
+Implements: [`\Greg\View\CompilerStrategy`](CompilerStrategy.md).
 
 _Example:_
 
@@ -19,7 +19,7 @@ include $compiledFile;
 ```
 
 # Available extenders:
-* [ViewBladeCompiler](ViewBladeCompiler.md) - A Blade compiler specially for the [Viewer Contract](ViewerContract.md).
+* [View Blade Compiler](ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
 
 # Table of contents:
 
