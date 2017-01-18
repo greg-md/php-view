@@ -10,7 +10,7 @@ Implements: [`\Greg\View\ViewCompilerStrategy`](ViewCompilerStrategy.md).
 
 Below is a list of **new methods**:
 
-* [addViewDirective](#addviewdirective) - Add a directive that was already registered in the `Viewer`, but not in the compiler.
+* [addViewDirective](#addviewdirective) - Add a directive that was already registered in the [Viewer](Viewer.md), but not in the compiler.
 
 Below is a list of **new directives and template formats**.
 
@@ -27,11 +27,11 @@ Below is a list of **new directives and template formats**.
 
 # New methods
 
-Below is a list of **new methods** of the `ViewBladeCompiler`:
+Below is a list of **new methods**:
 
 ## addViewDirective
 
-Add a directive that was already registered in the `Viewer`, but not in the compiler.
+Add a directive that was already registered in the [Viewer](Viewer.md), but not in the compiler.
 
 ```php
 addViewDirective(string $name): $this
