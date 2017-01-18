@@ -13,6 +13,7 @@ class FooCompiler extends \Greg\View\BladeCompiler implements \Greg\View\ViewCom
     {
         // @todo add a directive that was already registered in the Viewer.
     }
+}
 ```
 
 # Methods:
