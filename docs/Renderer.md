@@ -5,19 +5,17 @@
 _Example:_
 
 ```php
-$viewer = new \Greg\View\Viewer(__DIR__ . '/views');
+<header>
+    <?php echo $this->getSection("header")?>
+</header>
 
-$renderer = new \Greg\View\Renderer($viewer, __DIR__ . '/welcome.php', [
-    'name' => 'Greg',
-]);
+<section class="content">
+    <?php echo $this->content()?>
+</section>
 
-$renderer->section('header', 'I am a header!');
-
-$renderer->setContent('I am a content!');
-
-$content = (new \Greg\View\Loader($renderer))->_l_o_a_d_();
-
-echo $content;
+<footer>
+    <?php echo $this->getSection("footer")?>
+</footer>
 ```
 
 # Methods:

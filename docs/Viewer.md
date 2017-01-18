@@ -16,7 +16,7 @@ echo $viewer->render('welcome', [
 
 # Methods:
 
-Extends [Viewer Contract](ViewerContract.md). Below is a list of **new methods**:
+Implements [Viewer Contract](ViewerContract.md). Below is a list of **new methods**:
 
 * [__construct](#__construct) - Constructor of the `Viewer`;
 * [getCompiledFile](#getcompiledfile) - Get compiled file by a template file;
