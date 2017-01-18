@@ -20,6 +20,8 @@ class Viewer implements ViewerContract
 
     private $directives = [];
 
+    private $tmpFiles = [];
+
     public function __construct($path, array $params = [])
     {
         $this->setPaths((array) $path);
@@ -97,11 +99,24 @@ class Viewer implements ViewerContract
                     return $this->getCompiler($extension)->getCompiledFileFromString($id, $string);
                 }
 
-                return false;
+                return $this->getTmpFileFromString($id, $string);
             }
         }
 
         return false;
+    }
+
+    protected function getTmpFileFromString($id, $string)
+    {
+        if (!array_key_exists($id, $this->tmpFiles)) {
+            $file = tempnam(sys_get_temp_dir(), $id);
+
+            file_put_contents($file, $string);
+
+            $this->tmpFiles[$id] = $file;
+        }
+
+        return $this->tmpFiles[$id];
     }
 
     public function assign($key, $value = null)
@@ -232,6 +247,17 @@ class Viewer implements ViewerContract
             $this->getCompiler($extension)->removeCompiledFiles();
         }
 
+        $this->removeTmpFiles();
+
+        return $this;
+    }
+
+    protected function removeTmpFiles()
+    {
+        foreach ($this->tmpFiles as $file) {
+            unlink($file);
+        }
+
         return $this;
     }
 
@@ -292,5 +318,10 @@ class Viewer implements ViewerContract
     public function __get($key)
     {
         return $this->assigned($key);
+    }
+
+    public function __destruct()
+    {
+        $this->removeTmpFiles();
     }
 }
