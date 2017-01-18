@@ -4,7 +4,7 @@
 
 Extends: [`\Greg\View\BladeCompiler`](BladeCompiler.md).
 
-Implements: `\Greg\View\ViewCompilerStrategy`.
+Implements: [`\Greg\View\ViewCompilerStrategy`](ViewCompilerStrategy.md).
 
 # Table of contents:
 
