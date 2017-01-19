@@ -143,7 +143,7 @@ compileString(string $string): string
 Add a template compiler.
 
 ```php
-addCompiler(callable($content): string $compiler): $this
+addCompiler(callable(string $content): string $compiler): $this
 ```
 
 `$compiler` - A callable compiler.

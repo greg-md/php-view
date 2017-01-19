@@ -310,7 +310,7 @@ removeCompiledFiles(): $this
 Register a directive.
 
 ```php
-directive(string $name, callable(...$args): string $callable): $this
+directive(string $name, callable(mixed ...$args): string $callable): $this
 ```
 
 `$name` - Directive name;  
