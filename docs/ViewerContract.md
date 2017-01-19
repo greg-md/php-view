@@ -14,7 +14,7 @@ Below is a list of **required methods**:
 * [renderStringIfExists](#renderstringifexists) - Render a template string if exists;
 * [assign](#assign) - Assign parameters to all templates;
 * [assigned](#assigned) - Get assigned parameters;
-* [hasAssigned](#hasassigned) - It checks if it has assigned parameters;
+* [hasAssigned](#hasassigned) - Determine if assigned parameters exists;
 * [deleteAssigned](#deleteassigned) - Delete assigned parameters;
 * [setPaths](#setpaths) - Replace templates directories;
 * [addPaths](#addpaths) - Add templates directories;
@@ -23,13 +23,13 @@ Below is a list of **required methods**:
 * [addExtension](#addextension) - Add an extension, optionally with a compiler;
 * [getExtensions](#getextensions) - Get all known extensions;
 * [getSortedExtensions](#getsortedextensions) - Get all known extensions in a good sorted way;
-* [hasCompiler](#hascompiler) - It checks if it has a compiler by extension;
+* [hasCompiler](#hascompiler) - Determine if a compiler exists by extension;
 * [getCompiler](#getcompiler) - Get compiler by extension;
 * [getCompilers](#getcompilers) - Get all registered compilers;
 * [getCompilersExtensions](#getcompilersextensions) - Get compilers extensions;
 * [removeCompiledFiles](#removecompiledfiles) - Remove all compiled files from compilers compilation paths;
 * [directive](#directive) - Register a directive;
-* [hasDirective](#hasdirective) - It checks if it has a directive;
+* [hasDirective](#hasdirective) - Determine if a directive exists;
 * [format](#format) - Execute a directive.
 
 ## render
@@ -121,7 +121,7 @@ $foo = $viewer->assigned('foo');
 
 ## hasAssigned
 
-It checks if it has assigned parameters.
+Determine if assigned parameters exists.
 
 ```php
 hasAssigned(string|array $key = null): boolean
@@ -251,6 +251,14 @@ Get all known extensions in good a sorted way.
 getExtensions(): string[]
 ```
 
+## hasCompiler
+
+Determine if a compiler exists by extension.
+
+```php
+hasCompiler(string $extension): boolean
+```
+
 ## getCompiler
 
 Get compiler by extension.
@@ -318,7 +326,7 @@ $viewer->directive('alert', function($message) {
 
 ## hasDirective
 
-Check if directive exists.
+Determine if a directive exists.
 
 ```php
 hasDirective(string $name): boolean

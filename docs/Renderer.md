@@ -54,10 +54,10 @@ Below is a list of **supported methods**:
 * [setContent](#setcontent) - Set content;
 * [setSections](#setsections) - Set sections;
 * [getSections](#getsections) - Get sections;
-* [hasSection](#hassection) - Check if section exists;
+* [hasSection](#hassection) - Determine if a section exists;
 * [setStacks](#setstacks) - Set stacks;
 * [getStacks](#getstacks) - Get stacks;
-* [hasStack](#hasstack) - Check if stack exists;
+* [hasStack](#hasstack) - Determine if a stack exists;
 * [__call](#call) - Execute a directive registered in the [Viewer](Viewer.md).
 
 ## __construct
@@ -376,7 +376,7 @@ getSections(): array
 
 ## hasSection
 
-Check if section exists.
+Determine if a section exists.
 
 ```php
 hasSection(string $name): boolean
@@ -404,7 +404,7 @@ getStacks(): array
 
 ## hasStack
 
-Check if stack exists.
+Determine if a stack exists.
 
 ```php
 hasStack(string $name): boolean
