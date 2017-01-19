@@ -271,7 +271,7 @@ getSection(string $name, string $else = null): string
 ```
 
 `$name` - Section name;  
-`$else` - If the section does not exists, you see this content.
+`$else` - If the section does not exists, return this content.
 
 ## push
 
@@ -301,7 +301,7 @@ stack(string $name, string $else = null): string
 ```
 
 `$name` - Stack name;  
-`$else` - If the stack doesn't exists, you see this content.
+`$else` - If the stack doesn't exists, return this content.
 
 ## format
 

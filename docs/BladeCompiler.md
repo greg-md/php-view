@@ -143,21 +143,23 @@ compileString(string $string): string
 Add a template compiler.
 
 ```php
-addCompiler(callable $compiler): $this
+addCompiler(callable $compiler($content): string): $this
 ```
 
 `$compiler` - A callable compiler.
+&nbsp;&nbsp;&nbsp;&nbsp;`$content` - Content to compile.
 
 ## addDirective
 
 Add a template directive.
 
 ```php
-addDirective(string $name, callable $compiler)
+addDirective(string $name, callable $compiler(string $args): string): $this
 ```
 
 `$name` - Directive name;  
-`$compiler` - Directive callable compiler.
+`$compiler` - Directive callable.
+&nbsp;&nbsp;&nbsp;&nbsp;`$args` - Directive arguments.
 
 ## addEmptyDirective
 
