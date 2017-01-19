@@ -219,11 +219,11 @@ getPaths(): array
 Add an extension, optionally with a compiler.
 
 ```php
-addExtension(string $extension, \Greg\View\CompilerInterface|callable $compiler = null): $this
+addExtension(string $extension, \Greg\View\CompilerInterface|callable(): \Greg\View\CompilerInterface $compiler = null): $this
 ```
 
 `$extension` - Template extension;
-`$compiler` - Template compiler. Could be an instance of `CompilerInterface` or a `callable` function that returns that instance.
+`$compiler` - Template compiler.
 
 _Example:_
 
@@ -310,11 +310,12 @@ removeCompiledFiles(): $this
 Register a directive.
 
 ```php
-directive(string $name, callable $callable): $this
+directive(string $name, callable(...$args): string $callable): $this
 ```
 
 `$name` - Directive name;  
-`$callable` - Directive executive function.
+`$callable` - Callable.
+&nbsp;&nbsp;&nbsp;&nbsp;`...$args` - Directive arguments.
 
 _Example:_
 
