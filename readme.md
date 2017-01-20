@@ -7,7 +7,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/greg-md/php-view/v/unstable.svg)](https://packagist.org/packages/greg-md/php-view)
 [![License](https://poser.pugx.org/greg-md/php-view/license.svg)](https://packagist.org/packages/greg-md/php-view)
 
-A better Viewer for web artisans.
+A better viewer for web artisans.
 
 # Requirements
 
