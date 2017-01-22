@@ -333,9 +333,7 @@ class BladeCompiler implements CompilerStrategy
 
         $exprNamespace = $this->inNamespaceRegex('(', ')');
 
-        $exprNamespace->recursive();
-
-        $exprNamespace->setRecursiveGroup('recursive');
+        $exprNamespace->recursive('recursive');
 
         $pattern = "@(?'directive'{$directives})" . "(?:[\\s\\t]*(?'recursive'{$exprNamespace}))?;?";
 
@@ -549,7 +547,7 @@ class BladeCompiler implements CompilerStrategy
     {
         $pattern = new InNamespaceRegex($start, $end ?: $start);
 
-        $pattern->setCapturedKey('captured');
+        $pattern->capture('captured');
 
         $pattern->disableInQuotes();
 
