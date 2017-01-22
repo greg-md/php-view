@@ -4,6 +4,10 @@
 
 Extends: [`\ArrayAccess`](http://php.net/manual/en/class.arrayaccess.php).
 
+# Table of contents:
+
+* [Methods](#methods)
+
 # Methods:
 
 Includes [`\ArrayAccess`](http://php.net/manual/en/class.arrayaccess.php) methods.

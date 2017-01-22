@@ -24,6 +24,10 @@ class FooCompiler implements \Greg\View\CompilerStrategy
 }
 ```
 
+# Table of contents:
+
+* [Methods](#methods)
+
 # Methods:
 
 * [getCompiledFile](#getcompiledfile) - Get compiled file from a template file;

@@ -16,6 +16,10 @@ class FooCompiler extends \Greg\View\BladeCompiler implements \Greg\View\ViewCom
 }
 ```
 
+# Table of contents:
+
+* [Methods](#methods)
+
 # Methods:
 
 Includes [Compiler Strategy](CompilerStrategy.md) methods.
