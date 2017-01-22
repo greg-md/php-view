@@ -26,8 +26,6 @@ class FooCompiler implements \Greg\View\CompilerStrategy
 
 # Methods:
 
-Below is a list of **required methods**:
-
 * [getCompiledFile](#getcompiledfile) - Get compiled file from a template file;
 * [getCompiledFileFromString](#getcompiledfilefromstring) - Get compiled file from a template string;
 * [removeCompiledFiles](#removecompiledfiles) - Remove all compiled files.
@@ -55,7 +53,7 @@ getCompiledFileFromString(string $id, string $string): string
 
 ## removeCompiledFiles
 
-Remove all compiled files from compilation path.
+Remove all compiled files.
 
 ```php
 removeCompiledFiles(): $this

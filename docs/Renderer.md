@@ -18,11 +18,39 @@ _Example:_
 </footer>
 ```
 
+# Table of contents:
+
+* [Magic methods](#magic-methods)
+* [Methods](#methods)
+
+# Magic methods:
+
+* [__construct](#__construct);
+
+## __construct
+
+This is the constructor of the `ViewRenderer`.
+
+```php
+__construct(Viewer $viewer, string $file, array $params = [])
+```
+
+`$viewer` - [Viewer](/greg-md/php-view/wiki/Viewer);  
+`$file` - Template file;  
+`$params` - Template parameters.
+
+_Example:_
+
+```php
+$viewer = new \Greg\View\Viewer(__DIR__ . '/views');
+
+$renderer = new \Greg\View\ViewRenderer($viewer, __DIR__ . '/welcome.php', [
+    'name' => 'Greg',
+]);
+```
+
 # Methods:
 
-Below is a list of **supported methods**:
-
-* [__construct](#__construct) - Constructor of the `ViewRenderer`;
 * [render](#render) - Render a template file with current parameters;
 * [renderIfExists](#renderifexists) - Render a template file with current parameters if template exists;
 * [renderString](#renderstring) - Render a template string with current parameters;
@@ -59,28 +87,6 @@ Below is a list of **supported methods**:
 * [getStacks](#getstacks) - Get stacks;
 * [hasStack](#hasstack) - Determine if a stack exists;
 * [__call](#call) - Execute a directive registered in the [Viewer](Viewer.md).
-
-## __construct
-
-This is the constructor of the `ViewRenderer`.
-
-```php
-__construct(Viewer $viewer, string $file, array $params = [])
-```
-
-`$viewer` - [Viewer](/greg-md/php-view/wiki/Viewer);  
-`$file` - Template file;  
-`$params` - Template parameters.
-
-_Example:_
-
-```php
-$viewer = new \Greg\View\Viewer(__DIR__ . '/views');
-
-$renderer = new \Greg\View\ViewRenderer($viewer, __DIR__ . '/welcome.php', [
-    'name' => 'Greg',
-]);
-```
 
 ## render
 

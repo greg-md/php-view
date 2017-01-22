@@ -19,45 +19,17 @@ include $compiledFile;
 ```
 
 # Available extenders:
-* [View Blade Compiler](ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
+* [View Blade Compiler](ViewBladeCompiler.md) - An extended [Blade Compiler](BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
 
 # Table of contents:
 
-Below is a list of **supported methods**:
+* [Magic methods](#magic-methods)
+* [Methods](#methods)
+* [Directives and template formats](#directives-and-template-formats)
 
-* [__construct](#__construct) - Constructor of the `BladeCompiler`;
-* [setCompilationPath](#setcompilationpath) - Set compilation path;
-* [getCompilationPath](#getcompilationpath) - Get compilation path;
-* [getCompiledFile](#getcompiledfile) - Get compiled file from a template file;
-* [getCompiledFileFromString](#getcompiledfilefromstring) - Get compiled file from a template string;
-* [removeCompiledFiles](#removecompiledfiles) - Remove all compiled files from compilation path;
-* [compileFile](#compilefile) - Compile a template file;
-* [compileString](#compilestring) - Compile a template string;
-* [addCompiler](#addcompiler) - Add a compiler;
-* [addDirective](#adddirective) - Add a template directive;
-* [addEmptyDirective](#addemptydirective) - Add an empty template directive;
-* [addOptionalDirective](#addoptionaldirective) - Add a template directive with optional parameters.
+# Magic methods:
 
-Below is a list of **supported directives and template formats**.
-
-* **Display data**
-    * [Secured](#display-secured-data) - Display data throw `htmlentities` to prevent XSS attacks;
-    * [Raw](#display-raw-data) - Display raw data;
-    * [Comments](#comments) - Writing template comments.
-* **Statements**
-    * [If](#if-statement) - If Statement;
-    * [Unless](#unless-statement) - Unless Statement;
-    * [For](#for-statement) - For statement;
-    * [Foreach](#foreach-statement) - Foreach statement;
-    * [While](#while-statement) - While statement;
-    * [Switch](#switch-statement) - Switch statement;
-    * [Verbatim](#verbatim-statement) - Verbatim statement.
-* **Directives**
-    * [Stop](#stop) - Stop template execution.
-
-# Methods
-
-Below is a list of **supported methods** of the `BladeCompiler`:
+* [__construct](#__construct);
 
 ## __construct 
 
@@ -75,6 +47,19 @@ _Example:_
 $compiler = new \Greg\View\BladeCompiler(__DIR__ . '/compiled');
 ```
 
+# Methods:
+
+Includes [Compiler Strategy](CompilerStrategy.md) methods.
+
+* [setCompilationPath](#setcompilationpath) - Set compilation path;
+* [getCompilationPath](#getcompilationpath) - Get compilation path;
+* [compileFile](#compilefile) - Compile a template file;
+* [compileString](#compilestring) - Compile a template string;
+* [addCompiler](#addcompiler) - Add a compiler;
+* [addDirective](#adddirective) - Add a template directive;
+* [addEmptyDirective](#addemptydirective) - Add an empty template directive;
+* [addOptionalDirective](#addoptionaldirective) - Add a template directive with optional parameters.
+
 ## setCompilationPath
 
 Set compilation path.
@@ -91,35 +76,6 @@ Get compilation path.
 
 ```php
 getCompilationPath(): string
-```
-
-## getCompiledFile
-
-Get compiled file from a template file.
-
-```php
-getCompiledFile(string $file): string
-```
-
-`$file` - Template file.
-
-## getCompiledFileFromString
-
-Get compiled file from a template string.
-
-```php
-getCompiledFileFromString(string $id, string $string): string
-```
-
-`$id` - Template unique id. It should has the compiler extension;  
-`$string` - Template string.
-
-## removeCompiledFiles
-
-Remove all compiled files from compilation path.
-
-```php
-removeCompiledFiles(): $this
 ```
 
 ## compileFile
@@ -169,9 +125,22 @@ Add an empty template directive. See [`addDirective`](#adddirective) method.
 
 Add a template directive with optional parameters. See [`addDirective`](#adddirective) method.
 
-# Template syntax
+# Directives and template formats:
 
-Below is a list of **supported directives and template formats**.
+* **Display data**
+    * [Secured](#display-secured-data) - Display data throw `htmlentities` to prevent XSS attacks;
+    * [Raw](#display-raw-data) - Display raw data;
+    * [Comments](#comments) - Writing template comments.
+* **Statements**
+    * [If](#if-statement) - If Statement;
+    * [Unless](#unless-statement) - Unless Statement;
+    * [For](#for-statement) - For statement;
+    * [Foreach](#foreach-statement) - Foreach statement;
+    * [While](#while-statement) - While statement;
+    * [Switch](#switch-statement) - Switch statement;
+    * [Verbatim](#verbatim-statement) - Verbatim statement.
+* **Directives**
+    * [Stop](#stop) - Stop template execution.
 
 ## Display secured data
 

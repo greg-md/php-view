@@ -14,12 +14,14 @@ $renderer = new \Greg\View\Renderer($viewer, __DIR__ . '/welcome.php', [
 $content = (new \Greg\View\Loader($renderer))->_l_o_a_d_();
 ```
 
-# Methods:
+# Table of contents:
 
-Below is a list of **supported methods**:
+* [Magic methods](#magic-methods)
+* [Methods](#methods)
 
-* [__construct](#__construct) - Constructor of the `Loader`;
-* [\_l_o_a_d\_](#_l_o_a_d_) - Load [Renderer](Renderer.md).
+# Magic methods:
+
+* [__construct](#__construct);
 
 ## __construct
 
@@ -30,6 +32,10 @@ __construct(Renderer $renderer);
 ```
 
 `$renderer` - An instance of [Renderer](Renderer.md);
+
+# Methods:
+
+* [\_l_o_a_d\_](#_l_o_a_d_) - Load [Renderer](Renderer.md).
 
 ## \_l_o_a_d\_
 

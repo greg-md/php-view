@@ -1,6 +1,6 @@
 # View Blade Compiler Documentation
 
-`\Greg\View\ViewBladeCompiler` is an extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
+`\Greg\View\ViewBladeCompiler` is an extended [Blade Compiler](BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
 
 Extends: [`\Greg\View\BladeCompiler`](BladeCompiler.md).
 
@@ -8,26 +8,14 @@ Implements: [`\Greg\View\ViewCompilerStrategy`](ViewCompilerStrategy.md).
 
 # Table of contents:
 
-Below is a list of **new methods**:
+* [Methods](#methods)
+* [Directives and template formats](#directives-and-template-formats)
+
+# Methods:
+
+Includes [Blade Compiler](BladeCompiler.md) methods.
 
 * [addViewDirective](#addviewdirective) - Add a directive that was already registered in the [Viewer](Viewer.md), but not in the compiler.
-
-Below is a list of **new directives and template formats**.
-
-* **Statements**
-    * [Section](#section-statement) - Section statement;
-    * [Push](#push-statement) - Push statement.
-* **Directives**
-    * [Extends](#extends) - Extend template;
-    * [Render](#render) - Render another template with existing parameters.
-    * [Partial](#partial) - Render another template with new parameters;
-    * [Each](#each) - Render template for each element in array;
-    * [Content](#content) - Get registered content;
-    * [Format](#format) - Execute a directive registered in the [Viewer Contract](ViewerContract.md).
-
-# New methods
-
-Below is a list of **new methods**:
 
 ## addViewDirective
 
@@ -45,9 +33,20 @@ _Example:_
 $compiler->addViewDirective('alert');
 ```
 
-# New template syntax
+# Directives and template formats:
 
-Below is a list of **new directives and template formats**.
+Includes [Blade Compiler](BladeCompiler.md) directives and template formats.
+
+* **Statements**
+    * [Section](#section-statement) - Section statement;
+    * [Push](#push-statement) - Push statement.
+* **Directives**
+    * [Extends](#extends) - Extend template;
+    * [Render](#render) - Render another template with existing parameters.
+    * [Partial](#partial) - Render another template with new parameters;
+    * [Each](#each) - Render template for each element in array;
+    * [Content](#content) - Get registered content;
+    * [Format](#format) - Execute a directive registered in the [Viewer Contract](ViewerContract.md).
 
 ## Section Statement
 

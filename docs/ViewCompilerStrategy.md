@@ -18,7 +18,7 @@ class FooCompiler extends \Greg\View\BladeCompiler implements \Greg\View\ViewCom
 
 # Methods:
 
-Below is a list of **new methods**:
+Includes [Compiler Strategy](CompilerStrategy.md) methods.
 
 * [addViewDirective](#addviewdirective) - Add a directive that was already registered in the [Viewer Contract](ViewerContract.md), but not in the compiler.
 

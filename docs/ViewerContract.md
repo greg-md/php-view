@@ -6,7 +6,7 @@ Extends: [`\ArrayAccess`](http://php.net/manual/en/class.arrayaccess.php).
 
 # Methods:
 
-Below is a list of **required methods**:
+Includes [`\ArrayAccess`](http://php.net/manual/en/class.arrayaccess.php) methods.
 
 * [render](#render) - Render a template file;
 * [renderIfExists](#renderifexists) - Render a template file if exists;

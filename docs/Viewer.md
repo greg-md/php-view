@@ -14,13 +14,14 @@ echo $viewer->render('welcome', [
 ]);
 ```
 
-# Methods:
+# Table of contents:
 
-Implements [Viewer Contract](ViewerContract.md). Below is a list of **new methods**:
+* [Magic methods](#magic-methods)
+* [Methods](#methods)
 
-* [__construct](#__construct) - Constructor of the `Viewer`;
-* [getCompiledFile](#getcompiledfile) - Get compiled file by a template file;
-* [getCompiledFileFromString](#getcompiledfilefromstring) - Get compiled file by a template string;
+# Magic methods:
+
+* [__construct](#__construct);
 
 ## __construct 
 
@@ -40,6 +41,13 @@ $viewer = new \Greg\View\Viewer(__DIR__ . '/views', [
     'repository' => 'greg-md/php-view',
 ]);
 ```
+
+# Methods:
+
+Includes [Viewer Contract](ViewerContract.md) methods.
+
+* [getCompiledFile](#getcompiledfile) - Get compiled file by a template file;
+* [getCompiledFileFromString](#getcompiledfilefromstring) - Get compiled file by a template string;
 
 ## getCompiledFile
 
