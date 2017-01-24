@@ -197,7 +197,7 @@ eachString(string $id, string $string, array $values, array $params = [], string
 `$values` - Values;  
 `$params` - Template custom parameters;  
 `$valueKeyName` - The key name of the current value;  
-`$emptyId` - Template unique id. Will use it if no values found;
+`$emptyId` - Template unique id. Will use it if no values found;  
 `$emptyString` - Template string. Will use it if no values found.
 
 ## eachStringIfExists

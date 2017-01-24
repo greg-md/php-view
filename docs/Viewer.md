@@ -67,5 +67,5 @@ Get compiled file by a template string.
 getCompiledFile(string $id, string $string): string
 ```
 
-`$id` - Template unique id. It should has the compiler extension;
+`$id` - Template unique id. It should has the compiler extension;  
 `$name` - Template string.
