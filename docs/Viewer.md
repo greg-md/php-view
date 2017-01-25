@@ -21,11 +21,11 @@ echo $viewer->render('welcome', [
 
 # Magic methods:
 
-* [__construct](#__construct);
+* [__construct](#__construct)
 
 ## __construct 
 
-This is the constructor of the `Viewer`.
+Initialize the viewer.
 
 ```php
 __construct(string|array $path, array $params = [])

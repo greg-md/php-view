@@ -30,11 +30,11 @@ include $compiledFile;
 
 # Magic methods:
 
-* [__construct](#__construct);
+* [__construct](#__construct)
 
 ## __construct 
 
-This is the constructor of the `BladeCompiler`;
+Initialize the compiler.
 
 ```php
 __construct(string $compilationPath)

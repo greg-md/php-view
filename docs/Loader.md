@@ -21,11 +21,11 @@ $content = (new \Greg\View\Loader($renderer))->_l_o_a_d_();
 
 # Magic methods:
 
-* [__construct](#__construct);
+* [__construct](#__construct)
 
 ## __construct
 
-This is the constructor of the `Loader`;
+Initialize the loader.
 
 ```php
 __construct(Renderer $renderer);

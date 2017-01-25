@@ -29,7 +29,7 @@ _Example:_
 
 ## __construct
 
-This is the constructor of the `ViewRenderer`.
+Initialize the renderer.
 
 ```php
 __construct(Viewer $viewer, string $file, array $params = [])
