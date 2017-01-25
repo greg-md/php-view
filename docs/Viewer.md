@@ -1,6 +1,6 @@
 # Viewer Documentation
 
-`\Greg\View\Viewer` is the main class which initializes a new view manager.
+`\Greg\View\Viewer` is the view manager.
 
 Implements: [`\Greg\View\ViewerContract`](ViewerContract.md).
 

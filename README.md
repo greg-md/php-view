@@ -20,7 +20,7 @@ A better viewer for web artisans.
 
 # How It Works
 
-**First of all**, you have to create a new [Viewer](docs/Viewer.md):
+**First of all**, you have to initialize a [Viewer](docs/Viewer.md):
 
 ```php
 $viewsDirectory = __DIR__ . '/views';
@@ -67,7 +67,7 @@ echo $content;
 
 # Documentation
 
-* [Viewer](docs/Viewer.md) - The main class which initializes a new view manager;
+* [Viewer](docs/Viewer.md) - The view manager;
 * [Renderer](docs/Renderer.md) - Instance of a template. Could be accessed via `$this` variable in the template.
 * [Loader](docs/Loader.md) - A special loader for [Renderer](docs/Renderer.md) which will give access only to its public properties and methods;
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
