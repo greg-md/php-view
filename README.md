@@ -75,3 +75,7 @@ echo $content;
 * [Viewer Contract](docs/ViewerContract.md) - A contract of a viewer;
 * [Compiler Strategy](docs/CompilerStrategy.md) - A strategy for custom compilers;
 * [View Compiler Strategy](docs/ViewCompilerStrategy.md) - A strategy for custom [Viewer Contract](docs/ViewerContract.md) compilers;
+
+# License
+
+MIT © [Grigorii Duca](http://greg.md)
