@@ -9,6 +9,15 @@
 
 A better viewer for web artisans.
 
+# Table of contents:
+
+* [Requirements](#requirements)
+* [Compilers](#compilers)
+* [How It Works](#how-it-works)
+* [Documentation](#documentation)
+* [License](#license)
+* [Huuuge Quote](#huuuge-quote)
+
 # Requirements
 
 * PHP Version `^5.6 || ^7.0`
@@ -79,3 +88,7 @@ echo $content;
 # License
 
 MIT © [Grigorii Duca](http://greg.md)
+
+# Huuuge Quote
+
+![I fear not the man who has practiced 10,000 programming languages once, but I fear the man who has practiced one programming language 10,000 times. #horrorsquad](http://greg.md/huuuge-quote-fb.jpg)
