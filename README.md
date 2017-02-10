@@ -9,7 +9,7 @@
 
 A better viewer for web artisans.
 
-# Table of contents:
+# Table of Contents:
 
 * [Requirements](#requirements)
 * [Compilers](#compilers)
