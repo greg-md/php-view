@@ -226,7 +226,7 @@ Add an extension, optionally with a compiler.
 addExtension(string $extension, \Greg\View\CompilerInterface|callable(): \Greg\View\CompilerInterface $compiler = null): $this
 ```
 
-`$extension` - Template extension;
+`$extension` - Template extension;  
 `$compiler` - Template compiler.
 
 _Example:_
@@ -318,7 +318,7 @@ directive(string $name, callable(mixed ...$args): string $callable): $this
 ```
 
 `$name` - Directive name;  
-`$callable` - Callable.
+`$callable` - Callable.  
 &nbsp;&nbsp;&nbsp;&nbsp;`...$args` - Directive arguments.
 
 _Example:_
