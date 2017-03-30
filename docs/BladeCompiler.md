@@ -103,7 +103,7 @@ Add a template compiler.
 addCompiler(callable(string $content): string $compiler): $this
 ```
 
-`$compiler` - A callable compiler.
+`$compiler` - A callable compiler.  
 &nbsp;&nbsp;&nbsp;&nbsp;`$content` - Content to compile.
 
 ## addDirective
@@ -115,7 +115,7 @@ addDirective(string $name, callable(string $args): string $compiler): $this
 ```
 
 `$name` - Directive name;  
-`$compiler` - Directive callable.
+`$compiler` - Directive callable.  
 &nbsp;&nbsp;&nbsp;&nbsp;`$args` - Directive arguments.
 
 ## addEmptyDirective
