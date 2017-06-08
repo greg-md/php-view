@@ -3,7 +3,6 @@
 namespace Greg\View;
 
 use Greg\Support\Accessor\AccessorTrait;
-use Greg\Support\Obj;
 use Greg\Support\Str;
 
 class Viewer implements ViewerContract
@@ -221,7 +220,7 @@ class Viewer implements ViewerContract
         $compiler = &$this->compilers[$extension];
 
         if (is_callable($compiler)) {
-            $compiler = Obj::call($compiler, $this);
+            $compiler = call_user_func_array($compiler, [$this]);
         }
 
         if (!($compiler instanceof CompilerStrategy)) {
@@ -287,7 +286,7 @@ class Viewer implements ViewerContract
             throw new ViewException('Directive `' . $name . '` is not defined.');
         }
 
-        return Obj::call($this->directives[$name], ...$args);
+        return call_user_func_array($this->directives[$name], $args);
     }
 
     public function offsetExists($key)
