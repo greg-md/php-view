@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/greg-md/php-support.git",
-                "reference": "ea0fe576b06c8bebceab27570f63e118be29440b"
+                "reference": "13dc400da299c66a58b987c8bdcb62ba8c378f88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/greg-md/php-support/zipball/ea0fe576b06c8bebceab27570f63e118be29440b",
-                "reference": "ea0fe576b06c8bebceab27570f63e118be29440b",
+                "url": "https://api.github.com/repos/greg-md/php-support/zipball/13dc400da299c66a58b987c8bdcb62ba8c378f88",
+                "reference": "13dc400da299c66a58b987c8bdcb62ba8c378f88",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "support",
                 "web-artisans"
             ],
-            "time": "2017-06-08 21:19:19"
+            "time": "2017-06-08 21:27:14"
         }
     ],
     "packages-dev": [
