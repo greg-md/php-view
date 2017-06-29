@@ -1,7 +1,7 @@
 {
   "name": "greg-md/php-view",
   "type": "library",
-  "description": "Greg PHP View",
+  "description": "A powerful View for PHP.",
   "keywords": [ "greg-md", "greg-php", "php-view", "view", "php", "viewer", "blade", "web-artisans" ],
   "homepage": "https://github.com/greg-md/php-view",
   "license": "MIT",
