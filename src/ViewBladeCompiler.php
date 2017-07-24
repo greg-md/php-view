@@ -6,6 +6,11 @@ use Greg\Support\Str;
 
 class ViewBladeCompiler extends BladeCompiler implements ViewCompilerStrategy
 {
+    public function __construct($compilationPath)
+    {
+        parent::__construct($compilationPath);
+    }
+
     public function addViewDirective($name)
     {
         return parent::addOptionalDirective($name, function ($expr = null) use ($name) {
