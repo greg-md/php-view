@@ -52,32 +52,12 @@ $compiler = new \Greg\View\BladeCompiler(__DIR__ . '/compiled');
 
 Includes [Compiler Strategy](CompilerStrategy.md) methods.
 
-* [setCompilationPath](#setcompilationpath) - Set compilation path;
-* [getCompilationPath](#getcompilationpath) - Get compilation path;
 * [compileFile](#compilefile) - Compile a template file;
 * [compileString](#compilestring) - Compile a template string;
 * [addCompiler](#addcompiler) - Add a compiler;
 * [addDirective](#adddirective) - Add a template directive;
 * [addEmptyDirective](#addemptydirective) - Add an empty template directive;
 * [addOptionalDirective](#addoptionaldirective) - Add a template directive with optional parameters.
-
-## setCompilationPath
-
-Set compilation path.
-
-```php
-setCompilationPath(string $path): $this
-```
-
-`$path` - Compilation path;
-
-## getCompilationPath
-
-Get compilation path.
-
-```php
-getCompilationPath(): string
-```
 
 ## compileFile
 

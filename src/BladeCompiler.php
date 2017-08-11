@@ -8,9 +8,9 @@ use Greg\Support\Tools\InNamespaceRegex;
 
 class BladeCompiler implements CompilerStrategy
 {
-    const PHP_VAR_REGEX = '\$+[a-z_][a-z0-9_]*';
+    private const PHP_VAR_REGEX = '\$+[a-z_][a-z0-9_]*';
 
-    private $compilationPath = null;
+    private $compilationPath;
 
     private $compilers = [
         'compileDirectives',
@@ -65,9 +65,9 @@ class BladeCompiler implements CompilerStrategy
 
     private $verbatim = [];
 
-    public function __construct($compilationPath)
+    public function __construct(string $compilationPath)
     {
-        $this->setCompilationPath($compilationPath);
+        $this->compilationPath = realpath($compilationPath);
 
         $this->boot();
 
@@ -79,19 +79,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    public function setCompilationPath($path)
-    {
-        $this->compilationPath = (string) $path;
-
-        return $this;
-    }
-
-    public function getCompilationPath()
-    {
-        return $this->compilationPath;
-    }
-
-    public function getCompiledFile($file)
+    public function getCompiledFile(string $file): string
     {
         $compiledFile = $this->getCompilationFile($file);
 
@@ -102,7 +90,7 @@ class BladeCompiler implements CompilerStrategy
         return $compiledFile;
     }
 
-    public function getCompiledFileFromString($id, $string)
+    public function getCompiledFileFromString(string $id, string $string): string
     {
         $compiledFile = $this->getCompilationFile($id);
 
@@ -115,14 +103,14 @@ class BladeCompiler implements CompilerStrategy
 
     public function removeCompiledFiles()
     {
-        foreach (glob($this->getCompilationPath() . '/*.php') as $file) {
+        foreach (glob($this->compilationPath . '/*.php') as $file) {
             unlink($file);
         }
 
         return $this;
     }
 
-    public function compileFile($file)
+    public function compileFile(string $file): string
     {
         if (!file_exists($file)) {
             throw new ViewException('Blade file `' . $file . '` not found.');
@@ -131,7 +119,7 @@ class BladeCompiler implements CompilerStrategy
         return $this->compileString(file_get_contents($file));
     }
 
-    public function compileString($string)
+    public function compileString(string $string): string
     {
         $result = '';
 
@@ -152,28 +140,28 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    public function addDirective($name, callable $compiler)
+    public function addDirective(string $name, callable $compiler)
     {
         $this->directives[$name] = $compiler;
 
         return $this;
     }
 
-    public function addEmptyDirective($name, callable $compiler)
+    public function addEmptyDirective(string $name, callable $compiler)
     {
         $this->emptyDirectives[$name] = $compiler;
 
         return $this;
     }
 
-    public function addOptionalDirective($name, callable $compiler)
+    public function addOptionalDirective(string $name, callable $compiler)
     {
         $this->optionalDirectives[$name] = $compiler;
 
         return $this;
     }
 
-    protected function saveString($compiledFile, $string, $compiledContent)
+    private function saveString(string $compiledFile, string $string, string $compiledContent)
     {
         $this->save($compiledFile, $compiledContent);
 
@@ -182,7 +170,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function save($compiledFile, $compiledContent)
+    private function save(string $compiledFile, string $compiledContent)
     {
         File::makeDir($compiledFile);
 
@@ -191,12 +179,12 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getCompilationFile($id)
+    private function getCompilationFile(string $id): string
     {
-        return $this->getCompilationPath() . DIRECTORY_SEPARATOR . md5($id) . '.php';
+        return $this->compilationPath . DIRECTORY_SEPARATOR . md5($id) . '.php';
     }
 
-    protected function isFileExpired($file, $compiledFile)
+    private function isFileExpired(string $file, string $compiledFile): bool
     {
         if (!file_exists($file)) {
             return true;
@@ -209,7 +197,7 @@ class BladeCompiler implements CompilerStrategy
         return filemtime($file) > filemtime($compiledFile);
     }
 
-    protected function isStringExpired($string, $compiledFile)
+    private function isStringExpired(string $string, string $compiledFile): bool
     {
         if (!file_exists($compiledFile)) {
             return true;
@@ -225,7 +213,7 @@ class BladeCompiler implements CompilerStrategy
      *
      * @return string
      */
-    protected function parseToken(array $token)
+    private function parseToken(array $token): string
     {
         list($id, $content) = $token;
 
@@ -246,7 +234,7 @@ class BladeCompiler implements CompilerStrategy
         return $content;
     }
 
-    protected function compileVerbatim($content)
+    protected function compileVerbatim(string $content): string
     {
         return preg_replace_callback('#(?<!@)@verbatim(.*?)@endverbatim#is', function ($matches) {
             $this->verbatim[] = $matches[1];
@@ -255,14 +243,14 @@ class BladeCompiler implements CompilerStrategy
         }, $content);
     }
 
-    protected function restoreVerbatim($content)
+    protected function restoreVerbatim(string $content): string
     {
         return preg_replace_callback('#@__verbatim__@#', function () {
             return array_shift($this->verbatim);
         }, $content);
     }
 
-    protected function compileComments($string)
+    protected function compileComments(string $string): string
     {
         $regex = $this->inNamespaceRegex('{{--', '--}}');
 
@@ -271,12 +259,12 @@ class BladeCompiler implements CompilerStrategy
         }, $string);
     }
 
-    protected function compileComment($string)
+    protected function compileComment(string $string): string
     {
         return '<?php /* ' . $string . ' */ ?>';
     }
 
-    protected function compileRawEchos($string)
+    protected function compileRawEchos(string $string): string
     {
         $regex = $this->inNamespaceRegex('{!!', '!!}');
 
@@ -285,7 +273,7 @@ class BladeCompiler implements CompilerStrategy
         }, $string);
     }
 
-    protected function compileContentEchos($string)
+    protected function compileContentEchos(string $string): string
     {
         $regex = $this->inNamespaceRegex('{{', '}}');
 
@@ -294,17 +282,17 @@ class BladeCompiler implements CompilerStrategy
         }, $string);
     }
 
-    protected function compileRawEcho($string)
+    protected function compileRawEcho(string $string): string
     {
         return '<?php echo ' . $this->parseOr($string) . '; ?>';
     }
 
-    protected function compileContentEcho($string)
+    protected function compileContentEcho(string $string): string
     {
         return '<?php echo htmlentities(' . $this->parseOr($string) . '); ?>';
     }
 
-    protected function parseOr($string)
+    private function parseOr(string $string): string
     {
         if (preg_match('#^(' . self::PHP_VAR_REGEX . ')\s+or\s+(.+)$#is', $string, $matches)) {
             $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
@@ -313,7 +301,7 @@ class BladeCompiler implements CompilerStrategy
         return $string;
     }
 
-    protected function compileDirectives($value)
+    protected function compileDirectives(string $string): string
     {
         $directives = array_map('preg_quote', array_merge(
             array_keys($this->directives),
@@ -365,55 +353,55 @@ class BladeCompiler implements CompilerStrategy
             }
 
             return call_user_func_array($callable, $args);
-        }, $value);
+        }, $string);
     }
 
-    protected function compileIf($expr)
+    protected function compileIf(string $expr): string
     {
         return '<?php if(' . $expr . '): ?>';
     }
 
-    protected function compileElseIf($expr)
+    protected function compileElseIf(string $expr): string
     {
         return '<?php elseif(' . $expr . '): ?>';
     }
 
-    protected function compileEndIf()
+    protected function compileEndIf(): string
     {
         return '<?php endif; ?>';
     }
 
-    protected function compileUnless($expr)
+    protected function compileUnless(string $expr): string
     {
         return '<?php if(!(' . $expr . ')): ?>';
     }
 
-    protected function compileElseUnless($expr)
+    protected function compileElseUnless(string $expr): string
     {
         return '<?php elseif(!(' . $expr . ')): ?>';
     }
 
-    protected function compileEndUnless()
+    protected function compileEndUnless(): string
     {
         return '<?php endif; ?>';
     }
 
-    protected function compileElse()
+    protected function compileElse(): string
     {
         return '<?php else: ?>';
     }
 
-    protected function compileFor($expr)
+    protected function compileFor(string $expr): string
     {
         return '<?php for(' . $expr . '): ?>';
     }
 
-    protected function compileEndFor()
+    protected function compileEndFor(): string
     {
         return '<?php endfor; ?>';
     }
 
-    protected function compileForeach($expr)
+    protected function compileForeach(string $expr): string
     {
         $this->foreachEmptyVars[$emptyVar = $this->uniqueVar('foreachEmpty')] = false;
 
@@ -472,14 +460,14 @@ class BladeCompiler implements CompilerStrategy
         return "<?php {$emptyVar} = true; foreach({$expr}): {$emptyVar} = false; ?>";
     }
 
-    protected function compileEmpty()
+    protected function compileEmpty(): string
     {
         $this->foreachEmptyVars[$lastKey = Arr::lastKey($this->foreachEmptyVars)] = true;
 
         return '<?php endforeach; if(' . $lastKey . '): ?>';
     }
 
-    protected function compileEndForeach()
+    protected function compileEndForeach(): string
     {
         array_pop($this->foreachLoopVars);
 
@@ -490,32 +478,32 @@ class BladeCompiler implements CompilerStrategy
         return '<?php endforeach; ?>';
     }
 
-    protected function compileWhile($expr)
+    protected function compileWhile(string $expr): string
     {
         return '<?php while(' . $expr . '): ?>';
     }
 
-    protected function compileEndWhile()
+    protected function compileEndWhile(): string
     {
         return '<?php endwhile; ?>';
     }
 
-    protected function compileStop()
+    protected function compileStop(): string
     {
         return '<?php return; ?>';
     }
 
-    protected function compileSwitch($expr)
+    protected function compileSwitch(string $expr): string
     {
         return '<?php switch(' . $expr . '): case "' . uniqid(null, true) . '": break; ?>';
     }
 
-    protected function compileCase($expr)
+    protected function compileCase(string $expr): string
     {
         return '<?php case ' . $expr . ': ?>';
     }
 
-    protected function compileContinue($expr = null)
+    protected function compileContinue(?string $expr = null): string
     {
         if ($expr) {
             return '<?php if(' . $expr . ') continue; ?>';
@@ -524,7 +512,7 @@ class BladeCompiler implements CompilerStrategy
         return '<?php continue; ?>';
     }
 
-    protected function compileBreak($expr = null)
+    protected function compileBreak(?string $expr = null): string
     {
         if ($expr) {
             return '<?php if(' . $expr . ') break; ?>';
@@ -533,17 +521,17 @@ class BladeCompiler implements CompilerStrategy
         return '<?php break; ?>';
     }
 
-    protected function compileDefault()
+    protected function compileDefault(): string
     {
         return '<?php default: ?>';
     }
 
-    protected function compileEndSwitch()
+    protected function compileEndSwitch(): string
     {
         return '<?php endswitch; ?>';
     }
 
-    protected function inNamespaceRegex($start, $end = null)
+    protected function inNamespaceRegex(string $start, string $end = null): InNamespaceRegex
     {
         $pattern = new InNamespaceRegex($start, $end ?: $start);
 
@@ -558,7 +546,7 @@ class BladeCompiler implements CompilerStrategy
         return $pattern;
     }
 
-    protected function uniqueVar($name)
+    protected function uniqueVar(string $name): string
     {
         return '$' . $name . str_replace('.', '_', uniqid(null, true));
     }
@@ -577,7 +565,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getCompilers()
+    protected function getCompilers(): array
     {
         return $this->compilers;
     }
@@ -596,7 +584,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getDirectives()
+    protected function getDirectives(): array
     {
         return $this->directives;
     }
@@ -615,7 +603,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getEmptyDirectives()
+    protected function getEmptyDirectives(): array
     {
         return $this->emptyDirectives;
     }
@@ -634,7 +622,7 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getOptionalDirectives()
+    protected function getOptionalDirectives(): array
     {
         return $this->optionalDirectives;
     }

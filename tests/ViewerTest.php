@@ -1,11 +1,8 @@
 <?php
 
-namespace Greg\View\Tests;
+namespace Greg\View;
 
-use Greg\View\Renderer;
-use Greg\View\ViewBladeCompiler;
-use Greg\View\Viewer;
-use Greg\View\ViewException;
+use Greg\Support\Dir;
 use PHPUnit\Framework\TestCase;
 
 class FooCompiler
@@ -14,6 +11,8 @@ class FooCompiler
 
 class ViewerTest extends TestCase
 {
+    private $compilationPath = __DIR__ . '/compiled';
+
     /**
      * @var Viewer
      */
@@ -21,9 +20,9 @@ class ViewerTest extends TestCase
 
     public function setUp()
     {
-        parent::setUp();
+        Dir::make($this->compilationPath);
 
-        $this->viewer = new Viewer(__DIR__ . '/view');
+        $this->viewer = new Viewer([__DIR__ . '/view']);
 
         $this->viewer->addExtension('.blade.php', function () {
             return new ViewBladeCompiler(__DIR__ . '/compiled');
@@ -32,11 +31,7 @@ class ViewerTest extends TestCase
 
     public function tearDown()
     {
-        parent::tearDown();
-
-        foreach (glob(__DIR__ . '/compiled/*.php') as $file) {
-            unlink($file);
-        }
+        Dir::unlink($this->compilationPath);
     }
 
     /** @test */
@@ -90,7 +85,7 @@ class ViewerTest extends TestCase
 
         $this->renderedStringEquals('Hello World!', '@eco("Hello World!")');
 
-        $renderer = new Renderer($this->viewer, null);
+        $renderer = new Renderer($this->viewer, __DIR__ . '/view/hello.blade.php');
 
         $this->assertEquals('Hello World!', $renderer->eco('Hello World!'));
     }

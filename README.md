@@ -20,7 +20,7 @@ A powerful View for PHP.
 
 # Requirements
 
-* PHP Version `^5.6 || ^7.0`
+* PHP Version `^7.1`
 
 # Compilers
 

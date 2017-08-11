@@ -4,9 +4,9 @@ namespace Greg\View;
 
 interface CompilerStrategy
 {
-    public function getCompiledFile($file);
+    public function getCompiledFile(string $file): string;
 
-    public function getCompiledFileFromString($id, $string);
+    public function getCompiledFileFromString(string $id, string $string): string;
 
     public function removeCompiledFiles();
 }

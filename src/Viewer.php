@@ -2,14 +2,13 @@
 
 namespace Greg\View;
 
-use Greg\Support\Accessor\AccessorTrait;
 use Greg\Support\Str;
 
-class Viewer implements ViewerContract
+class Viewer
 {
-    use AccessorTrait;
-
     private $paths = [];
+
+    private $params = [];
 
     private $compilers = [
         '.php'   => null,
@@ -21,16 +20,16 @@ class Viewer implements ViewerContract
 
     private $tmpFiles = [];
 
-    public function __construct($path, array $params = [])
+    public function __construct(array $paths, array $params = [])
     {
-        $this->setPaths((array) $path);
+        $this->paths = $paths;
 
-        $this->assign($params);
+        $this->params = $params;
 
         return $this;
     }
 
-    public function render($name, array $params = [])
+    public function render(string $name, array $params = []): string
     {
         if ($file = $this->getCompiledFile($name)) {
             return $this->renderFile($file, $params);
@@ -39,7 +38,7 @@ class Viewer implements ViewerContract
         throw new ViewException('View file `' . $name . '` does not exist in view paths.');
     }
 
-    public function renderIfExists($name, array $params = [])
+    public function renderIfExists(string $name, array $params = []): ?string
     {
         if ($file = $this->getCompiledFile($name)) {
             return $this->renderFile($file, $params);
@@ -48,7 +47,7 @@ class Viewer implements ViewerContract
         return null;
     }
 
-    public function renderString($id, $string, array $params = [])
+    public function renderString(string $id, string $string, array $params = []): string
     {
         if ($file = $this->getCompiledFileFromString($id, $string)) {
             return $this->renderFile($file, $params);
@@ -57,7 +56,7 @@ class Viewer implements ViewerContract
         throw new ViewException('Could not find a compiler for view `' . $id . '`.');
     }
 
-    public function renderStringIfExists($id, $string, array $params = [])
+    public function renderStringIfExists(string $id, string $string, array $params = []): ?string
     {
         if ($file = $this->getCompiledFileFromString($id, $string)) {
             return $this->renderFile($file, $params);
@@ -66,14 +65,14 @@ class Viewer implements ViewerContract
         return null;
     }
 
-    protected function renderFile($file, array $params = [])
+    protected function renderFile(string $file, array $params = []): string
     {
         $renderer = new Renderer($this, $file, $params + $this->assigned());
 
         return (new Loader($renderer))->_l_o_a_d_();
     }
 
-    public function getCompiledFile($name)
+    public function getCompiledFile(string $name): ?string
     {
         foreach ($this->paths as $path) {
             foreach ($this->getExtensions() as $extension) {
@@ -87,10 +86,10 @@ class Viewer implements ViewerContract
             }
         }
 
-        return false;
+        return null;
     }
 
-    public function getCompiledFileFromString($id, $string)
+    public function getCompiledFileFromString(string $id, string $string): ?string
     {
         foreach ($this->getSortedExtensions() as $extension) {
             if (Str::endsWith($id, $extension)) {
@@ -102,10 +101,10 @@ class Viewer implements ViewerContract
             }
         }
 
-        return false;
+        return null;
     }
 
-    protected function getTmpFileFromString($id, $string)
+    protected function getTmpFileFromString(string $id, string $string): string
     {
         if (!array_key_exists($id, $this->tmpFiles)) {
             $file = tempnam(sys_get_temp_dir(), $id);
@@ -118,33 +117,36 @@ class Viewer implements ViewerContract
         return $this->tmpFiles[$id];
     }
 
-    public function assign($key, $value = null)
+    public function assign(string $key, $value)
     {
-        if (is_array($key)) {
-            $this->addToAccessor($key);
-        } else {
-            $this->setToAccessor($key, $value);
-        }
+        $this->params[$key] = $value;
 
         return $this;
     }
 
-    public function assigned($key = null)
+    public function assignMultiple(array $params)
     {
-        return func_num_args() ? $this->getFromAccessor($key) : $this->getAccessor();
+        $this->params = array_merge($this->params, $params);
+
+        return $this;
     }
 
-    public function hasAssigned($key = null)
+    public function assigned(string $key = null)
     {
-        return func_num_args() ? $this->inAccessor($key) : (bool) $this->getAccessor();
+        return func_num_args() ? $this->params[$key] ?? null : $this->params;
     }
 
-    public function deleteAssigned($key = null)
+    public function hasAssigned(string $key = null): bool
+    {
+        return func_num_args() ? array_key_exists($key, $this->params) : (bool) $this->params;
+    }
+
+    public function deleteAssigned(string $key = null)
     {
         if (func_num_args()) {
-            $this->removeFromAccessor($key);
+            unset($this->params[$key]);
         } else {
-            $this->resetAccessor();
+            $this->params = [];
         }
 
         return $this;
@@ -164,26 +166,26 @@ class Viewer implements ViewerContract
         return $this;
     }
 
-    public function addPath($path)
+    public function addPath(string $path)
     {
-        $this->paths[] = (string) $path;
+        $this->paths[] = $path;
 
         return $this;
     }
 
-    public function getPaths()
+    public function getPaths(): array
     {
         return $this->paths;
     }
 
-    public function addExtension($extension, $compiler = null)
+    public function addExtension(string $extension, $compiler = null)
     {
         $this->compilers[$extension] = $compiler;
 
         return $this;
     }
 
-    public function getExtensions()
+    public function getExtensions(): array
     {
         return array_keys($this->compilers);
     }
@@ -199,7 +201,7 @@ class Viewer implements ViewerContract
         return $extensions;
     }
 
-    public function hasCompiler($extension)
+    public function hasCompiler(string $extension): bool
     {
         return array_key_exists($extension, $this->getCompilers());
     }
@@ -211,7 +213,7 @@ class Viewer implements ViewerContract
      *
      * @return CompilerStrategy
      */
-    public function getCompiler($extension)
+    public function getCompiler(string $extension): CompilerStrategy
     {
         if (!$this->hasCompiler($extension)) {
             throw new ViewException('View compiler for extension `' . $extension . '` not found.');
@@ -230,12 +232,12 @@ class Viewer implements ViewerContract
         return $compiler;
     }
 
-    public function getCompilers()
+    public function getCompilers(): array
     {
         return array_filter($this->compilers);
     }
 
-    public function getCompilersExtensions()
+    public function getCompilersExtensions(): array
     {
         return array_keys($this->getCompilers());
     }
@@ -260,7 +262,7 @@ class Viewer implements ViewerContract
         return $this;
     }
 
-    public function directive($name, callable $callable)
+    public function directive(string $name, callable $callable)
     {
         $this->directives[$name] = $callable;
 
@@ -275,12 +277,12 @@ class Viewer implements ViewerContract
         return $this;
     }
 
-    public function hasDirective($name)
+    public function hasDirective(string $name): bool
     {
         return array_key_exists($name, $this->directives);
     }
 
-    public function format($name, ...$args)
+    public function format(string $name, ...$args): string
     {
         if (!$this->hasDirective($name)) {
             throw new ViewException('Directive `' . $name . '` is not defined.');
@@ -289,32 +291,32 @@ class Viewer implements ViewerContract
         return call_user_func_array($this->directives[$name], $args);
     }
 
-    public function offsetExists($key)
+    public function offsetExists(string $key)
     {
         return $this->hasAssigned($key);
     }
 
-    public function offsetSet($key, $value)
+    public function offsetSet(string $key, $value)
     {
         return $this->assign($key, $value);
     }
 
-    public function &offsetGet($key)
+    public function offsetGet(string $key)
     {
-        return $this->getAccessor()[$key];
+        return $this->params[$key] ?? null;
     }
 
-    public function offsetUnset($key)
+    public function offsetUnset(string $key)
     {
         return $this->deleteAssigned($key);
     }
 
-    public function __set($key, $value)
+    public function __set(string $key, $value)
     {
         return $this->assign($key, $value);
     }
 
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->assigned($key);
     }

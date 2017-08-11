@@ -11,7 +11,7 @@ class Loader
         $this->_r_e_n_d_e_r_e_r_ = $renderer;
     }
 
-    public function _l_o_a_d_()
+    public function _l_o_a_d_(): string
     {
         ob_start();
 
@@ -30,13 +30,13 @@ class Loader
         if ($extended = $this->_r_e_n_d_e_r_e_r_->extended()) {
             $viewer = $this->_r_e_n_d_e_r_e_r_->viewer();
 
-            if (is_array($extended)) {
+            if ($extended['id'] ?? false) {
                 if (!$file = $viewer->getCompiledFileFromString($extended['id'], $extended['string'])) {
                     throw new ViewException('Could not find a compiler for view `' . $extended['id'] . '`.');
                 }
             } else {
-                if (!$file = $viewer->getCompiledFile($extended)) {
-                    throw new ViewException('View file `' . $extended . '` does not exist in view paths.');
+                if (!$file = $viewer->getCompiledFile($extended['name'])) {
+                    throw new ViewException('View file `' . $extended['name'] . '` does not exist in view paths.');
                 }
             }
 

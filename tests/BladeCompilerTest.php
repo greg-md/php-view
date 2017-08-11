@@ -1,9 +1,8 @@
 <?php
 
-namespace Greg\View\Tests;
+namespace Greg\View;
 
-use Greg\View\BladeCompiler;
-use Greg\View\ViewException;
+use Greg\Support\Dir;
 use PHPUnit\Framework\TestCase;
 
 class ExtendedBladeCompiler extends BladeCompiler
@@ -60,6 +59,8 @@ class ExtendedBladeCompiler extends BladeCompiler
 
 class BladeCompilerTest extends TestCase
 {
+    private $compilationPath = __DIR__ . '/compiled';
+
     /**
      * @var BladeCompiler
      */
@@ -67,26 +68,14 @@ class BladeCompilerTest extends TestCase
 
     public function setUp()
     {
-        parent::setUp();
+        Dir::make($this->compilationPath);
 
         $this->compiler = new ExtendedBladeCompiler(__DIR__ . '/compiled');
     }
 
     public function tearDown()
     {
-        parent::tearDown();
-
-        foreach (glob(__DIR__ . '/compiled/*.php') as $file) {
-            unlink($file);
-        }
-    }
-
-    /** @test */
-    public function it_changes_compilation_path()
-    {
-        $this->compiler->setCompilationPath(__DIR__ . '/custom');
-
-        $this->assertEquals(__DIR__ . '/custom', $this->compiler->getCompilationPath());
+        Dir::unlink($this->compilationPath);
     }
 
     /** @test */

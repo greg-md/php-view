@@ -4,5 +4,5 @@ namespace Greg\View;
 
 interface ViewCompilerStrategy extends CompilerStrategy
 {
-    public function addViewDirective($name);
+    public function addViewDirective(string $name);
 }
