@@ -37,7 +37,7 @@ $viewsDirectory = __DIR__ . '/views';
 $viewer = new \Greg\View\Viewer($viewsDirectory);
 ```
 
-**Optionally**, you can add a view compiler. For example a [Blade Compiler](docs/ViewBladeCompiler.md) specially created for the [Viewer Contract](docs/ViewerContract.md):
+**Optionally**, you can add a view compiler. For example a [Blade Compiler](docs/ViewBladeCompiler.md) specially created for the [Viewer](docs/Viewer.md):
 
 ```php
 // Turn it to a callable, to load only when using blade templates.
@@ -80,10 +80,9 @@ echo $content;
 * [Renderer](docs/Renderer.md) - Instance of a template. Could be accessed via `$this` variable in the template.
 * [Loader](docs/Loader.md) - A special loader for [Renderer](docs/Renderer.md) which will give access only to its public properties and methods;
 * [Blade Compiler](docs/BladeCompiler.md) - An independent template compiler;
-* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer Contract](ViewerContract.md).
-* [Viewer Contract](docs/ViewerContract.md) - A contract of a viewer;
+* [View Blade Compiler](docs/ViewBladeCompiler.md) - An extended [Blade Compiler](docs/BladeCompiler.md), specially for the [Viewer](Viewer.md).
 * [Compiler Strategy](docs/CompilerStrategy.md) - A strategy for custom compilers;
-* [View Compiler Strategy](docs/ViewCompilerStrategy.md) - A strategy for custom [Viewer Contract](docs/ViewerContract.md) compilers;
+* [View Compiler Strategy](docs/ViewCompilerStrategy.md) - A strategy for custom [Viewer](docs/Viewer.md) compilers;
 
 # License
 
