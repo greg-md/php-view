@@ -62,7 +62,6 @@ class BladeCompilerTest extends TestCase
         $this->renderString($compiler, 'foo');
 
         $this->assertTrue($compiler->compiled);
-
     }
 
     public function testCanAddCustomDirectives()
@@ -88,7 +87,6 @@ class BladeCompilerTest extends TestCase
         $this->renderString($compiler, '@foo()');
 
         $this->assertTrue($compiler->compiled);
-
     }
 
     public function testCanAddCustomEmptyDirectives()
@@ -114,7 +112,6 @@ class BladeCompilerTest extends TestCase
         $this->renderString($compiler, '@foo');
 
         $this->assertTrue($compiler->compiled);
-
     }
 
     public function testCanAddCustomOptionalDirectives()
@@ -140,7 +137,6 @@ class BladeCompilerTest extends TestCase
         $this->renderString($compiler, '@foo');
 
         $this->assertTrue($compiler->compiled);
-
     }
 
     public function testCanThrowExceptionIfCompilationPathIsNotARealPath()

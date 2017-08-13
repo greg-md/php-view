@@ -140,7 +140,7 @@ class Viewer implements \ArrayAccess
     public function removeAssigned(string ...$args)
     {
         if ($args) {
-            array_map(function($key) {
+            array_map(function ($key) {
                 unset($this->params[$key]);
             }, $args);
         } else {

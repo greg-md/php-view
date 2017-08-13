@@ -74,7 +74,6 @@ class BladeCompiler implements CompilerStrategy
 
     protected function boot()
     {
-
     }
 
     public function getCompiledFile(string $file): string

@@ -214,7 +214,8 @@ class ViewerTest extends TestCase
         $this->expectException(ViewException::class);
 
         $this->viewer->addExtension('.foo', function () {
-            return new class {};
+            return new class() {
+            };
         });
 
         $this->viewer->getCompiler('.foo');
