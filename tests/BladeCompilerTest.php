@@ -5,72 +5,13 @@ namespace Greg\View;
 use Greg\Support\Dir;
 use PHPUnit\Framework\TestCase;
 
-class ExtendedBladeCompiler extends BladeCompiler
-{
-    public function boot()
-    {
-        $this->bootCompilers();
-
-        $this->bootDirectives();
-
-        $this->bootOptionalDirectives();
-
-        $this->bootEmptyDirectives();
-
-        return parent::boot();
-    }
-
-    public function bootCompilers()
-    {
-        $compilers = $this->getCompilers();
-
-        $this->setCompilers([]);
-
-        $this->addCompilers($compilers);
-    }
-
-    public function bootDirectives()
-    {
-        $directives = $this->getDirectives();
-
-        $this->setDirectives([]);
-
-        $this->addDirectives($directives);
-    }
-
-    public function bootOptionalDirectives()
-    {
-        $directives = $this->getOptionalDirectives();
-
-        $this->setOptionalDirectives([]);
-
-        $this->addOptionalDirectives($directives);
-    }
-
-    public function bootEmptyDirectives()
-    {
-        $directives = $this->getEmptyDirectives();
-
-        $this->setEmptyDirectives([]);
-
-        $this->addEmptyDirectives($directives);
-    }
-}
-
 class BladeCompilerTest extends TestCase
 {
     private $compilationPath = __DIR__ . '/compiled';
 
-    /**
-     * @var BladeCompiler
-     */
-    private $compiler = null;
-
     public function setUp()
     {
         Dir::make($this->compilationPath);
-
-        $this->compiler = new ExtendedBladeCompiler(__DIR__ . '/compiled');
     }
 
     public function tearDown()
@@ -78,45 +19,181 @@ class BladeCompilerTest extends TestCase
         Dir::unlink($this->compilationPath);
     }
 
+    public function testCanCompileVerbatim()
+    {
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->renderedStringEquals(
+            $compiler,
+            '{{ Hello! }}',
+            '@verbatim{{ Hello! }}@endverbatim'
+        );
+    }
+
+    public function testCanThrowExceptionIfParametersInDirectiveAreRequired()
+    {
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->expectException(ViewException::class);
+
+        $this->renderString($compiler, '@if');
+    }
+
+    public function testCanAddCustomCompilers()
+    {
+        $compilationPath = $this->compilationPath;
+
+        $compiler = new class($compilationPath) extends BladeCompiler {
+            public $compiled = false;
+
+            protected function boot()
+            {
+                $this->addCompilers([
+                    'customCompiler',
+                ]);
+            }
+
+            protected function customCompiler()
+            {
+                $this->compiled = true;
+            }
+        };
+
+        $this->renderString($compiler, 'foo');
+
+        $this->assertTrue($compiler->compiled);
+
+    }
+
+    public function testCanAddCustomDirectives()
+    {
+        $compilationPath = $this->compilationPath;
+
+        $compiler = new class($compilationPath) extends BladeCompiler {
+            public $compiled = false;
+
+            protected function boot()
+            {
+                $this->addDirectives([
+                    'foo' => 'compileFoo',
+                ]);
+            }
+
+            protected function compileFoo()
+            {
+                $this->compiled = true;
+            }
+        };
+
+        $this->renderString($compiler, '@foo()');
+
+        $this->assertTrue($compiler->compiled);
+
+    }
+
+    public function testCanAddCustomEmptyDirectives()
+    {
+        $compilationPath = $this->compilationPath;
+
+        $compiler = new class($compilationPath) extends BladeCompiler {
+            public $compiled = false;
+
+            protected function boot()
+            {
+                $this->addEmptyDirectives([
+                    'foo' => 'compileFoo',
+                ]);
+            }
+
+            protected function compileFoo()
+            {
+                $this->compiled = true;
+            }
+        };
+
+        $this->renderString($compiler, '@foo');
+
+        $this->assertTrue($compiler->compiled);
+
+    }
+
+    public function testCanAddCustomOptionalDirectives()
+    {
+        $compilationPath = $this->compilationPath;
+
+        $compiler = new class($compilationPath) extends BladeCompiler {
+            public $compiled = false;
+
+            protected function boot()
+            {
+                $this->addOptionalDirectives([
+                    'foo' => 'compileFoo',
+                ]);
+            }
+
+            protected function compileFoo()
+            {
+                $this->compiled = true;
+            }
+        };
+
+        $this->renderString($compiler, '@foo');
+
+        $this->assertTrue($compiler->compiled);
+
+    }
+
+    public function testCanThrowExceptionIfCompilationPathIsNotARealPath()
+    {
+        $this->expectException(ViewException::class);
+
+        new BladeCompiler('/undefined');
+    }
+
     /** @test */
     public function it_gets_compiled_file()
     {
+        $compiler = new BladeCompiler($this->compilationPath);
+
         $file = __DIR__ . '/view/default.blade.php';
 
         $compiledFile = __DIR__ . '/compiled/' . md5($file) . '.php';
 
-        $this->assertEquals($compiledFile, $this->compiler->getCompiledFile($file));
+        $this->assertEquals($compiledFile, $compiler->getCompiledFile($file));
 
         // Gets already existent file
-        $this->assertEquals($compiledFile, $this->compiler->getCompiledFile($file));
+        $this->assertEquals($compiledFile, $compiler->getCompiledFile($file));
     }
 
     /** @test */
     public function it_gets_compiled_file_from_string()
     {
-        // Coverage
-        $this->compiler->getCompiledFileFromString('test', 'Hello World!');
+        $compiler = new BladeCompiler($this->compilationPath);
 
         $this->assertEquals(
             __DIR__ . '/compiled/098f6bcd4621d373cade4e832627b4f6.php',
-            $this->compiler->getCompiledFileFromString('test', 'Hello World!')
+            $compiler->getCompiledFileFromString('test', 'Hello World!')
         );
     }
 
     /** @test */
     public function it_throws_an_error_if_file_not_found()
     {
+        $compiler = new BladeCompiler($this->compilationPath);
+
         $this->expectException(ViewException::class);
 
-        $this->compiler->getCompiledFile(__DIR__ . '/undefined.file');
+        $compiler->getCompiledFile(__DIR__ . '/undefined.file');
     }
 
     /** @test */
     public function it_removes_compiled_files()
     {
-        $this->compiler->getCompiledFile(__DIR__ . '/view/default.blade.php');
+        $compiler = new BladeCompiler($this->compilationPath);
 
-        $this->compiler->removeCompiledFiles();
+        $compiler->getCompiledFile(__DIR__ . '/view/default.blade.php');
+
+        $compiler->removeCompiledFiles();
 
         $this->assertEmpty(glob(__DIR__ . '/compiled/*.php'));
     }
@@ -124,29 +201,34 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_adds_custom_compiler()
     {
-        $this->compiler->addCompiler(function ($content) {
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $compiler->addCompiler(function ($content) {
             return str_replace('[SPLIT]', '<!-- Split content -->', $content);
         });
 
-        $this->renderedStringEquals('Hello World! <!-- Split content -->', 'Hello World! [SPLIT]');
+        $this->renderedStringEquals($compiler, 'Hello World! <!-- Split content -->', 'Hello World! [SPLIT]');
     }
 
     /** @test */
     public function it_adds_custom_directives()
     {
-        $this->compiler->addDirective('eco', function ($content) {
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $compiler->addDirective('eco', function ($content) {
             return '<?php echo ' . $content . '?>';
         });
 
-        $this->compiler->addEmptyDirective('br', function () {
+        $compiler->addEmptyDirective('br', function () {
             return '<br />';
         });
 
-        $this->compiler->addOptionalDirective('comment', function ($comment = null) {
+        $compiler->addOptionalDirective('comment', function ($comment = null) {
             return '<!-- <?php echo ' . ($comment ?: '""') . '?> -->';
         });
 
         $this->renderedStringEquals(
+            $compiler,
             'Hello World! <br /> <!--  --> <!-- This is a comment -->',
             '@eco("Hello World!") @br @comment @comment("This is a comment")'
         );
@@ -155,19 +237,26 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_renders_comments()
     {
-        $this->renderedStringEquals('Hello World!', 'Hello {{-- I am a comment --}}World!');
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->renderedStringEquals($compiler, 'Hello World!', 'Hello {{-- I am a comment --}}World!');
     }
 
     /** @test */
     public function it_renders_raw_content()
     {
-        $this->renderedStringEquals('I am a raw <strong>echo</strong>.', '{!! "I am a raw <strong>echo</strong>." !!}');
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->renderedStringEquals($compiler, 'I am a raw <strong>echo</strong>.', '{!! "I am a raw <strong>echo</strong>." !!}');
     }
 
     /** @test */
     public function it_renders_content()
     {
+        $compiler = new BladeCompiler($this->compilationPath);
+
         $this->renderedStringEquals(
+            $compiler,
             htmlentities('I am a raw <strong>echo</strong>.'),
             '{{ "I am a raw <strong>echo</strong>." }}'
         );
@@ -176,59 +265,74 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_renders_or()
     {
-        $this->renderedStringEquals('bar', '{{ $foo or "bar" }}');
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->renderedStringEquals($compiler, 'bar', '{{ $foo or "bar" }}');
     }
 
     /** @test */
     public function it_renders_if()
     {
-        $this->renderedStringEquals('foo', '@if(true)foo@endif');
+        $compiler = new BladeCompiler($this->compilationPath);
 
-        $this->renderedStringEquals('bar', '@if(false)foo@elseif(true)bar@endif');
+        $this->renderedStringEquals($compiler, 'foo', '@if(true)foo@endif');
 
-        $this->renderedStringEquals('bar', '@if(false)foo@else;bar@endif');
+        $this->renderedStringEquals($compiler, 'bar', '@if(false)foo@elseif(true)bar@endif');
+
+        $this->renderedStringEquals($compiler, 'bar', '@if(false)foo@else;bar@endif');
     }
 
     /** @test */
     public function it_renders_unless()
     {
-        $this->renderedStringEquals('foo', '@unless(false)foo@endunless');
+        $compiler = new BladeCompiler($this->compilationPath);
 
-        $this->renderedStringEquals('bar', '@unless(true)foo@elseunless(false)bar@endunless');
+        $this->renderedStringEquals($compiler, 'foo', '@unless(false)foo@endunless');
 
-        $this->renderedStringEquals('bar', '@unless(true)foo@else;bar@endunless');
+        $this->renderedStringEquals($compiler, 'bar', '@unless(true)foo@elseunless(false)bar@endunless');
+
+        $this->renderedStringEquals($compiler, 'bar', '@unless(true)foo@else;bar@endunless');
     }
 
     /** @test */
     public function it_renders_for()
     {
-        $this->renderedStringEquals('12345', '@for($i = 1; $i <= 5; ++$i){{ $i }}@endfor');
+        $compiler = new BladeCompiler($this->compilationPath);
+
+        $this->renderedStringEquals($compiler, '12345', '@for($i = 1; $i <= 5; ++$i){{ $i }}@endfor');
     }
 
     /** @test */
     public function it_renders_foreach()
     {
+        $compiler = new BladeCompiler($this->compilationPath);
+
         $this->renderedStringEquals(
+            $compiler,
             '345',
             '@foreach([1, 2, 3, 4, 5] as $i)@if($i === 1)@continue@endif@continue($i === 2){{ $i }}@endforeach'
         );
 
         $this->renderedStringEquals(
+            $compiler,
             '1234',
             '@foreach([1, 2, 3, 4, 5] as $i)@if($i === 5)@break@endif{{ $i }}@endforeach'
         );
 
         $this->renderedStringEquals(
+            $compiler,
             '1234',
             '@foreach([1, 2, 3, 4, 5] as $i)@break($i === 5){{ $i }}@endforeach'
         );
 
         $this->renderedStringEquals(
+            $compiler,
             'Empty',
             '@foreach([] as $i){{ $i }}@empty;Empty@endforeach'
         );
 
         $this->renderedStringEquals(
+            $compiler,
             '1234last',
             '@foreach([1, 2, 3, 4, 5] as $i, $iterator){{ $iterator->last ? "last" : $i }}@endforeach'
         );
@@ -237,7 +341,10 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_renders_while()
     {
+        $compiler = new BladeCompiler($this->compilationPath);
+
         $this->renderedStringEquals(
+            $compiler,
             '11',
             '<?php $array = [1, 2, 3]?>@while(array_shift($array))1@if(count($array) === 1)@stop@endif@endwhile'
         );
@@ -246,29 +353,31 @@ class BladeCompilerTest extends TestCase
     /** @test */
     public function it_renders_switch()
     {
-        $this->renderedStringEquals('bar', '@switch("bar")@case("foo")foo@break@case("bar")bar@break@endswitch');
+        $compiler = new BladeCompiler($this->compilationPath);
 
-        $this->renderedStringEquals('default', '@switch("bar")@case("foo")foo@break@default;default@break@endswitch');
+        $this->renderedStringEquals($compiler, 'bar', '@switch("bar")@case("foo")foo@break@case("bar")bar@break@endswitch');
+
+        $this->renderedStringEquals($compiler, 'default', '@switch("bar")@case("foo")foo@break@default;default@break@endswitch');
     }
 
-    protected function renderedStringEquals($expected, $actual)
+    protected function renderedStringEquals(BladeCompiler $compiler, $expected, $actual)
     {
-        $this->assertEquals($expected, $this->renderString($actual));
+        $this->assertEquals($expected, $this->renderString($compiler, $actual));
     }
 
-    protected function renderString($string)
+    protected function renderString(BladeCompiler $compiler, $string)
     {
-        return $this->render($this->compiler->getCompiledFileFromString('test', $string));
+        return $this->render($compiler->getCompiledFileFromString('test', $string));
     }
 
-    protected function renderedFileEquals($expected, $actual)
+    protected function renderedFileEquals(BladeCompiler $compiler, $expected, $actual)
     {
-        $this->assertEquals($expected, $this->renderFile($actual));
+        $this->assertEquals($expected, $this->renderFile($compiler, $actual));
     }
 
-    protected function renderFile($file)
+    protected function renderFile(BladeCompiler $compiler, $file)
     {
-        return $this->render($this->compiler->getCompiledFile($file));
+        return $this->render($compiler->getCompiledFile($file));
     }
 
     protected function render($file)

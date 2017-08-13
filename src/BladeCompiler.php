@@ -67,27 +67,25 @@ class BladeCompiler implements CompilerStrategy
 
     public function __construct(string $compilationPath)
     {
-        $this->compilationPath = realpath($compilationPath);
+        $this->setCompilationPath($compilationPath);
 
         $this->boot();
-
-        return $this;
     }
 
     protected function boot()
     {
-        return $this;
+
     }
 
     public function getCompiledFile(string $file): string
     {
-        $compiledFile = $this->getCompilationFile($file);
+        $compilationFile = $this->getCompilationFile($file);
 
-        if ($this->isFileExpired($file, $compiledFile)) {
-            $this->save($compiledFile, $this->compileFile($file));
+        if ($this->isFileExpired($file, $compilationFile)) {
+            $this->save($compilationFile, $this->compileFile($file));
         }
 
-        return $compiledFile;
+        return $compilationFile;
     }
 
     public function getCompiledFileFromString(string $id, string $string): string
@@ -161,79 +159,6 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    private function saveString(string $compiledFile, string $string, string $compiledContent)
-    {
-        $this->save($compiledFile, $compiledContent);
-
-        file_put_contents($compiledFile . '.blade.php', $string);
-
-        return $this;
-    }
-
-    private function save(string $compiledFile, string $compiledContent)
-    {
-        File::makeDir($compiledFile);
-
-        file_put_contents($compiledFile, $compiledContent);
-
-        return $this;
-    }
-
-    private function getCompilationFile(string $id): string
-    {
-        return $this->compilationPath . DIRECTORY_SEPARATOR . md5($id) . '.php';
-    }
-
-    private function isFileExpired(string $file, string $compiledFile): bool
-    {
-        if (!file_exists($file)) {
-            return true;
-        }
-
-        if (!file_exists($compiledFile)) {
-            return true;
-        }
-
-        return filemtime($file) > filemtime($compiledFile);
-    }
-
-    private function isStringExpired(string $string, string $compiledFile): bool
-    {
-        if (!file_exists($compiledFile)) {
-            return true;
-        }
-
-        return $string !== file_get_contents($compiledFile . '.blade.php');
-    }
-
-    /**
-     * Parse the tokens from the template.
-     *
-     * @param array $token
-     *
-     * @return string
-     */
-    private function parseToken(array $token): string
-    {
-        list($id, $content) = $token;
-
-        if ($id == T_INLINE_HTML) {
-            $content = $this->compileVerbatim($content);
-
-            foreach ($this->compilers as $callable) {
-                if (!is_callable($callable) and is_scalar($callable)) {
-                    $callable = [$this, $callable];
-                }
-
-                $content = call_user_func_array($callable, [$content]);
-            }
-
-            $content = $this->restoreVerbatim($content);
-        }
-
-        return $content;
-    }
-
     protected function compileVerbatim(string $content): string
     {
         return preg_replace_callback('#(?<!@)@verbatim(.*?)@endverbatim#is', function ($matches) {
@@ -290,15 +215,6 @@ class BladeCompiler implements CompilerStrategy
     protected function compileContentEcho(string $string): string
     {
         return '<?php echo htmlentities(' . $this->parseOr($string) . '); ?>';
-    }
-
-    private function parseOr(string $string): string
-    {
-        if (preg_match('#^(' . self::PHP_VAR_REGEX . ')\s+or\s+(.+)$#is', $string, $matches)) {
-            $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
-        }
-
-        return $string;
     }
 
     protected function compileDirectives(string $string): string
@@ -551,28 +467,9 @@ class BladeCompiler implements CompilerStrategy
         return '$' . $name . str_replace('.', '_', uniqid(null, true));
     }
 
-    protected function setCompilers(array $compilers)
-    {
-        $this->compilers = $compilers;
-
-        return $this;
-    }
-
     protected function addCompilers(array $compilers)
     {
         $this->compilers = array_merge($this->compilers, $compilers);
-
-        return $this;
-    }
-
-    protected function getCompilers(): array
-    {
-        return $this->compilers;
-    }
-
-    protected function setDirectives(array $directives)
-    {
-        $this->directives = $directives;
 
         return $this;
     }
@@ -584,33 +481,9 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getDirectives(): array
-    {
-        return $this->directives;
-    }
-
-    protected function setEmptyDirectives(array $directives)
-    {
-        $this->emptyDirectives = $directives;
-
-        return $this;
-    }
-
     protected function addEmptyDirectives(array $directives)
     {
         $this->emptyDirectives = array_merge($this->emptyDirectives, $directives);
-
-        return $this;
-    }
-
-    protected function getEmptyDirectives(): array
-    {
-        return $this->emptyDirectives;
-    }
-
-    protected function setOptionalDirectives(array $directives)
-    {
-        $this->optionalDirectives = $directives;
 
         return $this;
     }
@@ -622,8 +495,101 @@ class BladeCompiler implements CompilerStrategy
         return $this;
     }
 
-    protected function getOptionalDirectives(): array
+    private function setCompilationPath(string $compilationPath)
     {
-        return $this->optionalDirectives;
+        if (($compilationPath = realpath($compilationPath)) === false) {
+            throw new ViewException('Blade compilation path should be a real path.');
+        }
+
+        $this->compilationPath = $compilationPath;
+
+        return $this;
+    }
+
+    private function saveString(string $compiledFile, string $string, string $compiledContent)
+    {
+        $this->save($compiledFile, $compiledContent);
+
+        file_put_contents($this->templateStringFile($compiledFile), $string);
+
+        return $this;
+    }
+
+    private function save(string $compiledFile, string $compiledContent)
+    {
+        File::makeDir($compiledFile);
+
+        file_put_contents($compiledFile, $compiledContent);
+
+        return $this;
+    }
+
+    private function getCompilationFile(string $id): string
+    {
+        return $this->compilationPath . DIRECTORY_SEPARATOR . md5($id) . '.php';
+    }
+
+    private function templateStringFile(string $file)
+    {
+        return pathinfo($file, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($file, PATHINFO_FILENAME) . '.blade.php';
+    }
+
+    private function isFileExpired(string $file, string $compiledFile): bool
+    {
+        if (!file_exists($file)) {
+            return true;
+        }
+
+        if (!file_exists($compiledFile)) {
+            return true;
+        }
+
+        return filemtime($file) > filemtime($compiledFile);
+    }
+
+    private function isStringExpired(string $string, string $compiledFile): bool
+    {
+        if (!file_exists($compiledFile)) {
+            return true;
+        }
+
+        return $string !== file_get_contents($this->templateStringFile($compiledFile));
+    }
+
+    /**
+     * Parse the tokens from the template.
+     *
+     * @param array $token
+     *
+     * @return string
+     */
+    private function parseToken(array $token): string
+    {
+        list($id, $content) = $token;
+
+        if ($id == T_INLINE_HTML) {
+            $content = $this->compileVerbatim($content);
+
+            foreach ($this->compilers as $callable) {
+                if (!is_callable($callable) and is_scalar($callable)) {
+                    $callable = [$this, $callable];
+                }
+
+                $content = (string) call_user_func_array($callable, [$content]);
+            }
+
+            $content = $this->restoreVerbatim($content);
+        }
+
+        return $content;
+    }
+
+    private function parseOr(string $string): string
+    {
+        if (preg_match('#^(' . self::PHP_VAR_REGEX . ')\s+or\s+(.+)$#is', $string, $matches)) {
+            $string = 'isset(' . $matches[1] . ') ? ' . $matches[1] . ' : ' . $matches[2];
+        }
+
+        return $string;
     }
 }

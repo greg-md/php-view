@@ -16,10 +16,11 @@ Includes [`\ArrayAccess`](http://php.net/manual/en/class.arrayaccess.php) method
 * [renderIfExists](#renderifexists) - Render a template file if exists;
 * [renderString](#renderstring) - Render a template string;
 * [renderStringIfExists](#renderstringifexists) - Render a template string if exists;
-* [assign](#assign) - Assign parameters to all templates;
+* [assign](#assign) - Assign a parameter to all templates;
+* [assignMultiple](#assignMultiple) - Assign multiple parameters to all templates;
 * [assigned](#assigned) - Get assigned parameters;
 * [hasAssigned](#hasassigned) - Determine if assigned parameters exists;
-* [deleteAssigned](#deleteassigned) - Delete assigned parameters;
+* [removeAssigned](#removeassigned) - Remove assigned parameters;
 * [setPaths](#setpaths) - Replace templates directories;
 * [addPaths](#addpaths) - Add templates directories;
 * [addPath](#addpath) - Add a template directory;
@@ -85,21 +86,35 @@ Render a template string if its compiler exists. See [`renderString`](#renderstr
 
 ## assign
 
-Assign parameters to all templates.
+Assign a parameter to all templates.
 
 ```php
-assign(string|array $key, string $value = null): $this
+assign(string $key, string $value): $this
 ```
 
-`$key` - Parameter key or an array of parameters;  
-`$value` - Parameter value if `$key` is not an array.  
+`$key` - Parameter key;  
+`$value` - Parameter value.  
 
 _Example:_
 
 ```php
 $viewer->assign('author', 'Greg');
+```
 
-$viewer->assign([
+## assignMultiple
+
+Assign multiple parameters to all templates.
+
+```php
+assignMultiple(array $params): $this
+```
+
+`$params` - An array of parameters;  
+
+_Example:_
+
+```php
+$viewer->assignMultiple([
     'position' => 'Web Developer',
     'website' => 'http://greg.md/',
 ]);
@@ -145,12 +160,12 @@ if ($viewer->hasAssigned('foo')) {
 }
 ```
 
-## deleteAssigned
+## removeAssigned
 
-Delete assigned parameters.
+Remove assigned parameters.
 
 ```php
-deleteAssigned(string|array $key = null): $this
+removeAssigned(string|array $key = null): $this
 ```
 
 `$key` - Parameter key or an array of keys;  
@@ -159,13 +174,13 @@ _Example:_
 
 ```php
 // Delete 'foo' parameter.
-$viewer->deleteAssigned('foo');
+$viewer->removeAssigned('foo');
 
 // Delete 'foo' and 'baz' parameters.
-$viewer->deleteAssigned(['bar', 'baz']);
+$viewer->removeAssigned(['bar', 'baz']);
 
 // Delete all parameters.
-$viewer->deleteAssigned();
+$viewer->removeAssigned();
 ```
 
 ## setPaths

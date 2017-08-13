@@ -5,10 +5,6 @@ namespace Greg\View;
 use Greg\Support\Dir;
 use PHPUnit\Framework\TestCase;
 
-class FooCompiler
-{
-}
-
 class ViewerTest extends TestCase
 {
     private $compilationPath = __DIR__ . '/compiled';
@@ -22,7 +18,7 @@ class ViewerTest extends TestCase
     {
         Dir::make($this->compilationPath);
 
-        $this->viewer = new Viewer([__DIR__ . '/view']);
+        $this->viewer = new Viewer(__DIR__ . '/view');
 
         $this->viewer->addExtension('.blade.php', function () {
             return new ViewBladeCompiler(__DIR__ . '/compiled');
@@ -32,6 +28,154 @@ class ViewerTest extends TestCase
     public function tearDown()
     {
         Dir::unlink($this->compilationPath);
+    }
+
+    public function testCanRenderFileIfExists()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $this->assertEquals('Hello World!', $this->viewer->renderIfExists('default'));
+
+        $this->assertNull($viewer->renderIfExists('undefined'));
+    }
+
+    public function testCanThrowExceptionIfStringCompilerNotFound()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $this->expectException(ViewException::class);
+
+        $viewer->renderString('undefined', 'Foo');
+    }
+
+    public function testCanRenderStringIfExists()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $this->assertEquals('Hello World!', $this->viewer->renderStringIfExists('hi.php', 'Hello World!'));
+
+        $this->assertNull($viewer->renderStringIfExists('undefined', 'Hello World!'));
+    }
+
+    public function testCanAssignMultipleParameters()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $viewer->assignMultiple(['foo' => 'FOO', 'bar' => 'BAR']);
+
+        $this->assertArrayHasKey('foo', $viewer->assigned());
+
+        $this->assertArrayHasKey('bar', $viewer->assigned());
+    }
+
+    public function testCanDetermineIfHasAssignedValues()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $this->assertFalse($viewer->hasAssigned());
+
+        $viewer->assign('foo', 'FOO');
+
+        $this->assertTrue($viewer->hasAssigned());
+
+        $this->assertFalse($viewer->hasAssigned('bar'));
+
+        $this->assertTrue($viewer->hasAssigned('foo'));
+    }
+
+    public function testCanRemoveAssignedParameters()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $viewer->assign('foo', 'FOO');
+
+        $this->assertTrue($viewer->hasAssigned('foo'));
+
+        $viewer->removeAssigned('foo');
+
+        $this->assertFalse($viewer->hasAssigned('foo'));
+
+        $viewer->assignMultiple(['foo' => 'FOO', 'bar' => 'BAR']);
+
+        $viewer->removeAssigned();
+
+        $this->assertFalse($viewer->hasAssigned());
+    }
+
+    public function testCanSetPaths()
+    {
+        $viewer = new Viewer();
+
+        $viewer->setPaths(__DIR__, __DIR__ . '/view');
+
+        $this->assertEquals([__DIR__, __DIR__ . '/view'], $viewer->getPaths());
+    }
+
+    public function testCanAddPaths()
+    {
+        $viewer = new Viewer(__DIR__);
+
+        $viewer->addPaths(__DIR__ . '/view', __DIR__ . '/view2');
+
+        $this->assertEquals([__DIR__, __DIR__ . '/view', __DIR__ . '/view2'], $viewer->getPaths());
+    }
+
+    public function testCanRemoveCompiledFiles()
+    {
+        $viewer = new Viewer(__DIR__ . '/view');
+
+        $viewer->addExtension('.blade.php', function () {
+            return new ViewBladeCompiler($this->compilationPath);
+        });
+
+        $viewer->render('hello');
+
+        $viewer->renderString('hello.php', 'Hello!');
+
+        $this->assertNotEmpty(glob($this->compilationPath . '/*'));
+
+        $viewer->removeCompiledFiles();
+
+        $this->assertEmpty(glob($this->compilationPath . '/*'));
+    }
+
+    public function testCanThrowExceptionIfDirectiveNotFound()
+    {
+        $viewer = new Viewer();
+
+        $this->expectException(ViewException::class);
+
+        $viewer->format('undefined');
+    }
+
+    public function testCanActAsAnArray()
+    {
+        $viewer = new Viewer();
+
+        $viewer['foo'] = 'FOO';
+
+        $this->assertTrue(isset($viewer['foo']));
+
+        $this->assertEquals('FOO', $viewer['foo']);
+
+        $this->assertArrayHasKey('foo', $viewer->assigned());
+
+        unset($viewer['foo']);
+
+        $this->assertNull($viewer['foo']);
+
+        $this->assertArrayNotHasKey('foo', $viewer->assigned());
+    }
+
+    public function testCanActParamsAsProperties()
+    {
+        $viewer = new Viewer();
+
+        $viewer->foo = 'FOO';
+
+        $this->assertEquals('FOO', $viewer->foo);
+
+        $this->assertArrayHasKey('foo', $viewer->assigned());
     }
 
     /** @test */
@@ -70,7 +214,7 @@ class ViewerTest extends TestCase
         $this->expectException(ViewException::class);
 
         $this->viewer->addExtension('.foo', function () {
-            return new FooCompiler();
+            return new class {};
         });
 
         $this->viewer->getCompiler('.foo');

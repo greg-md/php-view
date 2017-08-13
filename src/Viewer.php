@@ -4,7 +4,7 @@ namespace Greg\View;
 
 use Greg\Support\Str;
 
-class Viewer
+class Viewer implements \ArrayAccess
 {
     private $paths = [];
 
@@ -20,13 +20,9 @@ class Viewer
 
     private $tmpFiles = [];
 
-    public function __construct(array $paths, array $params = [])
+    public function __construct(string ...$paths)
     {
         $this->paths = $paths;
-
-        $this->params = $params;
-
-        return $this;
     }
 
     public function render(string $name, array $params = []): string
@@ -107,7 +103,7 @@ class Viewer
     protected function getTmpFileFromString(string $id, string $string): string
     {
         if (!array_key_exists($id, $this->tmpFiles)) {
-            $file = tempnam(sys_get_temp_dir(), $id);
+            $file = tempnam(sys_get_temp_dir(), 'view');
 
             file_put_contents($file, $string);
 
@@ -141,10 +137,12 @@ class Viewer
         return func_num_args() ? array_key_exists($key, $this->params) : (bool) $this->params;
     }
 
-    public function deleteAssigned(string $key = null)
+    public function removeAssigned(string ...$args)
     {
-        if (func_num_args()) {
-            unset($this->params[$key]);
+        if ($args) {
+            array_map(function($key) {
+                unset($this->params[$key]);
+            }, $args);
         } else {
             $this->params = [];
         }
@@ -152,23 +150,16 @@ class Viewer
         return $this;
     }
 
-    public function setPaths(array $paths)
+    public function setPaths(string ...$paths)
     {
         $this->paths = $paths;
 
         return $this;
     }
 
-    public function addPaths(array $paths)
+    public function addPaths(string ...$paths)
     {
         $this->paths = array_merge($this->paths, $paths);
-
-        return $this;
-    }
-
-    public function addPath(string $path)
-    {
-        $this->paths[] = $path;
 
         return $this;
     }
@@ -259,6 +250,8 @@ class Viewer
             unlink($file);
         }
 
+        $this->tmpFiles = [];
+
         return $this;
     }
 
@@ -291,24 +284,24 @@ class Viewer
         return call_user_func_array($this->directives[$name], $args);
     }
 
-    public function offsetExists(string $key)
+    public function offsetExists($key)
     {
         return $this->hasAssigned($key);
     }
 
-    public function offsetSet(string $key, $value)
+    public function offsetSet($key, $value)
     {
         return $this->assign($key, $value);
     }
 
-    public function offsetGet(string $key)
+    public function offsetGet($key)
     {
         return $this->params[$key] ?? null;
     }
 
-    public function offsetUnset(string $key)
+    public function offsetUnset($key)
     {
-        return $this->deleteAssigned($key);
+        return $this->removeAssigned($key);
     }
 
     public function __set(string $key, $value)
