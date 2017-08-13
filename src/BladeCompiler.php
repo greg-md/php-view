@@ -72,6 +72,11 @@ class BladeCompiler implements CompilerStrategy
         $this->boot();
     }
 
+    public function compilationPath()
+    {
+        return $this->compilationPath;
+    }
+
     protected function boot()
     {
     }
