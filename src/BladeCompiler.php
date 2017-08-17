@@ -3,7 +3,6 @@
 namespace Greg\View;
 
 use Greg\Support\Arr;
-use Greg\Support\File;
 use Greg\Support\Tools\InNamespaceRegex;
 
 class BladeCompiler implements CompilerStrategy
@@ -521,8 +520,6 @@ class BladeCompiler implements CompilerStrategy
 
     private function save(string $compiledFile, string $compiledContent)
     {
-        File::makeDir($compiledFile);
-
         file_put_contents($compiledFile, $compiledContent);
 
         return $this;
