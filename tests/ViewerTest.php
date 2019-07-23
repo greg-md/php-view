@@ -14,7 +14,7 @@ class ViewerTest extends TestCase
      */
     private $viewer = null;
 
-    public function setUp()
+    protected function setUp(): void
     {
         Dir::make($this->compilationPath);
 
@@ -25,7 +25,7 @@ class ViewerTest extends TestCase
         });
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         Dir::unlink($this->compilationPath);
     }

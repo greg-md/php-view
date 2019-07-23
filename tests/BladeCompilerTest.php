@@ -9,12 +9,12 @@ class BladeCompilerTest extends TestCase
 {
     private $compilationPath = __DIR__ . '/compiled';
 
-    public function setUp()
+    protected function setUp(): void
     {
         Dir::make($this->compilationPath);
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         Dir::unlink($this->compilationPath);
     }
